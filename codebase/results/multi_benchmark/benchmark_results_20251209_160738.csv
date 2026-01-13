@@ -1,2 +1,0 @@
-avg_ks,min_dcr,avg_dcr,real_minority_ratio,syn_minority_ratio,ratio_diff,dataset,model,seed,epochs,timestamp
-0.1430071862907684,0.0,2.051266103207523,0.2478717523493643,0.49972360420121614,0.2518518518518519,adult,RE-TabSyn,42,10,2025-12-09T16:07:38.115213

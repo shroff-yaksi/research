@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+from tqdm import tqdm
 
 class LatentMLP(nn.Module):
     def __init__(self, latent_dim, hidden_dim=256, dropout=0.1):
@@ -13,10 +14,8 @@ class LatentMLP(nn.Module):
             nn.Linear(hidden_dim, hidden_dim),
         )
         
-        # Class embedding for Guidance (assuming binary class for now, or we can pass raw labels)
-        # For simplicity in this research code, we'll append the class label to the input
-        # or use a separate embedding. Let's use a separate embedding.
-        self.class_emb = nn.Embedding(2, hidden_dim) # Binary class (Minority vs Majority)
+        # Class embedding for Guidance (0=Majority, 1=Minority, 2=Null/Unconditional)
+        self.class_emb = nn.Embedding(3, hidden_dim)
 
         # Main network
         self.input_proj = nn.Linear(latent_dim, hidden_dim)
@@ -109,16 +108,6 @@ class LatentDiffusion:
         # We'll create a new y_in where masked entries are replaced by 2 (Null).
         
         y_in = y.clone()
-        y_in[mask] = 0 # Wait, if we use 0 for Majority, 1 for Minority, 2 for Null.
-        # But original data is 0/1?
-        # Let's remap: 0->0, 1->1. Null->2.
-        # So if mask is True, set to 2.
-        # But wait, y comes in as 0/1?
-        # Yes.
-        
-        # Let's assume the user passes y with 0/1.
-        # We need to make sure LatentMLP has embedding size 3.
-        
         y_in[mask] = 2 
         
         t_tensor = t.view(-1, 1).float() / self.timesteps
@@ -141,7 +130,7 @@ class LatentDiffusion:
         self.model.eval()
         x_t = torch.randn(num_samples, latent_dim, device=self.device)
         
-        for i in reversed(range(self.timesteps)):
+        for i in tqdm(reversed(range(self.timesteps)), desc="Sampling", total=self.timesteps):
             t = torch.tensor([i] * num_samples, device=self.device)
             t_input = t.view(-1, 1).float() / self.timesteps
             

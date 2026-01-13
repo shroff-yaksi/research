@@ -188,26 +188,50 @@ def generate_summary_table(df):
 
 def main():
     """Generate all visualizations with confidence intervals."""
-    csv_path = 'results/full_benchmark/benchmark_results_FINAL_20251210_011902.csv'
+    import argparse
+    import glob
+    import os
+
+    parser = argparse.ArgumentParser(description='Visualize Benchmark Results with CI')
+    parser.add_argument('--csv', type=str, help='Path to benchmark results CSV')
+    args = parser.parse_args()
+
+    csv_path = args.csv
     
+    if not csv_path:
+        # Try to find the latest result file in results/multi_benchmark
+        files = glob.glob('results/multi_benchmark/benchmark_results_*.csv')
+        if not files:
+            # Try full_benchmark
+            files = glob.glob('results/full_benchmark/benchmark_results_*.csv')
+        
+        if files:
+            # Sort by modification time
+            csv_path = max(files, key=os.path.getmtime)
+            print(f"Auto-detected latest results file: {csv_path}")
+        else:
+            print("Error: No benchmark results found. Please provide --csv path.")
+            return
+
     try:
         df = load_benchmark_results(csv_path)
         print(f"Loaded {len(df)} results from {len(df['dataset'].unique())} datasets")
         
+        # Create output directory
+        output_dir = os.path.dirname(csv_path)
+        
         # Generate plots
-        plot_ks_with_ci(df)
-        plot_minority_boost_with_ci(df)
-        plot_comparison_with_ci(df)
+        plot_ks_with_ci(df, os.path.join(output_dir, 'ks_with_ci.png'))
+        plot_minority_boost_with_ci(df, os.path.join(output_dir, 'minority_boost_with_ci.png'))
+        plot_comparison_with_ci(df, os.path.join(output_dir, 'comparison_with_ci.png'))
         
         # Generate summary table
         generate_summary_table(df)
         
-        print("\n✅ All visualizations with confidence intervals generated!")
+        print(f"\n✅ All visualizations with confidence intervals generated in {output_dir}!")
         
-    except FileNotFoundError:
-        print(f"Error: {csv_path} not found")
-        print("Run the benchmark first to generate results.")
-
+    except Exception as e:
+        print(f"Error processing {csv_path}: {e}")
 
 if __name__ == "__main__":
     main()

@@ -53,6 +53,8 @@ class LatentDiffusionWrapper(BaseModel):
         self.cat_cols = []
         self.num_cols = []
         self.target_col = None
+        self.minority_class_label = None
+        self.can_guide = False
 
     def train(self, train_data, target_col='salary'):
         print(f"Training {self.name} on {self.device}...")
@@ -82,20 +84,31 @@ class LatentDiffusionWrapper(BaseModel):
             self.label_encoder = LabelEncoder()
             y_train = self.label_encoder.fit_transform(train_data[target_col])
             y_tensor = torch.LongTensor(y_train).to(self.device)
+            self.can_guide = True
+            
+            # Identify minority class
+            counts = np.bincount(y_train)
+            self.minority_class_label = np.argmin(counts)
+            print(f"Guidance enabled. Minority Class Label: {self.minority_class_label} (Count: {counts[self.minority_class_label]})")
+            
         else:
             print(f"Warning: Target column '{target_col}' not found. Guidance disabled.")
             y_tensor = torch.zeros(X_train.shape[0], dtype=torch.long).to(self.device) # Dummy labels
+            self.can_guide = False
         
         # Indices for VAE Loss
         num_count = len(self.num_cols)
         self.num_cols_idx = list(range(num_count))
         self.cat_cols_idx_list = []
         current_idx = num_count
-        cat_encoder = self.preprocessor.named_transformers_['cat']
-        for categories in cat_encoder.categories_:
-            n_cats = len(categories)
-            self.cat_cols_idx_list.append((current_idx, current_idx + n_cats))
-            current_idx += n_cats
+        
+        if len(self.cat_cols) > 0:
+            cat_encoder = self.preprocessor.named_transformers_['cat']
+            if hasattr(cat_encoder, 'categories_'):
+                for categories in cat_encoder.categories_:
+                    n_cats = len(categories)
+                    self.cat_cols_idx_list.append((current_idx, current_idx + n_cats))
+                    current_idx += n_cats
             
         X_tensor = torch.FloatTensor(X_train).to(self.device)
         
@@ -107,7 +120,11 @@ class LatentDiffusionWrapper(BaseModel):
         batch_size = 64
         n_samples = X_tensor.shape[0]
         
-        for epoch in range(self.vae_epochs):
+        # tqdm for VAE
+        from tqdm import tqdm
+        vae_pbar = tqdm(range(self.vae_epochs), desc="VAE Training")
+        
+        for epoch in vae_pbar:
             epoch_loss = 0
             permutation = torch.randperm(n_samples)
             for i in range(0, n_samples, batch_size):
@@ -120,9 +137,9 @@ class LatentDiffusionWrapper(BaseModel):
                 loss.backward()
                 vae_optimizer.step()
                 epoch_loss += loss.item()
-                
-            if (epoch + 1) % 50 == 0:
-                print(f"VAE Epoch {epoch+1}/{self.vae_epochs}, Loss: {epoch_loss / n_samples:.4f}")
+            
+            # Update progress bar
+            vae_pbar.set_postfix({'loss': f"{epoch_loss / n_samples:.4f}"})
         
         print("VAE Trained. Freezing VAE.")
         for param in self.vae.parameters():
@@ -199,7 +216,9 @@ class LatentDiffusionWrapper(BaseModel):
             train_loader = None # We use manual loop below for non-DP
         
         # Train Diffusion
-        for epoch in range(self.epochs):
+        diff_pbar = tqdm(range(self.epochs), desc="Diffusion Training")
+        
+        for epoch in diff_pbar:
             epoch_loss = 0
             
             if self.target_epsilon is not None:
@@ -226,8 +245,8 @@ class LatentDiffusionWrapper(BaseModel):
                 
                 # Calculate current epsilon
                 epsilon = privacy_engine.get_epsilon(self.target_delta)
-                if (epoch + 1) % 10 == 0:
-                     print(f"Diff Epoch {epoch+1}/{self.epochs}, Loss: {epoch_loss / len(train_loader):.4f}, Epsilon: {epsilon:.2f}")
+                avg_loss = epoch_loss / len(train_loader)
+                diff_pbar.set_postfix({'loss': f"{avg_loss:.4f}", 'eps': f"{epsilon:.2f}"})
                      
                 if epsilon > self.target_epsilon:
                     print(f"Target epsilon {self.target_epsilon} reached at epoch {epoch+1}. Stopping.")
@@ -245,29 +264,44 @@ class LatentDiffusionWrapper(BaseModel):
                     epoch_loss += loss
                 
                 scheduler.step()
-                
-                if (epoch + 1) % 50 == 0:
-                    print(f"Diff Epoch {epoch+1}/{self.epochs}, Loss: {epoch_loss / (n_samples/batch_size):.4f}")
+                avg_loss = epoch_loss / (n_samples/batch_size)
+                diff_pbar.set_postfix({'loss': f"{avg_loss:.4f}"})
         
         self.is_trained = True
         print(f"{self.name} trained.")
 
-    def generate(self, num_samples):
+    def generate(self, num_samples, minority_ratio=None):
         if not self.is_trained:
             raise ValueError("Model not trained.")
         
         print(f"Generating {num_samples} samples with {self.name} (Guidance Scale: {self.guidance_scale})...")
         
-        # Determine labels for generation
-        # To boost rare events, we can force more minority class labels.
-        # Or we can sample labels from the training distribution.
-        # Let's sample labels 50/50 to explicitly boost minority!
-        # Or better, let the user decide. For now, let's generate balanced 50/50.
+        y_gen = None
+        current_guidance_scale = self.guidance_scale
         
-        y_gen = torch.randint(0, 2, (num_samples,), device=self.device)
+        if self.can_guide and self.minority_class_label is not None:
+            # Determine target ratio (default to 50/50 if not specified)
+            ratio = minority_ratio if minority_ratio is not None else 0.5
+            
+            num_minority = int(num_samples * ratio)
+            num_majority = num_samples - num_minority
+            
+            # Identify majority label (assuming binary: 0 or 1)
+            majority_label = 1 - self.minority_class_label
+            
+            # Create label tensor
+            labels = np.array([self.minority_class_label] * num_minority + [majority_label] * num_majority)
+            np.random.shuffle(labels)
+            y_gen = torch.LongTensor(labels).to(self.device)
+            
+            print(f"   Target Ratio: {ratio:.2f} (Minority: {num_minority}, Majority: {num_majority})")
+        else:
+            print("   Guidance disabled (Unconditional generation).")
+            current_guidance_scale = 0.0
+            y_gen = None
         
         # Sample z from Diffusion
-        z_gen = self.diffusion.sample(num_samples, self.latent_dim, y_cond=y_gen, guidance_scale=self.guidance_scale)
+        z_gen = self.diffusion.sample(num_samples, self.latent_dim, y_cond=y_gen, guidance_scale=current_guidance_scale)
         
         # Decode z with VAE
         with torch.no_grad():
@@ -277,9 +311,7 @@ class LatentDiffusionWrapper(BaseModel):
         synthetic_data = self._inverse_transform(recon_x.cpu().numpy())
         
         # We need to overwrite the target column with the labels we conditioned on!
-        # Because the VAE reconstruction of the target column might be noisy.
-        # And we want perfect alignment with guidance.
-        if self.target_col and self.label_encoder:
+        if self.target_col and self.label_encoder and y_gen is not None:
             synthetic_data[self.target_col] = self.label_encoder.inverse_transform(y_gen.cpu().numpy())
             
         return synthetic_data
@@ -294,16 +326,20 @@ class LatentDiffusionWrapper(BaseModel):
         num_restored = self.preprocessor.named_transformers_['num'].inverse_transform(num_part)
         df_num = pd.DataFrame(num_restored, columns=self.num_cols)
         
-        cat_encoder = self.preprocessor.named_transformers_['cat']
-        cat_categories = cat_encoder.categories_
         cat_restored_dict = {}
-        current_idx = 0
-        for i, col_name in enumerate(self.cat_cols):
-            n_cats = len(cat_categories[i])
-            col_slice = cat_part[:, current_idx : current_idx + n_cats]
-            class_indices = np.argmax(col_slice, axis=1)
-            cat_restored_dict[col_name] = cat_categories[i][class_indices]
-            current_idx += n_cats
+        
+        if len(self.cat_cols) > 0:
+            cat_encoder = self.preprocessor.named_transformers_['cat']
+            if hasattr(cat_encoder, 'categories_'):
+                cat_categories = cat_encoder.categories_
+                current_idx = 0
+                for i, col_name in enumerate(self.cat_cols):
+                    n_cats = len(cat_categories[i])
+                    col_slice = cat_part[:, current_idx : current_idx + n_cats]
+                    class_indices = np.argmax(col_slice, axis=1)
+                    cat_restored_dict[col_name] = cat_categories[i][class_indices]
+                    current_idx += n_cats
+                    
         df_cat = pd.DataFrame(cat_restored_dict)
         
         synthetic_data = pd.concat([df_num, df_cat], axis=1)
@@ -320,7 +356,7 @@ class GANWrapper(BaseModel):
         self.epochs = epochs
         self.model = CTGAN(epochs=epochs, verbose=True)
 
-    def train(self, train_data):
+    def train(self, train_data, target_col=None):
         print(f"Training {self.name} for {self.epochs} epochs...")
         # Detect discrete columns
         discrete_columns = train_data.select_dtypes(include=['object', 'category']).columns.tolist()
@@ -344,7 +380,7 @@ class TVAEWrapper(BaseModel):
         # TVAE from SDV/CTGAN ecosystem
         self.model = None # Initialize in train to use metadata
 
-    def train(self, train_data):
+    def train(self, train_data, target_col=None):
         print(f"Training {self.name} for {self.epochs} epochs...")
         
         # Use SDV SingleTableSynthesizer interface which handles metadata

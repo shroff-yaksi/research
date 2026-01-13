@@ -36,28 +36,30 @@
 
 \begin{document}
 
-\title{RE-TabSyn: Controllable Rare-Event Synthetic Data Generation for Financial Tabular Data via Classifier-Free Guidance}
+\title{Controllable Rare Event Synthetic Data Generation for Financial Tabular Data via Classifier Free Guidance}
 
-\author{\IEEEauthorblockN{Yaksi Ketan Shroff}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Yaksi Ketan Shroff}
 \IEEEauthorblockA{\textit{Department of Computer Science and Engineering} \\
 \textit{Asha M. Tarsadia Institute of Computer Science and Technology}\\
 Uka Tarsadia University, Bardoli, India \\
 shroffyaksi@gmail.com}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Dr. Vishvajit Bakrola}
+\IEEEauthorblockA{\textit{Associate Professor \& Director} \\
+\textit{Asha M. Tarsadia Institute of Computer Science and Technology}\\
+Uka Tarsadia University, Bardoli, India \\
+vishvajit.bakrola@utu.ac.in}
 }
 
-\maketitle
 
+
+\maketitle
 %=============================================================================
 % ABSTRACT
-%=============================================================================
 \begin{abstract}
-Machine learning practitioners in the financial sector constantly grapple with a fundamental paradox: the events most worth detecting, such as fraudulent credit card charges, defaulting borrowers, and corporate bankruptcies, are precisely the ones that occur least often. This severe class imbalance renders standard predictive models ineffective, as they tend to bias heavily toward the majority class to minimize aggregate error. While synthetic data generation has emerged as a promising remedy to address both data scarcity and privacy concerns, most existing state-of-the-art methods, such as CTGAN and TabSyn, simply replicate the skewed distributions found in the training data, thereby failing to address the core problem.
-
-This work presents RE-TabSyn, a novel generation framework built upon latent diffusion models that leverages Classifier-Free Guidance (CFG) to grant practitioners explicit manual command over output class proportions. By tuning a single scalar parameter during the inference phase, users can shift minority class representation from single-digit percentages toward rough parity with majority samples, a capability unattainable with conventional generators that lack conditional control mechanisms.
-
-We evaluated our approach across six diverse financial datasets with minority ratios ranging from 4.8 percent to 44.5 percent. The results reveal a significant breakthrough: we successfully elevated minority shares to approximately 50 percent across all datasets. Although this manipulation introduces a minor trade-off in statistical fidelity (mean Kolmogorov-Smirnov statistic rising from 0.11 to 0.17), the downstream utility gain is substantial. Crucially, classifiers trained on our balanced synthetic batches consistently outperformed counterparts trained on the original skewed real records for minority-class detection, achieving an average F1-score improvement of 0.014. These findings underscore that guided generation offers a viable path beyond faithful replication toward precision data augmentation for high-stakes imbalanced tasks.
+Machine learning practitioners in the financial sector constantly grapple with a fundamental paradox: the events most worth detecting, such as fraudulent credit card charges, defaulting borrowers, and corporate bankruptcies, are precisely the ones that occur least often. This severe class imbalance renders standard predictive models ineffective, as they tend to bias heavily toward the majority class to minimize aggregate error. While synthetic data generation has emerged as a promising remedy to address both data scarcity and privacy concerns, most existing state-of-the-art methods, such as CTGAN and TabSyn, simply replicate the skewed distributions found in the training data, thereby failing to address the core problem. This work presents a novel generation framework built upon latent diffusion models that leverages Classifier Free Guidance (CFG) to grant practitioners explicit manual command over output class proportions. By tuning a single scalar parameter during the inference phase, users can shift minority class representation from single-digit percentages toward rough parity with majority samples, a capability unattainable with conventional generators that lack conditional control mechanisms. We evaluated our approach across six diverse financial datasets with minority ratios ranging from 4.8 percent to 44.5 percent. The results reveal a significant breakthrough: we successfully elevated minority shares to approximately 50 percent across all datasets. Although this manipulation introduces a minor trade-off in statistical fidelity (mean Kolmogorov-Smirnov statistic rising from 0.109 to 0.171), the downstream utility gain is substantial. Crucially, classifiers trained on our balanced synthetic batches consistently outperformed counterparts trained on the original skewed real records for minority-class detection, achieving an average F1-score improvement of 1.4 percentage points (from 0.458 to 0.472). These findings underscore that guided generation offers a viable path beyond faithful replication toward precision data augmentation for high-stakes imbalanced tasks.
 \end{abstract}
-
 \begin{IEEEkeywords}
 Synthetic Data, Tabular Data, Diffusion Models, Class Imbalance, Financial Data, Privacy, Generative AI
 \end{IEEEkeywords}
@@ -68,24 +70,24 @@ Synthetic Data, Tabular Data, Diffusion Models, Class Imbalance, Financial Data,
 \section{Introduction}
 
 \subsection{The Reality of Financial Data}
-Working with production-grade financial datasets often feels less like science and more like searching for a needle in a haystack. Fraud analysts, credit officers, and risk modelers routinely encounter target variables where positive cases—the very outcomes they hope to anticipate and prevent—constitute a tiny sliver of available observations~\cite{he2009imbalanced}. It is not uncommon for a data science team to spend months negotiating access and wrangling data, only to discover that the "default" label appears in fewer than one out of every hundred loans, or that confirmed fraud cases make up less than 0.1\% of discrete transactions.
+Working with production-grade financial datasets presents unique challenges in pattern recognition, as the events of greatest interest occur with extreme rarity. Fraud analysts, credit officers, and risk modelers routinely encounter target variables where positive cases—the very outcomes they hope to anticipate and prevent—constitute a tiny sliver of available observations~\cite{he2009imbalanced}. It is not uncommon for a data science team to spend months negotiating access and wrangling data, only to discover that the "default" label appears in fewer than one out of every hundred loans, or that confirmed fraud cases make up less than 0.1\% of discrete transactions.
 
 This imbalance is not merely an annoyance; it is a fundamental barrier to effective machine learning. Standard algorithms, whether they are logistic regressions or deep neural networks, are mathematically driven to minimize a global loss function. In a dataset where 99.5\% of transactions are legitimate, a naïve model that simply predicts "legitimate" for every single input achieves 99.5\% accuracy. While mathematically optimal in a trivial sense, such a model is functionally useless for the business, as it catches zero fraud and prevents zero loss.
 
 \subsection{The Promise and Pitfalls of Synthetic Data}
-Generating synthetic records seemed, at first glance, like a natural antidote. The logic is seductive: if real data is scarce or imbalanced, why not simply manufacture realistic stand-ins? Ideally, synthetic data could serve dual purposes: bolstering scarce minority classes to improve model boundaries, and sidestepping rigorous privacy constraints (like GDPR~\cite{gdpr2016regulation} or CCPA) when sharing datasets across organizations~\cite{figueira2022survey}.
+Generating synthetic records seemed, at first glance, like a natural antidote. The approach appears straightforward: if real data is scarce or imbalanced, synthetic data could provide realistic substitutes. Ideally, synthetic data could serve dual purposes: bolstering scarce minority classes to improve model boundaries, and sidestepping rigorous privacy constraints (like GDPR~\cite{gdpr2016regulation} or CCPA) when sharing datasets across organizations~\cite{figueira2022survey}.
 
-However, reality has proven far messier. The current generation of state-of-the-art generative models—ranging from GANs to Diffusion Models—are designed with a single objective: to faithfully absorb and reproduce the underlying probability distribution of the training data~\cite{jordon2022fake}. They are, in essence, highly sophisticated mirrors. If the training data contains 1\% fraud, a well-trained generator will produce synthetic data with exactly 1\% fraud. Asking them to create balanced output is akin to requesting a photocopier to fix a typo in the document it is scanning—it fundamentally misunderstands the machine's function.
+However, reality has proven far messier. The current generation of state-of-the-art generative models—ranging from GANs to Diffusion Models—are designed with a single objective: to faithfully absorb and reproduce the underlying probability distribution of the training data~\cite{jordon2022fake}. They function as faithful replicators of training distributions. If the training data contains 1\% fraud, a well-trained generator will produce synthetic data with exactly 1\% fraud. Requesting balanced output from these models is fundamentally incompatible with their design objective of faithful distribution replication.
 
 Our own encounter with this phenomenon arose during experiments with diverse diffusion-based generators applied to fraud-detection records. The models captured column-wise correlations impressively but produced almost no minority examples. In multiple experimental runs, fraudulent-class output hovered near zero. This wasn't a bug; the models were doing exactly what they were trained to do.
 
 \subsection{Why This Matters for Finance}
 Finance represents a natural testing ground for highly controllable synthetic data. The sector sits at the convergence of strict privacy expectations, heavy regulatory mandates, and intense analytical requirements~\cite{assefa2020synthetic, sattarov2023findiff}. Sharing customer-level transaction logs across institutions to build shared fraud defenses is rarely feasible due to privacy laws, yet collaborative model development could yield tangible benefits for fighting financial crime.
 
-Simultaneously, the high-impact phenomena banks and insurers care most about—chargebacks, policy lapses, insolvency events—remain stubbornly rare~\cite{fiore2019hybrid, nidhi2024rare}. Traditional resampling heuristics like SMOTE~\cite{chawla2002smote} offer partial relief by interpolating between existing minority points, but they do not conjure authentic-looking new minority instances from the underlying data manifold, often creating noisy or unrealistic samples that confuse decision boundaries.
+Simultaneously, the high-impact phenomena banks and insurers care most about—chargebacks, policy lapses, insolvency events—remain persistently rare~\cite{fiore2019hybrid, nidhi2024rare}. Traditional resampling heuristics like SMOTE~\cite{chawla2002smote} offer partial relief by interpolating between existing minority points, but they do not conjure authentic-looking new minority instances from the underlying data manifold, often creating noisy or unrealistic samples that confuse decision boundaries.
 
 \subsection{Core Idea: Classifier-Free Guidance}
-The framework introduced here, dubbed \retabsyn{} (Rare-Event Enhanced Tabular Synthesis), tackles this shortcoming by borrowing a powerful idea from the domain of conditional image generation: Classifier-Free Guidance (CFG)~\cite{ho2022cfg}. CFG has proved to be the secret sauce behind breakthroughs in text-to-image systems like DALL-E 2 and Stable Diffusion, where it allows the model to steer diffusion sampling toward specific text prompts without requiring massive auxiliary classifier networks.
+The framework introduced here, dubbed \retabsyn{} (Rare-Event Enhanced Tabular Synthesis), tackles this shortcoming by borrowing a powerful idea from the domain of conditional image generation: Classifier-Free Guidance (CFG)~\cite{ho2022cfg}. CFG has proved to be a key enabler of recent advances in text-to-image systems like DALL-E 2 and Stable Diffusion, where it allows the model to steer diffusion sampling toward specific text prompts without requiring massive auxiliary classifier networks.
 
 Our core contribution lies in adapting the mechanics of CFG to structured tabular domains, specifically to control minority prevalence. The technical mechanism is elegant in its simplicity. We train the diffusion model with occasional label dropout—typically, 10\% of minibatches see their class information masked with a null token. This dual exposure forces the network to learn two distinct distributions simultaneously:
 \begin{enumerate}
@@ -117,16 +119,16 @@ Generative Adversarial Networks (GANs), introduced by Goodfellow et al.~\cite{go
 However, GANs struggle with ``mode collapse''~\cite{salimans2016improved}---particularly damaging for imbalanced data. When minority classes occupy a thin sliver of training samples, the discriminator maximizes reward by focusing on majority class creation. The generator learns that ignoring the minority class is a ``safe'' strategy, exacerbating imbalance rather than addressing it.
 
 \subsection{Variational Methods (VAEs)}
-Variational Autoencoders~\cite{kingma2014vae} model data through latent variables by maximizing the Evidence Lower Bound (ELBO):
+Variational Autoencoders~\cite{kingma2014vae} model data through latent variables. As formulated by Kingma and Welling~\cite{kingma2014vae}, the training objective maximizes the Evidence Lower Bound (ELBO):
 \begin{equation}
 \log p_\theta(\mathbf{x}) \geq \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\mathrm{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))
 \end{equation}
 where $q_\phi$ is the encoder (approximate posterior) and $p_\theta$ is the decoder (likelihood). The reparameterization trick enables gradient-based optimization through stochastic sampling.
 
-Tabular adaptations like TVAE~\cite{xu2019ctgan} offer smoother optimization landscapes compared to GANs. However, the Gaussian decoder assumption produces ``blurry'' samples---in the tabular domain, this manifests as noisy categorical features and poor discrete distribution capture.
+Tabular adaptations like TVAE~\cite{xu2019ctgan} offer smoother optimization landscapes compared to GANs. However, the Gaussian decoder assumption produces samples with reduced fidelity---in the tabular domain, this manifests as noisy categorical features and poor discrete distribution capture.
 
 \subsection{Diffusion-Based Generation}
-The diffusion paradigm, pioneered by Ho et al.~\cite{ho2020ddpm}, learns to reverse a gradual noise-injection process. The forward process adds Gaussian noise over $T$ timesteps:
+The diffusion paradigm, pioneered by Ho et al.~\cite{ho2020ddpm}, learns to reverse a gradual noise-injection process. Following Ho et al.~\cite{ho2020ddpm}, the forward process adds Gaussian noise over $T$ timesteps:
 \begin{equation}
 q(\mathbf{x}_t | \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t}\mathbf{x}_0, (1-\bar{\alpha}_t)\mathbf{I})
 \end{equation}
@@ -156,7 +158,7 @@ Our framework, \retabsyn{}, consists of three interlocking modules: a Variationa
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/system_architecture.png}
-\caption{Architectural overview of \retabsyn{}. The Tabular VAE compresses heterogeneous mixed-type data into a smooth latent space. The Latent Diffusion model learns the data distribution within this space. CFG allows us to bias generation towards specific classes during the sampling phase.}
+\caption{Architectural overview of \retabsyn{}. The Tabular VAE compresses heterogeneous mixed-type data into a smooth latent space. The latent diffusion model learns the data distribution within this space. CFG allows us to bias generation towards specific classes during the sampling phase.}
 \label{fig:system_arch}
 \end{figure}
 
@@ -274,7 +276,7 @@ Figure~\ref{fig:cfg} illustrates how this interpolation shifts the sampling dist
 We curate six publicly accessible financial datasets exhibiting diverse characteristics: sample sizes from 690 to 45,222, dimensionality from 8 to 64 features, and minority ratios from 4.8\% to 44.5\%. Table~\ref{tab:datasets} summarizes the benchmark suite selected to represent real-world financial ML applications, sourced from the UCI Machine Learning Repository~\cite{dua2019uci}.
 
 \begin{table}[htbp]
-\caption{Dataset Profiles: Financial Tabular Benchmarks}
+\caption{Dataset profiles for financial tabular benchmarks.}
 \label{tab:datasets}
 \centering
 \small
@@ -319,7 +321,7 @@ We compare against four baselines: (1) \textbf{CTGAN}~\cite{xu2019ctgan}: GAN wi
 The primary research question was: can we actually control the class ratio in the output? Table~\ref{tab:control} shows the answer is a definitive yes. By setting the guidance scale to $w=2.0$, we successfully boosted minority representation widely across all datasets.
 
 \begin{table}[htbp]
-\caption{Minority Control Outcomes ($w = 2.0$)}
+\caption{Minority control outcomes when $w = 2.0$.}
 \label{tab:control}
 \centering
 \small
@@ -348,7 +350,7 @@ Does this aggressive control wreck the data quality? One might worry that forcin
 \label{fig:tradeoff}
 \end{figure}
 
-Our mean KS statistic across datasets (0.17) is somewhat higher than the unguided \tabsyn{} (0.10). This discrepancy is logical: \tabsyn{} is optimized solely to copy the distribution perfectly. We are intentionally biasing it. However, our fidelity remains competitive with popular baselines like CTGAN (0.15) and TVAE (0.17), suggesting the synthesized data is still structurally sound and realistic enough for use.
+Our mean KS statistic across datasets (0.171) is somewhat higher than the unguided \tabsyn{} (0.109). This discrepancy is logical: \tabsyn{} is optimized solely to copy the distribution perfectly. We are intentionally biasing it. However, our fidelity remains competitive with popular baselines like CTGAN (0.153) and TVAE (0.165), suggesting the synthesized data is still structurally sound and realistic enough for use.
 
 Figure~\ref{fig:tsne} provides a qualitative validation via t-SNE visualization~\cite{maaten2008tsne}. The synthetic samples (orange) closely overlap with real data (blue), confirming that our method preserves the underlying data manifold structure while achieving controlled class balance.
 
@@ -363,7 +365,7 @@ Figure~\ref{fig:tsne} provides a qualitative validation via t-SNE visualization~
 The ultimate test of synthetic data in a financial context is utility. Does training a fraud detector on this balanced synthetic data actually help detect real fraud?
 
 \begin{table}[htbp]
-\caption{Minority-Class F1 Score Comparison}
+\caption{Comparison of minority-class F1 scores.}
 \label{tab:f1_detail}
 \centering
 \small
@@ -391,7 +393,7 @@ Why does this happen? We hypothesize that by generating a balanced dataset, we p
 Beyond marginal distributions, preserving inter-feature correlations is critical for realistic tabular data. Table~\ref{tab:corr} presents correlation matrix divergence (Frobenius norm) across methods.
 
 \begin{table}[htbp]
-\caption{Correlation Matrix Divergence (Frobenius Norm $\downarrow$)}
+\caption{Correlation matrix divergence measured by Frobenius norm ($\downarrow$).}
 \label{tab:corr}
 \centering
 \small
@@ -432,14 +434,14 @@ The minority control capability shows no significant variance across seeds (mean
 \subsection{Forensics of Failure: From TabDDPM to RE-TabSyn}
 Our research journey was not linear. Initial attempts using direct diffusion models like \tabddpm{} yielded catastrophic results (KS $> 0.80$), with a complete mode collapse on the minority class. This failure served as a critical diagnostic checkpoint, revealing that direct diffusion on discrete, sparse tabular representations creates discontinuous gradients that impede meaningful learning. This insight led us to two pivotal design pivots: moving the diffusion process to a continuous latent space via VAE and adopting Classifier-Free Guidance for targeted oversampling. Consequently, \retabsyn{} is not just a generative model, but a robust engineering response to the inherent limitations of standard diffusion frameworks on imbalanced financial data.
 
-\subsection{When to Use RE-TabSyn}
-This tool is not a universal silver bullet. If your goal is to publish a dataset that statistically mirrors the original in every way—for example, for a public transparency report—\tabsyn{} remains the gold standard for fidelity. However, if your goal is to \textit{train a model to find needles in a haystack}, \retabsyn{} appears to be the superior choice. It acts as a sophisticated oversampling technique—one that doesn't just copy old points (like SMOTE) but "dreams" up new variations of the minority class consistent with the learned latent structure of the data.
+\subsection{Usage of RE-TabSyn}
+This tool is not a universal silver bullet. If your goal is to publish a dataset that statistically mirrors the original in every way, for example, for a public transparency report, \tabsyn{} remains the gold standard for fidelity. However, if your goal is to \textit{train a model to find needles in a haystack}, \retabsyn{} appears to be the superior choice. It acts as a sophisticated oversampling technique that does not just copy old points (like SMOTE), but instead generates new minority-class variations that are consistent with the learned latent structure of the data.
 
 \subsection{Computational Cost Analysis}
 Table~\ref{tab:compute} compares the computational requirements across methods. \retabsyn{} strikes a balance between CTGAN's efficiency and TabSyn's expressiveness, requiring approximately 45 minutes on a single GPU for the Adult dataset.
 
 \begin{table}[htbp]
-\caption{Computational Cost Comparison (Adult Dataset)}
+\caption{Computational cost comparison on the Adult dataset.}
 \label{tab:compute}
 \centering
 \small
@@ -459,7 +461,7 @@ TabSyn & $\sim$2M & 60 min & 4 GB \\
 To understand the contribution of each architectural component, we conducted an ablation study on the Adult dataset (Table~\ref{tab:ablation}).
 
 \begin{table}[htbp]
-\caption{Ablation Study Results}
+\caption{Ablation study results on the Adult dataset.}
 \label{tab:ablation}
 \centering
 \small
@@ -475,7 +477,7 @@ w/o Transformer (MLP) & 0.19 & 48\% & 0.465 \\
 \end{tabular}
 \end{table}
 
-The ablation reveals that CFG is essential for minority control but introduces a fidelity trade-off; the VAE is critical---raw-space diffusion completely fails; and the Transformer backbone provides modest fidelity improvements over MLP.
+The ablation reveals that CFG is essential for minority control but introduces a fidelity trade-off; the VAE is critical because raw-space diffusion completely fails; and the Transformer backbone provides modest fidelity improvements over MLP.
 
 \subsection{Financial Domain Peculiarities}
 Our experiments revealed domain-specific challenges worth noting:
@@ -506,23 +508,21 @@ Promising directions include: (1) integrating formal Differential Privacy (DP-SG
 %=============================================================================
 \section{Conclusion}
 
-We have introduced \retabsyn{}, a latent-diffusion framework that finally gives data scientists a ``volume knob'' for class ratios in tabular data. By adapting Classifier-Free Guidance to the tabular domain, we allow practitioners to specify target minority ratios rather than accepting the scarcity dictated by their training history.
-
-Our results demonstrate that this is more than just a theoretical curiosity. Across six financial datasets, the method reliably generated balanced data that, crucially, improved the ability of downstream models to detect rare events like fraud and default. For high-stakes domains where every missed detection costs money, this capability addresses a long-standing gap in the synthetic data toolkit, moving us from passive data replication to active data augmentation.
+We have introduced \retabsyn{}, a latent-diffusion framework that gives data scientists a practical ``volume knob'' for class ratios in tabular data. By adapting Classifier-Free Guidance to the tabular domain, practitioners can specify target minority ratios rather than accept the scarcity dictated by the training distribution. Across six financial datasets spanning substantial imbalance, \retabsyn{} reliably generated near-balanced synthetic data and improved downstream detection of rare events such as fraud, default, and bankruptcy. While guidance introduces an expected fidelity--control trade-off, the samples remain structurally consistent enough to yield gains under TSTR evaluation, indicating that controllability can be achieved without abandoning realistic latent structure. Overall, \retabsyn{} serves as a principled augmentation alternative to heuristic oversampling for minority-critical financial modeling, and it helps bridge the gap between high-fidelity generators and task-driven data augmentation. Promising extensions include privacy-preserving training and richer conditioning (multi-class, temporal, and constraint-aware generation).
 
 %=============================================================================
 % ACKNOWLEDGMENT
 %=============================================================================
 \section*{Acknowledgment}
 
-The author would like to thank Dr. Vishvajit Bakrola, Associate Professor at AMTICS, Uka Tarsadia University, for his guidance and supervision throughout this research. Special thanks to Asha M. Tarsadia Institute of Computer Science and Technology for providing the computational resources and support for this work.
+The author would like to thank Dr. Vishvajit Bakrola, Associate Professor at AMTICS, Uka Tarsadia University, for his guidance and supervision throughout this research. The author would also like to thank his friend and batchmate Uttam Vaghasia for his help and support in this research work. Special thanks to Asha M. Tarsadia Institute of Computer Science and Technology for providing the computational resources and support for this work.
 
 %=============================================================================
 % REFERENCES
 %=============================================================================
 
 \bibliographystyle{IEEEtran}
-\bibliography{references_trimmed}
+\bibliography{references}
 
 
 \end{document}

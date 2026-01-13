@@ -39,8 +39,8 @@ ALL_DATASETS = [
     'australian_credit',  # Australian Credit Approval
     # Extended Financial (4 additional)
     'credit_approval',    # UCI Credit Approval (anonymized)
-    'lending_club',       # P2P Lending Loan Default
-    'give_me_credit',     # Kaggle Credit Delinquency
+    # 'lending_club',       # P2P Lending Loan Default (Requires manual download)
+    # 'give_me_credit',     # Kaggle Credit Delinquency (Requires manual download)
     'polish_bankruptcy',  # Company Bankruptcy Prediction
 ]
 
@@ -117,7 +117,11 @@ def run_single_benchmark(dataset_name, model_name, seed=42, epochs=100, output_d
     model.train(train_data, target_col=loader.target_col)
     
     # 6. Generate
-    synthetic_data = model.generate(num_samples=len(test_data))
+    if model_name == 'RE-TabSyn':
+        # Explicitly boost minority class to 50% for controllable synthesis
+        synthetic_data = model.generate(num_samples=len(test_data), minority_ratio=0.5)
+    else:
+        synthetic_data = model.generate(num_samples=len(test_data))
     
     # Save synthetic data
     syn_path = f'{output_dir}/synthetic_{dataset_name}_{model_name}_seed{seed}.csv'
@@ -128,6 +132,7 @@ def run_single_benchmark(dataset_name, model_name, seed=42, epochs=100, output_d
     evaluator = Evaluator(
         real_data=test_data,
         synthetic_data=synthetic_data,
+        train_data=train_data, # Pass training data for Privacy (DCR) check
         target_col=loader.target_col,
         minority_class=rare_stats['minority_class'] if rare_stats else None
     )
@@ -186,10 +191,16 @@ def run_multi_benchmark(datasets=None, models=None, seeds=None, quick_test=False
     # Create list of all runs
     runs = [(d, m, s) for d in datasets for m in models for s in seeds]
     
-    for i, (dataset, model_name, seed) in enumerate(runs):
+    # Wrap runs with tqdm for overall progress
+    pbar = tqdm(enumerate(runs), total=total_runs, desc="Total Benchmark Progress")
+    
+    for i, (dataset, model_name, seed) in pbar:
         run_start = time.time()
         
-        # Progress header
+        # Update progress bar description
+        pbar.set_description(f"Running: {dataset} | {model_name} | seed={seed}")
+        
+        # Progress header (Keep for log file readability)
         print(f"\n{'='*70}", flush=True)
         print(f"  RUN {i+1}/{total_runs}: {dataset} | {model_name} | seed={seed}", flush=True)
         if run_times:
@@ -250,7 +261,7 @@ def run_multi_benchmark(datasets=None, models=None, seeds=None, quick_test=False
         print(f"\n{'='*70}", flush=True)
         print("RESULTS SUMMARY", flush=True)
         print(f"{'='*70}", flush=True)
-        summary_cols = ['dataset', 'model', 'seed', 'avg_ks', 'syn_minority_ratio', 'min_dcr']
+        summary_cols = ['dataset', 'model', 'seed', 'avg_ks', 'syn_minority_ratio', 'min_dcr', 'utility_f1']
         available_cols = [c for c in summary_cols if c in results_df.columns]
         print(results_df[available_cols].to_string(index=False), flush=True)
         
@@ -259,10 +270,14 @@ def run_multi_benchmark(datasets=None, models=None, seeds=None, quick_test=False
         print("AGGREGATED BY MODEL (Mean ± Std)", flush=True)
         print(f"{'='*70}", flush=True)
         if 'avg_ks' in results_df.columns:
-            agg = results_df.groupby('model').agg({
+            agg_dict = {
                 'avg_ks': ['mean', 'std'],
                 'syn_minority_ratio': ['mean', 'std'] if 'syn_minority_ratio' in results_df.columns else lambda x: 0,
-            }).round(4)
+            }
+            if 'utility_f1' in results_df.columns:
+                agg_dict['utility_f1'] = ['mean', 'std']
+                
+            agg = results_df.groupby('model').agg(agg_dict).round(4)
             print(agg.to_string(), flush=True)
         
         return results_df

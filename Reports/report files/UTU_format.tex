@@ -1,0 +1,236 @@
+\documentclass[12pt,a4paper]{report}
+% UTU Project Report LaTex Format
+% https://github.com/shahparth123/utu-report-format
+
+%MIT License
+
+
+%Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+% Enter your details in following lines:
+\newcommand{\studentNameone}{Yaksi Shroff}
+\newcommand{\studentNametwo}{Yaksi Shroff}
+\newcommand{\studentNamethree}{Yaksi Shroff}
+%\newcommand{\studentNamefour}{Student Full Name}
+\newcommand{\guideName}{Dr. Vishvajit Bakrola}
+\newcommand{\headName}{Prof. Vishvendu Bhatt}
+\newcommand{\directorName}{Dr. Vishvajit Bakrola}
+\newcommand{\enrollmentNumberone}{202203103510201}
+\newcommand{\enrollmentNumbertwo}{202203103510201}
+\newcommand{\enrollmentNumberthree}{202203103510201}
+%\newcommand{\enrollmentNumberfour}{20XX02100XX000X}
+\newcommand{\reportTitle}{RE-TabSyn: Controllable Rare-Event Synthetic Data Generation for Financial Tabular Data via Classifier-Free Guidance}
+\newcommand{\instituteName}{Asha M. Tarsadia Institute of Computer Science and Technology}
+\newcommand{\instituteNameshort}{AMTICS}
+\newcommand{\degreeName}{Bachelors of Technology}
+\newcommand{\branchName}{Computer Science and Engineering}
+\newcommand{\departmentName}{Department of Computer Science and Engineering}
+
+\newcommand{\locationName}{UTU, Bardoli}
+\newcommand{\universityName}{Uka Tarsadia University}
+\newcommand{\academicYear}{April-2026}
+
+%***************************************************
+% DO NOT CHANGE BELOW THIS LINE
+%***************************************************
+\usepackage[pdftex]{graphicx}
+%\DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\usepackage{graphicx} %for including images
+\graphicspath{{./}{./img/}}
+\usepackage{setspace} %for line spacing
+\usepackage{tabularx} %for basic spacing in caption and table
+\usepackage{amsmath}  %for math equations
+\usepackage{amssymb}  %for math symbols
+\renewcommand{\baselinestretch}{1.5}
+
+\usepackage[pages=some]{background} %to add watermark
+\backgroundsetup{                      %to add watermark
+contents={\includegraphics{UTU.png}},
+angle=0,
+scale=4,
+color=black,
+opacity=0.2
+}
+
+\usepackage{tocloft}    % tocloft for table of contents style
+
+\usepackage[compact]{titlesec}  % titlesec for title section layout
+\newcommand*{\justifyheading}{\raggedleft} % for right justification of chapters
+
+%remove space before chapter title
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries\justifyheading}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-50pt}{40pt}
+
+
+\renewcommand{\contentsname}{
+\begin{center}
+\LARGE\bf TABLE OF CONTENTS
+\end{center}
+} %for changing the contents title
+
+\renewcommand\listtablename{
+\begin{center}
+\LARGE\bf LIST OF TABLES
+\end{center}
+} %for changing list of table title
+
+\renewcommand\listfigurename{
+\begin{center}
+\LARGE\bf LIST OF FIGURES
+\setlength\cftbeforefigskip{\cftbeforechapskip}
+\end{center}
+} %for changing list of figure title
+
+\usepackage{subfig}
+
+\renewcommand\cftchapafterpnum{\vskip6pt}   %for spacing change in table of content
+\renewcommand\cftsecafterpnum{\vskip10pt}   %for spacing change in table of content
+\renewcommand\cftsubsecafterpnum{\vskip10pt}
+\renewcommand\cftsubsubsecafterpnum{\vskip10pt}
+
+%--------------parth------------
+\usepackage{color}   %May be necessary if you want to color links
+\usepackage{hyperref}
+\hypersetup{
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=black  %choose some color if you want links to stand out
+}
+\usepackage{url}
+\usepackage{notoccite}
+\usepackage{float}
+\usepackage{pdflscape}
+
+%\usepackage{indentfirst }
+%\usepackage{subcaption}
+%%%%% For Removing paragraph
+\setlength\parindent{0pt}
+\setlength{\emergencystretch}{3em}
+
+\usepackage{enumerate}
+\newenvironment{tight_enumerate}{
+ \begin{enumerate}
+ \setlength{\topsep}{0pt}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt} }
+{\end{enumerate}
+}
+
+\newenvironment{tight_itemize}{
+ \begin{itemize}
+ \setlength{\topsep}{0pt}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt} }
+{\end{itemize}
+}
+
+
+\newenvironment{tight_description}{
+ \begin{description}
+ \setlength{\topsep}{0pt}
+ \setlength{\itemsep}{0pt}
+ \setlength{\parskip}{0pt} }
+{\end{description}
+}
+
+%-----------------parth end----------------
+%------------------------- Document settings ------------------------
+\topmargin   0mm
+\hoffset     0mm
+\voffset     0mm
+\textwidth   155mm
+\textheight  230mm
+%------------------------- Definitions ------------------------------
+
+
+
+%------------------------- document ---------------------------------
+
+\begin{document}
+% --------- Title and abstract etc the front matter -----------
+\pagenumbering{roman}
+\input{coverpages}
+
+\begin{singlespace}
+
+\newpage
+\setlength{\cftbeforetoctitleskip}{-4em}  %for removing space before table of content title
+\tableofcontents
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF TABLES}
+\setlength{\cftbeforelottitleskip}{-4em}  %for removing space before list of tables title
+\listoftables
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
+\setlength{\cftbeforeloftitleskip}{-4em}   %for removing space before list of figures title
+\listoffigures
+\end{singlespace}
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF ABBREVIATIONS}\index{Abbreviations}
+%\listofabbrevations
+\include{Abbreviations}
+
+\newpage
+\pagenumbering{arabic}
+\pagestyle{headings}
+% ----------------- thesis chapters -----------
+% ----Introduction----------
+\flushbottom
+\include{Introduction}
+\flushbottom
+%%-------------------------------------------------------------------------
+\flushbottom
+\include{ResearchAnalysis}
+\flushbottom
+%%-------------------------------------------------------------------------
+%%-------------------------------------------------------------------------
+\flushbottom
+\include{LitratureReview}
+\flushbottom
+
+%%-------------------------------------------------------------------------
+
+\flushbottom
+\include{ImplementationTesting}
+\flushbottom
+%%-------------------------------------------------------------------------
+\flushbottom
+\include{ResearchOutcomes}
+\flushbottom
+%%-------------------------------------------------------------------------
+% ----Conclusion---------
+\flushbottom
+\include{ConclusionAndFutureWork}
+\flushbottom
+
+% ----Future Scope---------
+\flushbottom
+\include{Futurescope}
+\flushbottom
+%------------ Appendix ----------------
+\flushbottom
+\appendix
+%\include{AppendixA}
+\flushbottom
+
+%%-------------------------------------------------------------------------
+%-----------------publication---------------------------------------
+%\flushbottom
+%\include{publication}
+%\flushbottom
+
+%------------------------------------------------------------------------
+% ------------ Bibliography---------------
+\renewcommand{\bibname}{REFERENCES}
+\begin{singlespace}
+\bibliographystyle{ieeetr}
+%\bibliography{reference}
+
+\include{References}
+\flushbottom
+%------------ ANNEXURE ----------------
+\flushbottom
+\include{ANNEXURE}
+\flushbottom
+\end{document} 

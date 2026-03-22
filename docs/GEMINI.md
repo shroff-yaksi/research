@@ -67,7 +67,7 @@ The primary code resides in the `codebase/` directory.
 - **`data_loader.py`**: Handles downloading and preprocessing of 9 financial datasets (Adult, German Credit, Bank Marketing, etc.).
 - **`evaluator.py`**: Computes metrics: KS Statistic (Fidelity), DCR (Privacy), and Minority Ratio.
 
-### `/literature review papers/` (Research Context)
+### `/literature/` (Research Context)
 - Contains **150+ categorized research papers** (Diffusion, GANs, Privacy, Transformers).
 - Organized by category (A: Diffusion, B: Privacy, C: GANs, etc.).
 - **`RESEARCH_PAPERS.md`**: Catalog of all papers.
@@ -76,9 +76,12 @@ The primary code resides in the `codebase/` directory.
 - Stores benchmark logs, CSVs of synthetic data, and comparison plots.
 - **`comparison.md`**: Comparisons against SOTA (TabDDPM, CTGAN).
 
-### `/docs/` & `/Reports/`
-- **`JOURNEY.md`**: The narrative of the research process and decisions.
-- **`Reports/`**: Drafts for the thesis/paper.
+### `/docs/`, `/report files/`, & `/paper files/`
+- **`docs/JOURNEY.md`**: The narrative of the research process and decisions.
+- **`report files/`**: Clean workspace containing formatting templates for the new final report.
+- **`paper files/`**: Clean workspace containing IEEE formatting templates for the new research paper.
+- **`diagram files/`**: Master folder containing all unique `.png` diagrams.
+- **`pdf_drafts/`**: Consolidated PDF drafts and presentations.
 
 ---
 
@@ -100,4 +103,4 @@ The primary code resides in the `codebase/` directory.
 ## 📝 TODOs & Next Steps
 - Expand benchmarks to more datasets.
 - Perform ablation studies on guidance scale `w`.
-- Finalize the research paper in `paper/` directory.
+- Finalize the research paper in the `paper files/` directory.

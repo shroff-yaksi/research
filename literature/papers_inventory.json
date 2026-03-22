@@ -1,0 +1,1272 @@
+{
+  "metadata": {
+    "total_papers": 158,
+    "last_updated": "2025-12-30T11:25:00.000000"
+  },
+  "papers": [
+    {
+      "paper_number": 1,
+      "title": "Classifier-free diffusion guidance.",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "1. Classifier-free diffusion guidance..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/1. Classifier-free diffusion guidance..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 2,
+      "title": "CoDi Co-evolving contrastive diffusion models for mixed-type tabular synthesis",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "2. CoDi Co-evolving contrastive diffusion models for mixed-type tabular synthesis.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/2. CoDi Co-evolving contrastive diffusion models for mixed-type tabular synthesis.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 3,
+      "title": "Conditional score-based diffusion models for Bayesian inference in infinite dimensions",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "3. Conditional score-based diffusion models for Bayesian inference in infinite dimensions.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/3. Conditional score-based diffusion models for Bayesian inference in infinite dimensions.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 4,
+      "title": "Controllable Tabular Data Synthesis Using Diffusion Models",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "4. Controllable Tabular Data Synthesis Using Diffusion Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/4. Controllable Tabular Data Synthesis Using Diffusion Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 5,
+      "title": "Deep unsupervised learning using nonequilibrium thermodynamics.",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "5. Deep unsupervised learning using nonequilibrium thermodynamics..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/5. Deep unsupervised learning using nonequilibrium thermodynamics..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 6,
+      "title": "Denoising diffusion probabilistic models.",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "6. Denoising diffusion probabilistic models..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/6. Denoising diffusion probabilistic models..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 7,
+      "title": "Differentially private federated learning of diffusion models for synthetic tabular data generation.",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "7. Differentially private federated learning of diffusion models for synthetic tabular data generation..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/7. Differentially private federated learning of diffusion models for synthetic tabular data generation..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 8,
+      "title": "Difformer Scalable (graph) transformers induced by energy constrained diffusion",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "8. Difformer Scalable (graph) transformers induced by energy constrained diffusion.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/8. Difformer Scalable (graph) transformers induced by energy constrained diffusion.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 9,
+      "title": "Diffusion models beat GANs on image synthesis.",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "9. Diffusion models beat GANs on image synthesis..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/9. Diffusion models beat GANs on image synthesis..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 10,
+      "title": "Diffusion models for missing value imputation in tabular data",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "10. Diffusion models for missing value imputation in tabular data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/10. Diffusion models for missing value imputation in tabular data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 11,
+      "title": "Diffusion Models for Tabular Data Imputation and Synthetic Data Generation (1)",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "11. Diffusion Models for Tabular Data Imputation and Synthetic Data Generation (1).pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/11. Diffusion Models for Tabular Data Imputation and Synthetic Data Generation (1).pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 12,
+      "title": "Diffusion Models for Tabular Data- Challenges, Current Progress, and Future Directions",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "12. Diffusion Models for Tabular Data- Challenges, Current Progress, and Future Directions.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/12. Diffusion Models for Tabular Data- Challenges, Current Progress, and Future Directions.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 13,
+      "title": "Domain-Constrained Diffusion Models to Synthesize Tabular Data_ A Case Study in Power Systems",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "13. Domain-Constrained Diffusion Models to Synthesize Tabular Data_ A Case Study in Power Systems.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/13. Domain-Constrained Diffusion Models to Synthesize Tabular Data_ A Case Study in Power Systems.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 14,
+      "title": "Federated Diffusion Modeling with Differential Privacy for Tabular Data Synthesis",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "14. Federated Diffusion Modeling with Differential Privacy for Tabular Data Synthesis.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/14. Federated Diffusion Modeling with Differential Privacy for Tabular Data Synthesis.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 15,
+      "title": "FedTabDiff- Federated Learning of Diffusion Probabilistic Models for Synthetic Mixed-Type Tabular Data Generation",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "15. FedTabDiff- Federated Learning of Diffusion Probabilistic Models for Synthetic Mixed-Type Tabular Data Generation.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/15. FedTabDiff- Federated Learning of Diffusion Probabilistic Models for Synthetic Mixed-Type Tabular Data Generation.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 16,
+      "title": "FinDiff_ Diffusion Models for Financial Tabular Data Generation",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "16. FinDiff_ Diffusion Models for Financial Tabular Data Generation.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/16. FinDiff_ Diffusion Models for Financial Tabular Data Generation.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 17,
+      "title": "MIXED-TYPE TABULAR DATA SYNTHESIS WITH SCORE-BASED DIFFUSION IN LATENT SPACE",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "17. MIXED-TYPE TABULAR DATA SYNTHESIS WITH SCORE-BASED DIFFUSION IN LATENT SPACE.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/17. MIXED-TYPE TABULAR DATA SYNTHESIS WITH SCORE-BASED DIFFUSION IN LATENT SPACE.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 18,
+      "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "18. Score-Based Generative Modeling through Stochastic Differential Equations.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/18. Score-Based Generative Modeling through Stochastic Differential Equations.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 19,
+      "title": "SiloFuse_ Cross-silo synthetic data generation with latent tabular diffusion models.",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "19. SiloFuse_ Cross-silo synthetic data generation with latent tabular diffusion models..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/19. SiloFuse_ Cross-silo synthetic data generation with latent tabular diffusion models..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 20,
+      "title": "TabDDPM Modelling Tabular Data with Diffusion Models",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "20. TabDDPM Modelling Tabular Data with Diffusion Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/20. TabDDPM Modelling Tabular Data with Diffusion Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 21,
+      "title": "TABDIFF- A MIXED-TYPE DIFFUSION MODEL FOR TABULAR DATA GENERATION",
+      "category": "A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)",
+      "filename": "21. TABDIFF- A MIXED-TYPE DIFFUSION MODEL FOR TABULAR DATA GENERATION.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/A. Diffusion-Based Models (Primary Focus_ Utility & Fidelity)/21. TABDIFF- A MIXED-TYPE DIFFUSION MODEL FOR TABULAR DATA GENERATION.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 22,
+      "title": "Adversarial removal of demographic attributes from text data.",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "22. Adversarial removal of demographic attributes from text data..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/22. Adversarial removal of demographic attributes from text data..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 23,
+      "title": "Calibrating noise to sensitivity in private data analysis.",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "23. Calibrating noise to sensitivity in private data analysis..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/23. Calibrating noise to sensitivity in private data analysis..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 24,
+      "title": "Data Synthesis based on Generative Adversarial Networks",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "24. Data Synthesis based on Generative Adversarial Networks.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/24. Data Synthesis based on Generative Adversarial Networks.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 25,
+      "title": "Deep learning with differential privacy.",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "25. Deep learning with differential privacy..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/25. Deep learning with differential privacy..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 26,
+      "title": "Differentially Private Data Generation with Missing Data",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "26. Differentially Private Data Generation with Missing Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/26. Differentially Private Data Generation with Missing Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 27,
+      "title": "Differentially Private Denoise Diffusion Probability Models",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "27. Differentially Private Denoise Diffusion Probability Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/27. Differentially Private Denoise Diffusion Probability Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 28,
+      "title": "Differentially Private Regression with Gaussian Processes",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "28. Differentially Private Regression with Gaussian Processes.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/28. Differentially Private Regression with Gaussian Processes.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 29,
+      "title": "DIFFERENTIALLY PRIVATE SYNTHETIC DATA VIA FOUNDATION MODEL APIS 1_ IMAGES",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "29. DIFFERENTIALLY PRIVATE SYNTHETIC DATA VIA FOUNDATION MODEL APIS 1_ IMAGES.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/29. DIFFERENTIALLY PRIVATE SYNTHETIC DATA VIA FOUNDATION MODEL APIS 1_ IMAGES.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 30,
+      "title": "Differentially Private Tabular Data Synthesis using Large Language Models",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "30. Differentially Private Tabular Data Synthesis using Large Language Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/30. Differentially Private Tabular Data Synthesis using Large Language Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 31,
+      "title": "DP-VAE- Human-Readable Text Anonymization for Online Reviews with Differentially Private Variational Autoencoders",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "31. DP-VAE- Human-Readable Text Anonymization for Online Reviews with Differentially Private Variational Autoencoders.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/31. DP-VAE- Human-Readable Text Anonymization for Online Reviews with Differentially Private Variational Autoencoders.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 32,
+      "title": "Evaluating Differentially Private Synthetic Data Generation in High-Stakes Domains",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "32. Evaluating Differentially Private Synthetic Data Generation in High-Stakes Domains.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/32. Evaluating Differentially Private Synthetic Data Generation in High-Stakes Domains.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 33,
+      "title": "Evaluating Privacy and Utility in Synthetic Data",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "33. Evaluating Privacy and Utility in Synthetic Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/33. Evaluating Privacy and Utility in Synthetic Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 34,
+      "title": "FEDERATED LEARNING WITH MATCHED AVERAGING",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "34. FEDERATED LEARNING WITH MATCHED AVERAGING.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/34. FEDERATED LEARNING WITH MATCHED AVERAGING.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 35,
+      "title": "Generating tabular datasets under differential privacy (1)",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "35. Generating tabular datasets under differential privacy (1).pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/35. Generating tabular datasets under differential privacy (1).pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 36,
+      "title": "Opacus User-Friendly Differentially Private Federated Learning of Diffusion Models",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "36. Opacus User-Friendly Differentially Private Federated Learning of Diffusion Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/36. Opacus User-Friendly Differentially Private Federated Learning of Diffusion Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 37,
+      "title": "Practical Differential Privacy in Deep Learning",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "37. Practical Differential Privacy in Deep Learning.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/37. Practical Differential Privacy in Deep Learning.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 38,
+      "title": "Privacy Preserving Synthetic Data Release Using Deep Learning",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "38. Privacy Preserving Synthetic Data Release Using Deep Learning.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/38. Privacy Preserving Synthetic Data Release Using Deep Learning.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 39,
+      "title": "Private Synthetic Data for Multitask Learning and Marginal Queries",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "39. Private Synthetic Data for Multitask Learning and Marginal Queries.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/39. Private Synthetic Data for Multitask Learning and Marginal Queries.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 40,
+      "title": "PrivSyn- Differentially Private Data Synthesis",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "40. PrivSyn- Differentially Private Data Synthesis.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/40. PrivSyn- Differentially Private Data Synthesis.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 41,
+      "title": "Tabular Data Synthesis with Differential Privacy- A Survey",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "41. Tabular Data Synthesis with Differential Privacy- A Survey.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/41. Tabular Data Synthesis with Differential Privacy- A Survey.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 42,
+      "title": "The algorithmic foundations of differential privacy.",
+      "category": "B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)",
+      "filename": "42. The algorithmic foundations of differential privacy..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/B. Privacy-Focused Diffusion Models (Primary Focus_ Privacy with Utility)/42. The algorithmic foundations of differential privacy..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 43,
+      "title": "A Hybrid Deep Learning Approach with Generative Adversarial Network for Credit Card Fraud Detection",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "43. A Hybrid Deep Learning Approach with Generative Adversarial Network for Credit Card Fraud Detection.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/43. A Hybrid Deep Learning Approach with Generative Adversarial Network for Credit Card Fraud Detection.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 44,
+      "title": "A novel missing data imputation approach based on clinical conditional Generative Adversarial Networks applied to EHR datasets",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "44. A novel missing data imputation approach based on clinical conditional Generative Adversarial Networks applied to EHR datasets.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/44. A novel missing data imputation approach based on clinical conditional Generative Adversarial Networks applied to EHR datasets.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 45,
+      "title": "Beyond the Norm- A Survey of Synthetic Data Generation for Rare Events",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "45. Beyond the Norm- A Survey of Synthetic Data Generation for Rare Events.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/45. Beyond the Norm- A Survey of Synthetic Data Generation for Rare Events.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 46,
+      "title": "CausalGAN_ Learning causal implicit generative models with adversarial training.",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "46. CausalGAN_ Learning causal implicit generative models with adversarial training..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/46. CausalGAN_ Learning causal implicit generative models with adversarial training..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 47,
+      "title": "Conditional Wasserstein GAN-based oversampling of tabular data for imbalanced learning.",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "47. Conditional Wasserstein GAN-based oversampling of tabular data for imbalanced learning..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/47. Conditional Wasserstein GAN-based oversampling of tabular data for imbalanced learning..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 48,
+      "title": "CTAB-GAN+- Enhancing Tabular Data Synthesis",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "48. CTAB-GAN+- Enhancing Tabular Data Synthesis.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/48. CTAB-GAN+- Enhancing Tabular Data Synthesis.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 49,
+      "title": "DP-CTGAN_ Differentially Private Medical Data Generation using CTGANs",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "49. DP-CTGAN_ Differentially Private Medical Data Generation using CTGANs.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/49. DP-CTGAN_ Differentially Private Medical Data Generation using CTGANs.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 50,
+      "title": "Fed-DPSDG-WGAN- Differentially Private Synthetic Data Generation for Loan Default Prediction via Federated Wasserstein GAN",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "50. Fed-DPSDG-WGAN- Differentially Private Synthetic Data Generation for Loan Default Prediction via Federated Wasserstein GAN.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/50. Fed-DPSDG-WGAN- Differentially Private Synthetic Data Generation for Loan Default Prediction via Federated Wasserstein GAN.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 51,
+      "title": "Generative adversarial nets.",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "51. Generative adversarial nets..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/51. Generative adversarial nets..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 52,
+      "title": "Improved techniques for training GANs.",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "52. Improved techniques for training GANs..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/52. Improved techniques for training GANs..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 53,
+      "title": "Improved Training of Wasserstein GANs",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "53. Improved Training of Wasserstein GANs.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/53. Improved Training of Wasserstein GANs.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 54,
+      "title": "Modeling tabular data using conditional GAN.",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "54. Modeling tabular data using conditional GAN..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/54. Modeling tabular data using conditional GAN..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 55,
+      "title": "Real-valued (medical) time series generation with recurrent conditional GANs",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "55. Real-valued (medical) time series generation with recurrent conditional GANs.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/55. Real-valued (medical) time series generation with recurrent conditional GANs.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 56,
+      "title": "SMOTE_ Synthetic minority over-sampling technique.",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "56. SMOTE_ Synthetic minority over-sampling technique..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/56. SMOTE_ Synthetic minority over-sampling technique..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 57,
+      "title": "Synthetic data for enhanced privacy- A VAE-GAN approach against membership inference attacks",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "57. Synthetic data for enhanced privacy- A VAE-GAN approach against membership inference attacks.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/57. Synthetic data for enhanced privacy- A VAE-GAN approach against membership inference attacks.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 58,
+      "title": "Synthetic tabular data generation using a VAE-GAN architecture",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "58. Synthetic tabular data generation using a VAE-GAN architecture.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/58. Synthetic tabular data generation using a VAE-GAN architecture.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 59,
+      "title": "Tab-VAE- A Novel VAE for Generating Synthetic Tabular Data",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "59. Tab-VAE- A Novel VAE for Generating Synthetic Tabular Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/59. Tab-VAE- A Novel VAE for Generating Synthetic Tabular Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 60,
+      "title": "TabFairGAN- Fair Tabular Data Generation with Generative Adversarial Networks",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "60. TabFairGAN- Fair Tabular Data Generation with Generative Adversarial Networks.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/60. TabFairGAN- Fair Tabular Data Generation with Generative Adversarial Networks.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 61,
+      "title": "Wasserstein generative adversarial networks.",
+      "category": "C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)",
+      "filename": "61. Wasserstein generative adversarial networks..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/C. GAN-Based Models (Primary Focus_ Utility & Rare Event Preservation)/61. Wasserstein generative adversarial networks..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 62,
+      "title": "FLAIM- AIM-based Synthetic Data Generation in the Federated Setting",
+      "category": "D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)",
+      "filename": "62. FLAIM- AIM-based Synthetic Data Generation in the Federated Setting.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)/62. FLAIM- AIM-based Synthetic Data Generation in the Federated Setting.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 63,
+      "title": "Private prediction for large-scale synthetic text generation",
+      "category": "D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)",
+      "filename": "63. Private prediction for large-scale synthetic text generation.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)/63. Private prediction for large-scale synthetic text generation.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 64,
+      "title": "REaLTabFormer- Generating Realistic Relational and Tabular Data using Transformers",
+      "category": "D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)",
+      "filename": "64. REaLTabFormer- Generating Realistic Relational and Tabular Data using Transformers.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)/64. REaLTabFormer- Generating Realistic Relational and Tabular Data using Transformers.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 65,
+      "title": "Revisiting Deep Learning Models for Tabular Data",
+      "category": "D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)",
+      "filename": "65. Revisiting Deep Learning Models for Tabular Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)/65. Revisiting Deep Learning Models for Tabular Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 66,
+      "title": "SAINT- Improved Neural Networks for Tabular Data via Row Attention and Contrastive Pre-Training",
+      "category": "D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)",
+      "filename": "66. SAINT- Improved Neural Networks for Tabular Data via Row Attention and Contrastive Pre-Training.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)/66. SAINT- Improved Neural Networks for Tabular Data via Row Attention and Contrastive Pre-Training.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 67,
+      "title": "TabLLM- Few-shot Classification of Tabular Data with Large Language Models",
+      "category": "D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)",
+      "filename": "67. TabLLM- Few-shot Classification of Tabular Data with Large Language Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)/67. TabLLM- Few-shot Classification of Tabular Data with Large Language Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 68,
+      "title": "TabNet- Attentive Interpretable Tabular Learning",
+      "category": "D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)",
+      "filename": "68. TabNet- Attentive Interpretable Tabular Learning.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)/68. TabNet- Attentive Interpretable Tabular Learning.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 69,
+      "title": "TabTransformer- Tabular Data Modeling Using Contextual Embeddings",
+      "category": "D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)",
+      "filename": "69. TabTransformer- Tabular Data Modeling Using Contextual Embeddings.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/D. Transformer-LLM-Based Models (Primary Focus_ Utility & Context Understanding)/69. TabTransformer- Tabular Data Modeling Using Contextual Embeddings.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 70,
+      "title": "A Comprehensive Survey of Synthetic Tabular Data Generation",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "70. A Comprehensive Survey of Synthetic Tabular Data Generation.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/70. A Comprehensive Survey of Synthetic Tabular Data Generation.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 71,
+      "title": "A Linear Reconstruction Approach for Attribute Inference Attacks against Synthetic Data",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "71. A Linear Reconstruction Approach for Attribute Inference Attacks against Synthetic Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/71. A Linear Reconstruction Approach for Attribute Inference Attacks against Synthetic Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 72,
+      "title": "A Multi-Faceted Evaluation Framework for Assessing Synthetic Data Generated by Large Language Models",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "72. A Multi-Faceted Evaluation Framework for Assessing Synthetic Data Generated by Large Language Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/72. A Multi-Faceted Evaluation Framework for Assessing Synthetic Data Generated by Large Language Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 73,
+      "title": "A Systematic Review of Synthetic Data Generation Techniques Using Generative AI",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "73. A Systematic Review of Synthetic Data Generation Techniques Using Generative AI.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/73. A Systematic Review of Synthetic Data Generation Techniques Using Generative AI.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 74,
+      "title": "A Universal Metric for Robust Evaluation of Synthetic Tabular Data",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "74. A Universal Metric for Robust Evaluation of Synthetic Tabular Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/74. A Universal Metric for Robust Evaluation of Synthetic Tabular Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 75,
+      "title": "Assessment of Privacy and Utility in Synthetic Data",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "75. Assessment of Privacy and Utility in Synthetic Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/75. Assessment of Privacy and Utility in Synthetic Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 76,
+      "title": "Benchmarking Differentially Private Synthetic Data Generation Algorithms",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "76. Benchmarking Differentially Private Synthetic Data Generation Algorithms.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/76. Benchmarking Differentially Private Synthetic Data Generation Algorithms.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 77,
+      "title": "Benchmarking Differentially Private Tabular Data Synthesis",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "77. Benchmarking Differentially Private Tabular Data Synthesis.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/77. Benchmarking Differentially Private Tabular Data Synthesis.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 78,
+      "title": "Can Synthetic Data be Fair and Private_ A Comparative Study of Synthetic Data Generation and Fairness Algorithms",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "78. Can Synthetic Data be Fair and Private_ A Comparative Study of Synthetic Data Generation and Fairness Algorithms.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/78. Can Synthetic Data be Fair and Private_ A Comparative Study of Synthetic Data Generation and Fairness Algorithms.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 79,
+      "title": "Deep Learning within Tabular Data- Foundations, Challenges, Advances and Future Directions",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "79. Deep Learning within Tabular Data- Foundations, Challenges, Advances and Future Directions.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/79. Deep Learning within Tabular Data- Foundations, Challenges, Advances and Future Directions.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 80,
+      "title": "Estimating mutual information.",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "80. Estimating mutual information..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/80. Estimating mutual information..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 81,
+      "title": "Fake it till you make it_ Guidelines for effective synthetic data generation.",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "81. Fake it till you make it_ Guidelines for effective synthetic data generation..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/81. Fake it till you make it_ Guidelines for effective synthetic data generation..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 82,
+      "title": "Measuring the quality of synthetic data for use in competitions",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "82. Measuring the quality of synthetic data for use in competitions.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/82. Measuring the quality of synthetic data for use in competitions.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 83,
+      "title": "Navigating Tabular Data Synthesis Research- Understanding User Needs and Tool Capabilities",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "83. Navigating Tabular Data Synthesis Research- Understanding User Needs and Tool Capabilities.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/83. Navigating Tabular Data Synthesis Research- Understanding User Needs and Tool Capabilities.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 84,
+      "title": "Scaling While Privacy Preserving",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "84. Scaling While Privacy Preserving.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/84. Scaling While Privacy Preserving.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 85,
+      "title": "Synthetic Survey Data Generation and Evaluation",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "85. Synthetic Survey Data Generation and Evaluation.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/85. Synthetic Survey Data Generation and Evaluation.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 86,
+      "title": "Synthetic Tabular Data- Methods, Attacks and Defenses",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "86. Synthetic Tabular Data- Methods, Attacks and Defenses.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/86. Synthetic Tabular Data- Methods, Attacks and Defenses.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 87,
+      "title": "Syntheval a framework for detailed utility and privacy evaluation of tabular synthetic data",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "87. Syntheval a framework for detailed utility and privacy evaluation of tabular synthetic data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/87. Syntheval a framework for detailed utility and privacy evaluation of tabular synthetic data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 88,
+      "title": "Systematic Assessment of Tabular Data Synthesis Algorithms",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "88. Systematic Assessment of Tabular Data Synthesis Algorithms.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/88. Systematic Assessment of Tabular Data Synthesis Algorithms.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 89,
+      "title": "The Kolmogorov-Smirnov test for goodness of fit.",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "89. The Kolmogorov-Smirnov test for goodness of fit..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/89. The Kolmogorov-Smirnov test for goodness of fit..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 90,
+      "title": "Unlocking Post-hoc Dataset Inference with Synthetic Data",
+      "category": "E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)",
+      "filename": "90. Unlocking Post-hoc Dataset Inference with Synthetic Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/E. Evaluation and Benchmarking (Primary Focus_ Comprehensive Assessment)/90. Unlocking Post-hoc Dataset Inference with Synthetic Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 91,
+      "title": "A Linear Reconstruction Approach for Attribute Inference Attacks against Synthetic Data",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "91. A Linear Reconstruction Approach for Attribute Inference Attacks against Synthetic Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/91. A Linear Reconstruction Approach for Attribute Inference Attacks against Synthetic Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 92,
+      "title": "A Unified Framework for Quantifying Privacy Risk in Synthetic Data",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "92. A Unified Framework for Quantifying Privacy Risk in Synthetic Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/92. A Unified Framework for Quantifying Privacy Risk in Synthetic Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 93,
+      "title": "An Empirical Study on the Membership Inference Attack against Tabular Data Synthesis Models",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "93. An Empirical Study on the Membership Inference Attack against Tabular Data Synthesis Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/93. An Empirical Study on the Membership Inference Attack against Tabular Data Synthesis Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 94,
+      "title": "Estimating the success of re-identifications in incomplete datasets using generative models.",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "94. Estimating the success of re-identifications in incomplete datasets using generative models..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/94. Estimating the success of re-identifications in incomplete datasets using generative models..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 95,
+      "title": "LinkTeller- Recovering Private Edges from Graph Neural Networks via Influence Analysis",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "95. LinkTeller- Recovering Private Edges from Graph Neural Networks via Influence Analysis.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/95. LinkTeller- Recovering Private Edges from Graph Neural Networks via Influence Analysis.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 96,
+      "title": "Membership inference attacks against machine learning models.",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "96. Membership inference attacks against machine learning models..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/96. Membership inference attacks against machine learning models..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 97,
+      "title": "Membership Inference Attacks against Synthetic Data through Overfitting Detection",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "97. Membership Inference Attacks against Synthetic Data through Overfitting Detection.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/97. Membership Inference Attacks against Synthetic Data through Overfitting Detection.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 98,
+      "title": "Membership Inference Attacks Against Synthetic Health Data",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "98. Membership Inference Attacks Against Synthetic Health Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/98. Membership Inference Attacks Against Synthetic Health Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 99,
+      "title": "Membership Inference Attacks from First Principles",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "99. Membership Inference Attacks from First Principles.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/99. Membership Inference Attacks from First Principles.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 100,
+      "title": "Model Inversion Attacks that Exploit Confidence Information and Basic Countermeasures",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "100. Model Inversion Attacks that Exploit Confidence Information and Basic Countermeasures.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/100. Model Inversion Attacks that Exploit Confidence Information and Basic Countermeasures.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 101,
+      "title": "Privacy risk in machine learning_ Analyzing the connection to overfitting.",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "101. Privacy risk in machine learning_ Analyzing the connection to overfitting..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/101. Privacy risk in machine learning_ Analyzing the connection to overfitting..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 102,
+      "title": "Property inference attacks on fully connected neural networks using permutation invariant representations.",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "102. Property inference attacks on fully connected neural networks using permutation invariant representations..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/102. Property inference attacks on fully connected neural networks using permutation invariant representations..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 103,
+      "title": "Quantifying and mitigating privacy risks for tabular generative models.",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "103. Quantifying and mitigating privacy risks for tabular generative models..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/103. Quantifying and mitigating privacy risks for tabular generative models..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 104,
+      "title": "Robust de-anonymization of large sparse datasets.",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "104. Robust de-anonymization of large sparse datasets..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/104. Robust de-anonymization of large sparse datasets..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 105,
+      "title": "Synthetic data--anonymisation groundhog day.",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "105. Synthetic data--anonymisation groundhog day..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/105. Synthetic data--anonymisation groundhog day..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 106,
+      "title": "TAMIS- Tailored Membership Inference Attacks on Synthetic Data",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "106. TAMIS- Tailored Membership Inference Attacks on Synthetic Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/106. TAMIS- Tailored Membership Inference Attacks on Synthetic Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 107,
+      "title": "Winning the MIDST Challenge- New Membership Inference Attacks on Diffusion Models for Tabular Data Synthesis",
+      "category": "F. Privacy Attacks and Defense (New Focus Area)",
+      "filename": "107. Winning the MIDST Challenge- New Membership Inference Attacks on Diffusion Models for Tabular Data Synthesis.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/F. Privacy Attacks and Defense (New Focus Area)/107. Winning the MIDST Challenge- New Membership Inference Attacks on Diffusion Models for Tabular Data Synthesis.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 108,
+      "title": "A Review of Generative Models in Generating Synthetic Attack Data for Cybersecurity",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "108. A Review of Generative Models in Generating Synthetic Attack Data for Cybersecurity.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/108. A Review of Generative Models in Generating Synthetic Attack Data for Cybersecurity.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 109,
+      "title": "Can GANs Learn the Stylized Facts of Financial Time Series_",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "109. Can GANs Learn the Stylized Facts of Financial Time Series_.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/109. Can GANs Learn the Stylized Facts of Financial Time Series_.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 110,
+      "title": "Computationally efficient and stable real-world synthetic emergency room electronic health record data generation. Precision and Future Medicine",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "110. Computationally efficient and stable real-world synthetic emergency room electronic health record data generation. Precision and Future Medicine.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/110. Computationally efficient and stable real-world synthetic emergency room electronic health record data generation. Precision and Future Medicine.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 111,
+      "title": "Computationally efficient and stable real-world synthetic emergency room electronic health record data generation_ high similarity and privacy preserving diffusion model approach.",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "111. Computationally efficient and stable real-world synthetic emergency room electronic health record data generation_ high similarity and privacy preserving diffusion model approach..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/111. Computationally efficient and stable real-world synthetic emergency room electronic health record data generation_ high similarity and privacy preserving diffusion model approach..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 112,
+      "title": "Dex-Net 2.0",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "112. Dex-Net 2.0.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/112. Dex-Net 2.0.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 113,
+      "title": "DiffusionClaims \u2013 PHI-safe synthetic claims for robust anomaly detection. International Journal of Computer Technology and Electronics Communication.",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "113. DiffusionClaims \u2013 PHI-safe synthetic claims for robust anomaly detection. International Journal of Computer Technology and Electronics Communication..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/113. DiffusionClaims \u2013 PHI-safe synthetic claims for robust anomaly detection. International Journal of Computer Technology and Electronics Communication..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 114,
+      "title": "EHR-Safe- generating high-fidelity and privacy-preserving synthetic electronic health records",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "114. EHR-Safe- generating high-fidelity and privacy-preserving synthetic electronic health records.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/114. EHR-Safe- generating high-fidelity and privacy-preserving synthetic electronic health records.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 115,
+      "title": "FairSYN-Edu_ A fairness-aware, privacy-preserving diffusion model for educational data synthesis.. FairSYN-Edu_a_diffusion-based_model_for_fair_and_p",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "115. FairSYN-Edu_ A fairness-aware, privacy-preserving diffusion model for educational data synthesis.. FairSYN-Edu_a_diffusion-based_model_for_fair_and_p.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/115. FairSYN-Edu_ A fairness-aware, privacy-preserving diffusion model for educational data synthesis.. FairSYN-Edu_a_diffusion-based_model_for_fair_and_p.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 116,
+      "title": "Generating Contextual Load Profiles",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "116. Generating Contextual Load Profiles.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/116. Generating Contextual Load Profiles.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 117,
+      "title": "Generation and evaluation of privacy preserving synthetic health data.",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "117. Generation and evaluation of privacy preserving synthetic health data..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/117. Generation and evaluation of privacy preserving synthetic health data..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 118,
+      "title": "GENERATION AND EVALUATION OF SYNTHETIC DATA CONTAINING TREATMENTS",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "118. GENERATION AND EVALUATION OF SYNTHETIC DATA CONTAINING TREATMENTS.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/118. GENERATION AND EVALUATION OF SYNTHETIC DATA CONTAINING TREATMENTS.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 119,
+      "title": "Leveraging synthetic data for tabular financial fraud detection",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "119. Leveraging synthetic data for tabular financial fraud detection.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/119. Leveraging synthetic data for tabular financial fraud detection.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 120,
+      "title": "Novel synthetic dataset generation method with privacy-preserving for intrusion detection system.",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "120. Novel synthetic dataset generation method with privacy-preserving for intrusion detection system..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/120. Novel synthetic dataset generation method with privacy-preserving for intrusion detection system..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 121,
+      "title": "RareGraph-Synth_ Knowledge-guided diffusion models for generating privacy-preserving synthetic patient trajectories in ultra-rare diseases.",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "121. RareGraph-Synth_ Knowledge-guided diffusion models for generating privacy-preserving synthetic patient trajectories in ultra-rare diseases..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/121. RareGraph-Synth_ Knowledge-guided diffusion models for generating privacy-preserving synthetic patient trajectories in ultra-rare diseases..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 122,
+      "title": "ScoEHR Synthetic Electronic Health Records Generation using Continuous-time Diffusion Models",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "122. ScoEHR Synthetic Electronic Health Records Generation using Continuous-time Diffusion Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/122. ScoEHR Synthetic Electronic Health Records Generation using Continuous-time Diffusion Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 123,
+      "title": "Synthetic data generation for tabular health records_ A systematic review.",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "123. Synthetic data generation for tabular health records_ A systematic review..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/123. Synthetic data generation for tabular health records_ A systematic review..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 124,
+      "title": "Synthetic data generation- a privacy-preserving approach to accelerate rare disease research",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "124. Synthetic data generation- a privacy-preserving approach to accelerate rare disease research.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/124. Synthetic data generation- a privacy-preserving approach to accelerate rare disease research.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 125,
+      "title": "The Synthetic Data Vault",
+      "category": "G. Domain-Specific Applications (New Focus Area)",
+      "filename": "125. The Synthetic Data Vault.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/G. Domain-Specific Applications (New Focus Area)/125. The Synthetic Data Vault.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 126,
+      "title": "A decision framework for privacy-preserving synthetic data generation",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "126. A decision framework for privacy-preserving synthetic data generation.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/126. A decision framework for privacy-preserving synthetic data generation.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 127,
+      "title": "An introduction to copulas",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "127. An introduction to copulas.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/127. An introduction to copulas.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 128,
+      "title": "Auto-encoding variational bayes.",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "128. Auto-encoding variational bayes..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/128. Auto-encoding variational bayes..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 129,
+      "title": "Casual Structure Lesrning",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "129. Casual Structure Lesrning.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/129. Casual Structure Lesrning.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 130,
+      "title": "DP2-VAE- Differentially Private Pre-trained Variational Autoencoders",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "130. DP2-VAE- Differentially Private Pre-trained Variational Autoencoders.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/130. DP2-VAE- Differentially Private Pre-trained Variational Autoencoders.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 131,
+      "title": "FedSyn- Synthetic Data Generation using Federated Learning",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "131. FedSyn- Synthetic Data Generation using Federated Learning.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/131. FedSyn- Synthetic Data Generation using Federated Learning.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 132,
+      "title": "Graph Neural Networks for Tabular Data Learning- A Survey with Taxonomy & Directions",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "132. Graph Neural Networks for Tabular Data Learning- A Survey with Taxonomy & Directions.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/132. Graph Neural Networks for Tabular Data Learning- A Survey with Taxonomy & Directions.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 133,
+      "title": "k-Sample inference via Multimarginal Optimal Transport",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "133. k-Sample inference via Multimarginal Optimal Transport.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/133. k-Sample inference via Multimarginal Optimal Transport.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 134,
+      "title": "Learning from imbalanced data.. Learning from Imbalanced Data",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "134. Learning from imbalanced data.. Learning from Imbalanced Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/134. Learning from imbalanced data.. Learning from Imbalanced Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 135,
+      "title": "Meta-Learning and Synthetic Data for Automated Pretraining and Finetuning",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "135. Meta-Learning and Synthetic Data for Automated Pretraining and Finetuning.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/135. Meta-Learning and Synthetic Data for Automated Pretraining and Finetuning.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 136,
+      "title": "On Re\u0301nyi Differential Privacy in Statistics-Based Synthetic Data Generation",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "136. On Re\u0301nyi Differential Privacy in Statistics-Based Synthetic Data Generation.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/136. On Re\u0301nyi Differential Privacy in Statistics-Based Synthetic Data Generation.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 137,
+      "title": "Optimal privacy control for transport network data sharing",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "137. Optimal privacy control for transport network data sharing.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/137. Optimal privacy control for transport network data sharing.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 138,
+      "title": "Optimal transport_ old and new.",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "138. Optimal transport_ old and new..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/138. Optimal transport_ old and new..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 139,
+      "title": "Representation learning with contrastive predictive coding.",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "139. Representation learning with contrastive predictive coding..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/139. Representation learning with contrastive predictive coding..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 140,
+      "title": "Statistical Data Privacy- A Song of Privacy and Utility",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "140. Statistical Data Privacy- A Song of Privacy and Utility.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/140. Statistical Data Privacy- A Song of Privacy and Utility.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 141,
+      "title": "X. On the criterion that a given system of deviations from the probable in the case of a correlated system of variables is such that it can be reasonably supposed to have arisen from random sampling",
+      "category": "H. Theoretical Foundations and Novel Approaches (New Focus Area)",
+      "filename": "141. X. On the criterion that a given system of deviations from the probable in the case of a correlated system of variables is such that it can be reasonably supposed to have arisen from random sampling.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/H. Theoretical Foundations and Novel Approaches (New Focus Area)/141. X. On the criterion that a given system of deviations from the probable in the case of a correlated system of variables is such that it can be reasonably supposed to have arisen from random sampling.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 142,
+      "title": "Adversarial Learning for Effective Detector Training via Synthetic Data_",
+      "category": "I. Recent Advances and Future Directions (New Focus Area)",
+      "filename": "142. Adversarial Learning for Effective Detector Training via Synthetic Data_.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/I. Recent Advances and Future Directions (New Focus Area)/142. Adversarial Learning for Effective Detector Training via Synthetic Data_.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 143,
+      "title": "Deep Generative Models, Synthetic Tabular Data, and Differential Privacy",
+      "category": "I. Recent Advances and Future Directions (New Focus Area)",
+      "filename": "143. Deep Generative Models, Synthetic Tabular Data, and Differential Privacy.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/I. Recent Advances and Future Directions (New Focus Area)/143. Deep Generative Models, Synthetic Tabular Data, and Differential Privacy.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 144,
+      "title": "Foundation Models for Tabular Data within Systemic Contexts Need Grounding",
+      "category": "I. Recent Advances and Future Directions (New Focus Area)",
+      "filename": "144. Foundation Models for Tabular Data within Systemic Contexts Need Grounding.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/I. Recent Advances and Future Directions (New Focus Area)/144. Foundation Models for Tabular Data within Systemic Contexts Need Grounding.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 145,
+      "title": "Generation of realistic synthetic data using Multimodal Neural Ordinary Differential Equations",
+      "category": "I. Recent Advances and Future Directions (New Focus Area)",
+      "filename": "145. Generation of realistic synthetic data using Multimodal Neural Ordinary Differential Equations.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/I. Recent Advances and Future Directions (New Focus Area)/145. Generation of realistic synthetic data using Multimodal Neural Ordinary Differential Equations.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 146,
+      "title": "Goggle Generative modelling for tabular data by learning relational structure",
+      "category": "I. Recent Advances and Future Directions (New Focus Area)",
+      "filename": "146. Goggle Generative modelling for tabular data by learning relational structure.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/I. Recent Advances and Future Directions (New Focus Area)/146. Goggle Generative modelling for tabular data by learning relational structure.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 147,
+      "title": "ImitAL- Learning Active Learning Strategies from Synthetic Data",
+      "category": "I. Recent Advances and Future Directions (New Focus Area)",
+      "filename": "147. ImitAL- Learning Active Learning Strategies from Synthetic Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/I. Recent Advances and Future Directions (New Focus Area)/147. ImitAL- Learning Active Learning Strategies from Synthetic Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 148,
+      "title": "On the opportunities and risks of foundation models.",
+      "category": "I. Recent Advances and Future Directions (New Focus Area)",
+      "filename": "148. On the opportunities and risks of foundation models..pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/I. Recent Advances and Future Directions (New Focus Area)/148. On the opportunities and risks of foundation models..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 149,
+      "title": "Synthetic data generation with hybrid quantum-classical models for the financial sector",
+      "category": "I. Recent Advances and Future Directions (New Focus Area)",
+      "filename": "149. Synthetic data generation with hybrid quantum-classical models for the financial sector.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/I. Recent Advances and Future Directions (New Focus Area)/149. Synthetic data generation with hybrid quantum-classical models for the financial sector.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 150,
+      "title": "Communication-Efficient Learning of Deep Networks from Decentralized Data",
+      "category": "J. Uncategorized",
+      "filename": "150. Communication-Efficient Learning of Deep Networks from Decentralized Data.pdf",
+      "path": "/Users/shroffyaksi/Desktop/papers/J. Uncategorized/150. Communication-Efficient Learning of Deep Networks from Decentralized Data.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 151,
+      "title": "Hierarchical text-conditional image generation with CLIP latents.",
+      "category": "J. Uncategorized",
+      "filename": "151. Hierarchical text-conditional image generation with CLIP latents..pdf",
+      "path": "/Users/shroffyaksi/Desktop/Research/literature review papers/J. Uncategorized/151. Hierarchical text-conditional image generation with CLIP latents..pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 152,
+      "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+      "category": "K. Foundational ML Papers (Added for Paper References)",
+      "filename": "152. High-Resolution Image Synthesis with Latent Diffusion Models.pdf",
+      "path": "/Users/shroffyaksi/Desktop/Research/literature review papers/K. Foundational ML Papers (Added for Paper References)/152. High-Resolution Image Synthesis with Latent Diffusion Models.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 153,
+      "title": "Scalable Diffusion Models with Transformers (DiT)",
+      "category": "K. Foundational ML Papers (Added for Paper References)",
+      "filename": "153. Scalable Diffusion Models with Transformers (DiT).pdf",
+      "path": "/Users/shroffyaksi/Desktop/Research/literature review papers/K. Foundational ML Papers (Added for Paper References)/153. Scalable Diffusion Models with Transformers (DiT).pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 154,
+      "title": "Attention Is All You Need (Transformer)",
+      "category": "K. Foundational ML Papers (Added for Paper References)",
+      "filename": "154. Attention Is All You Need (Transformer).pdf",
+      "path": "/Users/shroffyaksi/Desktop/Research/literature review papers/K. Foundational ML Papers (Added for Paper References)/154. Attention Is All You Need (Transformer).pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 155,
+      "title": "XGBoost A Scalable Tree Boosting System",
+      "category": "K. Foundational ML Papers (Added for Paper References)",
+      "filename": "155. XGBoost A Scalable Tree Boosting System.pdf",
+      "path": "/Users/shroffyaksi/Desktop/Research/literature review papers/K. Foundational ML Papers (Added for Paper References)/155. XGBoost A Scalable Tree Boosting System.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 156,
+      "title": "Visualizing Data using t-SNE",
+      "category": "K. Foundational ML Papers (Added for Paper References)",
+      "filename": "156. Visualizing Data using t-SNE.pdf",
+      "path": "/Users/shroffyaksi/Desktop/Research/literature review papers/K. Foundational ML Papers (Added for Paper References)/156. Visualizing Data using t-SNE.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 157,
+      "title": "Layer Normalization",
+      "category": "K. Foundational ML Papers (Added for Paper References)",
+      "filename": "157. Layer Normalization.pdf",
+      "path": "/Users/shroffyaksi/Desktop/Research/literature review papers/K. Foundational ML Papers (Added for Paper References)/157. Layer Normalization.pdf",
+      "status": "available"
+    },
+    {
+      "paper_number": 158,
+      "title": "Dropout A Simple Way to Prevent Neural Networks from Overfitting",
+      "category": "K. Foundational ML Papers (Added for Paper References)",
+      "filename": "158. Dropout A Simple Way to Prevent Neural Networks from Overfitting.pdf",
+      "path": "/Users/shroffyaksi/Desktop/Research/literature review papers/K. Foundational ML Papers (Added for Paper References)/158. Dropout A Simple Way to Prevent Neural Networks from Overfitting.pdf",
+      "status": "available"
+    }
+  ]
+}

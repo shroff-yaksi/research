@@ -1,0 +1,179 @@
+\chapter{Literature Review}
+
+This literature review surveys peer-reviewed publications spanning synthetic data generation, tabular data modeling, generative adversarial networks (GANs), variational autoencoders (VAEs), diffusion models, and privacy-preserving mechanisms. A systematic analysis of 151 research papers across 10 categories was conducted to identify the state of the art, evaluate existing limitations, and pinpoint the critical research gap addressed by our proposed approach. Table~\ref{tab:lit_categories} summarizes the scope of this review.
+
+\begin{table}[H]
+\centering
+\caption{Summary of Literature Review Scope: 151 Papers Across 10 Categories}
+\label{tab:lit_categories}
+\begin{tabular}{lcp{7cm}}
+\hline
+\textbf{Category} & \textbf{Count} & \textbf{Key Papers} \\
+\hline
+A. Diffusion-Based Models & 21 & TabSyn, TabDDPM, CoDi, FinDiff, TabDiff \\
+B. Privacy-Focused Models & 21 & DP-SGD, DP-CTGAN, PrivSyn, PATE-GAN \\
+C. GAN-Based Models & 19 & CTGAN, CTAB-GAN+, TabFairGAN, WGAN \\
+D. Transformer/LLM Models & 8 & REaLTabFormer, TabLLM, TabNet \\
+E. Evaluation \& Benchmarking & 21 & SynthEval, SDMetrics, SynthCity \\
+F. Privacy Attacks \& Defense & 17 & MIA Studies, TAMIS, Attribute Inference \\
+G. Domain Applications & 18 & EHR-Safe, FinSyn, RareGraph-Synth \\
+H. Theoretical Foundations & 16 & VAE, Copulas, Optimal Transport \\
+I. Recent Advances & 8 & Foundation Models, Neural ODEs \\
+J. Uncategorized & 2 & FedAvg, CLIP \\
+\hline
+\textbf{Total} & \textbf{151} & \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Foundational Works in Generative Models}
+The field of synthetic data generation is built upon three foundational paradigms in deep generative modeling, each offering distinct advantages and limitations. This section reviews the theoretical underpinnings and practical characteristics of Generative Adversarial Networks, Variational Autoencoders, and Denoising Diffusion Probabilistic Models---the three pillars upon which modern tabular synthesis methods, including RE-TabSyn, are constructed.
+
+\subsection{Generative adversarial networks}
+Goodfellow et al.\ \cite{goodfellow2014gan} introduced Generative Adversarial Networks (GANs) in 2014, establishing a framework wherein two neural networks---a generator and discriminator---compete in a minimax game. The generator learns to produce samples indistinguishable from real data, while the discriminator learns to differentiate between real and generated samples. This adversarial training paradigm revolutionized generative modeling across domains, spawning thousands of follow-up works. At Nash equilibrium, the generator recovers the true data distribution, a theoretical guarantee that motivated widespread adoption.
+
+However, GANs suffer from several well-documented pathologies:
+\begin{itemize}
+    \item \textbf{Training Instability:} The minimax objective creates oscillatory dynamics where the generator and discriminator may fail to converge, requiring careful hyperparameter tuning and learning rate scheduling.
+    \item \textbf{Mode Collapse:} The generator may learn to produce a limited variety of outputs, ``forgetting'' underrepresented modes of the data distribution---a critical failure for rare event generation.
+    \item \textbf{Convergence Diagnostics:} Unlike VAEs (which optimize a well-defined loss), GAN training lacks a single metric to assess convergence, making it difficult to determine when training is complete.
+\end{itemize}
+
+Subsequent works addressed these issues: Wasserstein GAN \cite{arjovsky2017wgan} introduced the Earth Mover's distance as a more stable training objective, Gulrajani et al.\ \cite{gulrajani2017wgangp} improved WGAN training with gradient penalty, and Salimans et al.\ \cite{salimans2016improved} proposed feature matching, minibatch discrimination, and historical averaging. CausalGAN \cite{kocaoglu2018causalgan} introduced causal reasoning into adversarial training. Despite these advances, mode collapse on minority classes remains a fundamental limitation for imbalanced data generation.
+
+\subsection{Variational autoencoders}
+The Variational Autoencoder (VAE) \cite{kingma2014vae}, introduced by Kingma and Welling in 2014, combines variational inference with deep learning, enabling probabilistic latent variable modeling. By maximizing the Evidence Lower Bound (ELBO), VAEs learn smooth latent representations suitable for generation. The reparameterization trick enables end-to-end gradient-based optimization, making VAEs both theoretically principled and practically trainable.
+
+VAEs offer several advantages over GANs:
+\begin{itemize}
+    \item \textbf{Stable Training:} The ELBO objective is well-defined and monotonically improvable, avoiding the oscillatory dynamics of adversarial training.
+    \item \textbf{Meaningful Latent Space:} The KL divergence regularization encourages a smooth, continuous latent geometry where interpolation between points produces semantically meaningful samples.
+    \item \textbf{Density Estimation:} VAEs provide an approximate likelihood, enabling model comparison and anomaly detection.
+\end{itemize}
+
+However, VAEs often suffer from blurry reconstructions due to the Gaussian decoder assumption (which averages over modes) and posterior collapse in complex datasets (where the model ignores the latent code). Kim et al.\ \cite{kim2023tabvae} proposed Tab-VAE, a specialized VAE for tabular data that addresses some of these limitations through mixed-type decoding heads, though it still lacks class conditioning capabilities.
+
+\subsection{Denoising diffusion probabilistic models}
+Ho et al.\ \cite{ho2020ddpm} presented Denoising Diffusion Probabilistic Models (DDPMs) in 2020, which generate data by learning to reverse a gradual noising process. Starting from pure Gaussian noise, the model iteratively denoises over $T$ timesteps to produce high-quality samples. DDPMs achieved a breakthrough in image generation, surpassing GANs in both fidelity (measured by FID score) and diversity (measured by recall metrics).
+
+Key advantages of diffusion models include:
+\begin{itemize}
+    \item \textbf{Stable Training:} The simple MSE denoising objective provides consistent gradient signals without adversarial instabilities.
+    \item \textbf{Mode Coverage:} Unlike GANs, diffusion models do not suffer from mode collapse, as the denoising objective encourages coverage of all modes in the data distribution.
+    \item \textbf{Flexible Conditioning:} Conditioning information can be incorporated at each denoising step, enabling fine-grained control over generated outputs.
+\end{itemize}
+
+Song et al.\ \cite{song2021score} provided a unified theoretical framework connecting DDPMs with score-based models through stochastic differential equations (SDEs), establishing that both approaches learn the score function $\nabla_\mathbf{x} \log p(\mathbf{x})$ of the data distribution. The foundational thermodynamic perspective was first articulated by Sohl-Dickstein et al.\ \cite{sohldickstein2015deep}, and Dhariwal and Nichol \cite{dhariwal2021diffbeatgan} demonstrated that diffusion models surpass GANs on image synthesis benchmarks.
+
+Rombach et al.\ \cite{rombach2022ldm} introduced Latent Diffusion Models (LDMs), demonstrating that performing diffusion in a compressed latent space dramatically reduces computational cost while maintaining generation quality. This insight---operating diffusion in a learned latent space---is central to RE-TabSyn's design and explains why it succeeds where direct diffusion approaches fail.
+
+\section{Synthetic Tabular Data Generation}
+Building on these foundational generative paradigms, a growing body of work has specifically targeted the challenge of synthesizing realistic tabular data. This section reviews the major tabular synthesis methods, tracing the progression from GAN-based approaches (CTGAN, TVAE) through early diffusion attempts (TabDDPM) to the current state-of-the-art latent diffusion framework (TabSyn).
+
+\subsection{CTGAN and TVAE}
+CTGAN \cite{xu2019ctgan}, proposed by Xu et al.\ in 2019, addresses tabular data challenges through mode-specific normalization for numerical columns and a conditional generator for handling imbalanced categorical distributions. The training-by-sampling strategy ensures minority categories are adequately represented during training. CTGAN became the de facto baseline for tabular synthesis, implemented in the widely-used Synthetic Data Vault (SDV) library.
+
+Introduced alongside CTGAN, TVAE applies variational autoencoders to tabular synthesis using the same preprocessing pipeline but ELBO optimization instead of adversarial training. TVAE offers more stable training at the cost of slightly lower sample quality. Conditional Wasserstein GAN \cite{engelmann2021cwgan} explored oversampling for imbalanced learning, and TabFairGAN \cite{rajabi2022tabfairgan} addressed fairness constraints. VAE-GAN hybrid architectures \cite{camino2020vaegan, pereira2024synthetic} combined strengths of both paradigms, while Tab-VAE \cite{kim2023tabvae} specialized the VAE framework for tabular data. DP-CTGAN \cite{torfi2022dpctgan} and Fed-DPSDG-WGAN \cite{ma2023feddpsdg} extended GAN-based synthesis with privacy and federated constraints. Esteban et al.\ \cite{esteban2017rcgan} applied conditional GANs to medical time series, and hybrid deep learning approaches \cite{mishra2022hybrid, yoon2020gain} addressed domain-specific challenges. Beyond the Norm \cite{nidhi2024beyond} surveyed rare event generation comprehensively. Both CTGAN and TVAE share a critical limitation: they faithfully replicate the training class distribution without any mechanism for enhancement or control.
+
+\subsection{CTAB-GAN+}
+Zhao et al.\ \cite{zhao2022ctabgan} enhanced CTGAN with auxiliary classifiers and information-maximizing discriminators in CTAB-GAN+. This model improved statistical similarity and downstream utility, particularly for datasets with complex feature interactions. However, it remained bound to the training distribution and introduced additional training complexity without addressing the class imbalance control problem.
+
+\subsection{TabDDPM}
+TabDDPM \cite{kotelnikov2023tabddpm}, published at ICML 2023 by Kotelnikov et al., was the first comprehensive application of diffusion models to tabular data. It treats numerical features with Gaussian diffusion and categorical features with multinomial diffusion. While it demonstrated competitive performance on purely numerical datasets, TabDDPM exhibited catastrophic failure on mixed-type financial data. Our experiments confirm this: TabDDPM achieves an average KS statistic of 0.770 across six financial datasets---far worse than even simple GAN baselines. This failure stems from the fundamental incompatibility between discrete categorical distributions and the continuous noise processes used in standard diffusion.
+
+\subsection{TabSyn}
+TabSyn \cite{zhang2024tabsyn}, published at ICLR 2024 by Zhang et al., represents the current state of the art in tabular data fidelity. TabSyn addresses TabDDPM's limitations through a two-stage approach:
+\begin{enumerate}
+    \item A VAE encodes mixed-type tabular data into continuous latent representations, solving the categorical encoding problem.
+    \item A Transformer-based diffusion model operates in this smooth latent space, capturing complex inter-column dependencies through self-attention.
+\end{enumerate}
+
+TabSyn achieves exceptional fidelity (avg KS = 0.109 in our experiments), establishing a new benchmark for distributional similarity. However, TabSyn has no mechanism for controlling class distribution---it mirrors the training data's imbalance. If a dataset has 5\% minority class, TabSyn generates approximately 5\% minority samples.
+
+\subsection{Other diffusion-based approaches}
+Several recent works extend diffusion for tabular data: TabDiff \cite{shi2024tabdiff} proposes multi-modal diffusion for mixed types, FinDiff \cite{sattarov2023findiff} applies diffusion specifically to financial data, and RelDDPM \cite{liu2024relddpm} extends diffusion for relational multi-table synthesis. CoDi \cite{choi2023codi} introduces co-evolving contrastive diffusion for mixed-type synthesis, while Zheng et al.\ \cite{zheng2024controllable} explore controllability through diffusion conditioning. Additional works address federated settings \cite{noble2024dpfed, sattarov2024fedtabdiff, yang2024feddiff, shankar2024silofuse}, domain-specific constraints \cite{yuan2024domain}, missing value imputation \cite{ouyang2023missdiff, jolicoeurmartineau2024diffusion}, and comprehensive surveys of the tabular diffusion landscape \cite{mueller2024diffusion}. Difformer \cite{wu2023difformer} and conditional score-based approaches \cite{baldassari2024conditional} further expand the theoretical foundations. While each makes valuable contributions, none addresses controllable class-conditional generation.
+
+\section{Controllable and Conditional Generation}
+A key limitation shared by all methods reviewed above is the inability to control the class distribution of generated samples. This section examines existing approaches to conditional and controllable generation, highlighting the critical gap that motivates RE-TabSyn.
+
+\subsection{Classifier-free diffusion guidance}
+Ho and Salimans \cite{ho2022cfg} introduced Classifier-Free Guidance (CFG) in 2022, eliminating the need for separate classifier training in conditional diffusion models. CFG jointly trains conditional and unconditional models through random label dropout---during training, the class label is replaced with a null token with some probability (typically 10--20\%). At inference time, the conditional and unconditional predictions are interpolated using a guidance scale $w$:
+
+\begin{equation}
+\tilde{\epsilon} = \epsilon_{uncond} + w \cdot (\epsilon_{cond} - \epsilon_{uncond})
+\end{equation}
+
+CFG quickly became the standard conditioning mechanism for text-to-image models (Stable Diffusion, DALL-E 2, Imagen) due to its simplicity and effectiveness. The guidance scale provides an intuitive trade-off: higher $w$ produces outputs more aligned with the condition but potentially less diverse.
+
+Despite its demonstrated success in image generation, CFG had never been applied to tabular data synthesis prior to our work. RE-TabSyn is the first to bridge this gap, adapting CFG for structured data class control.
+
+\subsection{RelDDPM and other conditional methods}
+RelDDPM \cite{liu2024relddpm} extends diffusion models for controllable tabular synthesis through conditioning mechanisms that support inter-table relationships and target constraints. However, its conditioning architecture is complex, requires auxiliary classifiers, and does not provide the simple, continuous control that CFG offers. Transformer-based approaches---including REaLTabFormer \cite{solatorio2023realtabformer}, TabLLM \cite{hegselmann2023tabllm}, TabNet \cite{arik2021tabnet}, SAINT \cite{somepalli2021saint}, TabTransformer \cite{huang2020tabtransformer}, and FLAIM \cite{liu2024flaim}---capture contextual dependencies through attention mechanisms. Gorishniy et al.\ \cite{gorishniy2021revisiting} benchmarked deep learning models for tabular data, while Flemings and Razaviyayn \cite{flemings2024private} addressed private prediction for large-scale text generation. Other conditional generation methods rely on conditional inputs to the generator but cannot modify the generation ratio after training.
+
+\section{Privacy-Preserving Synthetic Data}
+Privacy concerns have driven substantial work on differentially private (DP) synthetic data generation, forming a critical pillar of the synthetic data ecosystem.
+
+DP-SGD \cite{abadi2016dpsgd}, introduced by Abadi et al.\ in 2016, formalized differentially private deep learning by clipping per-sample gradients and adding calibrated Gaussian noise during training. This provides formal $(\epsilon, \delta)$-differential privacy guarantees but significantly degrades model utility due to the noisy gradient updates.
+
+PATE-GAN \cite{jordon2019pategan} combines the Private Aggregation of Teacher Ensembles framework with GANs, training an ensemble of teacher discriminators on disjoint subsets of data and aggregating their votes with Laplace noise.
+
+DP-CTGAN \cite{torkzadehmahani2019dpctgan} integrates DP-SGD directly into CTGAN training, providing formal privacy guarantees. However, the noise injection compounds CTGAN's existing mode collapse problem, particularly devastating for minority classes. Yale et al.\ \cite{yale2020synthetic} demonstrated that privacy-preserving generation significantly degrades utility for health data, a finding corroborated across financial datasets.
+
+Stadler et al.\ \cite{stadler2022synthetic} raised important concerns in their ``Synthetic Data -- Anonymisation Groundhog Day'' paper, demonstrating that synthetic data without formal DP guarantees may still be vulnerable to membership inference attacks. Dwork and Roth \cite{dwork2014algorithmic} established the algorithmic foundations of differential privacy, while Dwork et al.\ \cite{dwork2006calibrating} introduced noise calibration techniques. Additional privacy-focused works include data synthesis with missing data \cite{ge2024dpgen, park2018data}, differentially private diffusion models \cite{dockhorn2023dpddpm}, Gaussian process regression under DP \cite{smith2021dpreg}, foundation model APIs for DP synthesis \cite{ghalebikesabi2023dpsynth}, LLM-based DP tabular synthesis \cite{touati2024dptabllm}, text anonymization via DP-VAE \cite{weggenmann2022dpvae}, evaluation of DP in high-stakes domains \cite{ganev2023dpeval, hittmeir2020evaluating}, federated learning with matched averaging \cite{wang2020fedma}, tabular DP generation \cite{liu2024gentab}, the Opacus library \cite{yousefpour2021opacus}, practical DP in deep learning \cite{mcmahan2017practical}, privacy-preserving deep learning releases \cite{chen2020ppsynth}, private synthetic data for marginal queries \cite{liu2021privsynth}, PrivSyn \cite{zhang2021privsyn}, adversarial demographic attribute removal \cite{elazar2018adversarial}, and comprehensive surveys of DP tabular synthesis \cite{liu2024dptabsurvey}. This body of work motivates the inclusion of privacy metrics in our evaluation framework.
+
+\section{Financial Domain Applications}
+The financial sector has been an active adopter of synthetic data technology, driven by the unique combination of strict regulations and critical analytical needs.
+
+Assefa et al.\ \cite{assefa2020synthetic} provided an early survey of synthetic data opportunities and challenges in finance, identifying fraud detection, credit scoring, and stress testing as key applications. Fiore et al.\ \cite{fiore2019hybrid} demonstrated that GAN-augmented training data improved credit card fraud detection accuracy by up to 10\%, establishing a precedent for synthetic data utility in imbalanced financial tasks.
+
+FinDiff \cite{sattarov2023findiff} applied diffusion models specifically to financial tabular data generation, achieving strong statistical similarity but without addressing the class control problem. Chen et al.\ \cite{chen2023finsyn} proposed FinSyn with constraint validation for financial data but relied on GAN architectures without controllable rare event generation mechanisms.
+
+Nidhi et al.\ \cite{nidhi2024rare} provided a comprehensive survey on synthetic data generation for rare event prediction, concluding that ``the ability to control the generation of rare events remains an open challenge.'' Domain-specific synthetic data applications span healthcare \cite{theodorou2023ehrsafe, yuan2023scoehr, li2024ehr, li2024ehrdiff, gonzales2023synthetic, nikolenko2021synthetic, goyal2024raregraph, dahmen2019geneval}, cybersecurity \cite{dasgupta2024review, min2024novel}, education \cite{luo2024fairsynedu}, energy systems \cite{ge2024contextual}, robotics \cite{mahler2017dexnet}, financial time series \cite{takahashi2019gansfinance, sattarov2024leveraging}, and the foundational Synthetic Data Vault framework \cite{patki2016synthvault}. Our own work \cite{shroff2026retabsyn}, accepted at the I2IT International Conference, directly addresses this open challenge.
+
+\section{Evaluation Frameworks and Metrics}
+Evaluating synthetic data quality requires a multi-dimensional approach. The literature has converged on three pillars of evaluation:
+
+Statistical fidelity measures how closely synthetic data matches real data distributions. Key metrics include the Kolmogorov-Smirnov statistic for numerical columns, the chi-square test for categorical columns, and the Jensen-Shannon Divergence for overall distributional comparison. Figueira and Vaz \cite{figueira2022survey} provide a comprehensive taxonomy of fidelity metrics.
+
+Machine learning utility measures whether synthetic data can effectively replace real data for ML tasks. The Train-on-Synthetic, Test-on-Real protocol, where models are trained on synthetic data and evaluated on held-out real data, is the standard approach. Metrics include AUC-ROC, F1-score, and accuracy. Jordon et al.\ \cite{jordon2022fake} established guidelines for effective utility evaluation.
+
+Privacy preservation measures resistance to re-identification attacks. Distance to Closest Record quantifies how far each synthetic sample is from its nearest real neighbor, with higher values indicating better privacy. Membership Inference Attack resistance measures whether an adversary can determine if a specific record was in the training data. Key works in privacy attacks include foundational MIA studies \cite{shokri2017mia, carlini2022mia, yeom2018privacy}, MIA against synthetic data \cite{vanbreugel2023mia, chen2020miahealth, hu2024empirical}, attribute inference attacks \cite{giomi2023linear}, unified privacy risk frameworks \cite{giomi2023unified}, model inversion attacks \cite{fredrikson2015model}, property inference \cite{ganju2018property}, re-identification estimation \cite{rocher2019estimating}, graph privacy \cite{wu2022linkteller}, de-anonymization \cite{narayanan2008robust}, TAMIS \cite{meeus2024tamis}, the MIDST challenge \cite{meeus2024midst}, and quantifying privacy risks for generative models \cite{stadler2023quantifying}. Additional evaluation works include universal metrics \cite{platzer2021universal}, privacy-utility assessment \cite{emam2022assessment}, DP benchmarks \cite{tao2021benchmark, liu2024benchmarking}, fairness studies \cite{ganev2024fair}, deep learning for tabular data surveys \cite{borisov2022deep}, mutual information estimation \cite{kraskov2004mutual}, SDV quality metrics \cite{patki2016sdv}, user needs analysis \cite{kolsch2024navigating}, scalability \cite{wang2024scaling}, survey data evaluation \cite{snoke2018synthetic}, attack-defense surveys \cite{bellovin2024synthtab}, SynthEval \cite{lautrup2024syntheval}, systematic assessment \cite{chundawat2022systematic}, the KS test \cite{massey1951ks}, and post-hoc inference \cite{wang2024unlocking}.
+
+\section{Identified Research Gaps}
+Based on our comprehensive analysis of 151 publications, we identify three critical gaps that motivate RE-TabSyn:
+
+\begin{table}[H]
+\centering
+\caption{Research Gap Analysis: Capabilities of Existing Methods vs.\ RE-TabSyn}
+\label{tab:gap_analysis}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Capability} & \textbf{CTGAN} & \textbf{TVAE} & \textbf{TabDDPM} & \textbf{TabSyn} & \textbf{RE-TabSyn} \\
+\hline
+Mixed-type Support & Yes & Yes & Partial & Yes & Yes \\
+High Fidelity (KS $<$ 0.20) & Yes & Yes & No & Yes & Yes \\
+Stable Training & No & Yes & Yes & Yes & Yes \\
+Mode Coverage & No & Partial & Yes & Yes & Yes \\
+Class Control & No & No & No & No & \textbf{Yes} \\
+Post-hoc Ratio Adjustment & No & No & No & No & \textbf{Yes} \\
+Privacy Preservation & Weak & Weak & Moderate & Strong & Strong \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{Gap 1: Absence of Controllable Minority Class Generation.} No existing method enables practitioners to specify desired minority ratios during generation. All methods faithfully replicate (or degrade) the training class distribution without offering any mechanism for adjustment.
+
+    \item \textbf{Gap 2: CFG Application to Tabular Domain.} Classifier-Free Guidance has demonstrated remarkable success in image synthesis, becoming the default conditioning mechanism for state-of-the-art text-to-image models. Yet its potential for structured tabular data class control remained entirely unexplored. Our systematic search across all 151 papers found zero instances of CFG applied to tabular synthesis.
+
+    \item \textbf{Gap 3: Unified Fidelity-Privacy-Control Framework.} Existing works optimize for either fidelity (TabSyn), privacy (DP-CTGAN), or rare event handling (SMOTE). No single framework addresses all three dimensions simultaneously, leaving practitioners to choose between competing objectives.
+\end{itemize}
+
+RE-TabSyn directly addresses all three gaps by:
+\begin{enumerate}
+    \item Adopting latent space diffusion for robust mixed-type handling (from TabSyn's insight).
+    \item Introducing Classifier-Free Guidance to tabular synthesis for the first time.
+    \item Enabling controllable minority ratios through a single guidance scale parameter, while maintaining competitive fidelity and strong privacy.
+\end{enumerate}
+
+The theoretical foundations underpinning this work draw from VAE theory \cite{kingma2014vae}, copula methods \cite{nelsen2006copulas}, causal structure learning \cite{zheng2024causal}, pre-trained DP-VAEs \cite{jiang2023dp2vae}, federated synthesis \cite{rajotte2022fedsyn}, graph neural networks for tabular data \cite{zhu2023gnn}, optimal transport \cite{villani2009optimal, hallin2021ksample}, contrastive predictive coding \cite{oord2018representation}, statistical data privacy \cite{slavkovic2023statistical}, Renyi DP \cite{balle2020renyi}, privacy-preserving decision frameworks \cite{haney2024decision}, optimal privacy control \cite{xu2024optimal}, meta-learning for synthetic data \cite{triantafillou2022metalearning}, the chi-square test \cite{pearson1900criterion}, and imbalanced learning \cite{he2009imbalanced, chawla2002smote}. Recent advances include adversarial detector training \cite{liu2023adversarial}, deep generative model surveys \cite{jordon2022deepgen}, foundation models for tabular data \cite{van2024foundation, bommasani2022opportunities}, neural ODEs \cite{garcia2024neural}, relational structure learning \cite{liu2023goggle}, active learning from synthetic data \cite{haussmann2020imital}, quantum-classical hybrid models \cite{coyle2024quantum}, federated learning \cite{mcmahan2017fedavg}, and hierarchical text-conditional generation \cite{ramesh2022clip}. The evaluation and implementation rely on XGBoost \cite{chen2016xgboost}, t-SNE visualization \cite{maaten2008tsne}, the Transformer architecture \cite{vaswani2017attention}, Diffusion Transformers \cite{peebles2023dit}, layer normalization \cite{ba2016layernorm}, and dropout regularization \cite{srivastava2014dropout}.

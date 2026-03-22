@@ -1,0 +1,163 @@
+\chapter{Implementation and Experimental Setup}
+
+This chapter describes the complete end-to-end implementation of RE-TabSyn, covering the pipeline architecture, data preprocessing strategies, model configurations, training procedures, and the synthetic data generation protocol. All experiments were conducted using Python 3.10 with PyTorch 2.0 as the deep learning framework.
+
+\section{End-to-End Pipeline Architecture}
+The implementation of RE-TabSyn encompasses a complete end-to-end pipeline designed for robustness and reproducibility. Figure~\ref{fig:pipeline} illustrates the high-level flow, while Figure~\ref{fig:pipeline_block_diagram} provides a detailed view of each module and its sub-components.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{img/pipeline.png}
+\caption{High-level pipeline of the RE-TabSyn framework. Data flows sequentially from the raw financial dataset through cleaning, encoding, scaling, VAE training, latent representation extraction, diffusion with Classifier-Free Guidance, and finally generation of synthetic samples.}
+\label{fig:pipeline}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/pipeline_block_diagram.png}
+\caption{Detailed block diagram of the complete RE-TabSyn pipeline showing all stages: Data Preprocessing (missing value handling, categorical encoding, numerical scaling, train/test split), Model Selection (GAN-based, diffusion-based, and proposed RE-TabSyn), Model Training (VAE training, latent encoding, diffusion training with CFG label dropout), Synthetic Data Sampling (latent sampling, guided denoising, decoding, post-processing), and the three-pillar Evaluation Framework (statistical metrics, ML utility metrics, and privacy metrics).}
+\label{fig:pipeline_block_diagram}
+\end{figure}
+
+The pipeline consists of five integrated modules:
+\begin{itemize}
+    \item \textbf{Data Ingestion Module:} Provides unified access to all six benchmark datasets with automatic download, caching, and versioning. Each dataset is loaded through a standardized interface that identifies numerical columns, categorical columns, and the target variable.
+    \item \textbf{Preprocessing Module:} Transforms raw data into model-ready tensors through a sequence of imputation, encoding, and scaling operations (detailed in Section~\ref{sec:preprocessing}).
+    \item \textbf{Model Training Pipeline:} Implements the two-phase training protocol---first training the VAE encoder-decoder, then training the Latent Diffusion Model with Classifier-Free Guidance on frozen VAE latent representations.
+    \item \textbf{Generation Module:} Performs latent sampling, CFG-guided denoising, VAE decoding, and reverse transformation to produce synthetic tabular data in the original feature space.
+    \item \textbf{Evaluation Module:} Computes a comprehensive suite of statistical fidelity, machine learning utility, and privacy metrics, generating both numerical results and visualizations.
+\end{itemize}
+
+\section{Data Preprocessing}
+\label{sec:preprocessing}
+The preprocessing module is crucial for the stable training of deep generative models on tabular data. Inadequate preprocessing is a common source of failure in tabular synthesis pipelines.
+
+\subsection{Missing value handling}
+Missing values are handled through a two-strategy approach:
+\begin{itemize}
+    \item \textbf{Numerical columns:} Missing values are imputed with the column median, which is robust to outliers common in financial data (e.g., extreme income values).
+    \item \textbf{Categorical columns:} Missing values are imputed with the column mode (most frequent category). Alternatively, missingness can be treated as a separate category when it carries informational content.
+\end{itemize}
+
+\subsection{Feature encoding and scaling}
+\textbf{Numerical Features} are transformed using a Quantile Transformer that maps arbitrary distributions to a standard normal distribution ($\mathcal{N}(0, 1)$). This is critical for two reasons: (1) financial data often exhibits heavy tails, skewness, and multimodality that would destabilize VAE training under raw values, and (2) the Gaussian latent space assumption of the VAE is better satisfied when inputs are normally distributed. The quantile transform is invertible, enabling exact reverse transformation of generated samples.
+
+\textbf{Categorical Features} are converted using Label Encoding, which maps each category to an integer in $\{0, 1, \ldots, K-1\}$. This preserves ordinality where applicable and prevents the extreme high dimensionality that results from one-hot encoding (which can expand a single categorical column with 50 categories into 50 binary columns). The VAE then learns to embed these integer-encoded categories into continuous latent representations, solving the discontinuity problem that plagues TabDDPM.
+
+\subsection{Benchmark datasets}
+Table~\ref{tab:datasets} summarizes the six financial benchmark datasets used in our experiments.
+
+\begin{table}[H]
+\centering
+\caption{Benchmark Dataset Characteristics}
+\label{tab:datasets}
+\begin{tabular}{lccccl}
+\hline
+\textbf{Dataset} & \textbf{Samples} & \textbf{Num.} & \textbf{Cat.} & \textbf{Min. \%} & \textbf{Domain} \\
+\hline
+Adult Income & 48,842 & 6 & 8 & 24.8\% & Income prediction \\
+German Credit & 1,000 & 7 & 13 & 30.0\% & Credit risk \\
+Bank Marketing & 45,211 & 7 & 9 & 11.3\% & Marketing response \\
+Credit Approval & 690 & 6 & 9 & 44.5\% & Credit scoring \\
+Lending Club & 42,535 & 7 & 5 & 20.0\% & Loan default \\
+Polish Bankruptcy & 10,503 & 64 & 0 & 4.8\% & Corporate bankruptcy \\
+\hline
+\end{tabular}
+\end{table}
+
+These datasets were selected to cover a wide range of:
+\begin{itemize}
+    \item \textbf{Sample sizes:} From 690 (Credit Approval) to 48,842 (Adult Income), testing scalability.
+    \item \textbf{Feature compositions:} From purely numerical (Polish Bankruptcy with 64 numerical features) to mixed-type (German Credit with 13 categorical and 7 numerical features), testing heterogeneous data handling.
+    \item \textbf{Imbalance severities:} From near-balanced (Credit Approval at 44.5\%) to extreme imbalance (Polish Bankruptcy at 4.8\%), testing the limits of minority boosting.
+    \item \textbf{Financial sub-domains:} Income prediction, credit risk, marketing, lending, and corporate bankruptcy.
+\end{itemize}
+
+\section{Model Configurations}
+This section details the architectural configurations and hyperparameters for RE-TabSyn and all baseline methods. All models were configured following their respective authors' recommendations, with adjustments for the financial tabular data domain where necessary.
+
+\subsection{RE-TabSyn architecture}
+\begin{itemize}
+    \item \textbf{VAE Encoder:} Multi-Layer Perceptron (MLP) with hidden dimensions [256, 128] and ReLU activations, compressing data into a 64-dimensional latent space. The encoder produces both mean ($\mu$) and log-variance ($\log \sigma^2$) vectors.
+    \item \textbf{VAE Decoder:} Mirror architecture [128, 256] with separate output heads: linear projection for numerical features (with MSE loss) and softmax projection for categorical features (with Cross-Entropy loss).
+    \item \textbf{Diffusion Backbone (DiT):} Transformer-based architecture with 4 layers, hidden dimension 256, 4 attention heads (64 dim/head), and Adaptive Layer Normalization (AdaLN). The noise schedule uses $T = 1000$ timesteps with linear $\beta$ variance from $\beta_1 = 10^{-4}$ to $\beta_T = 0.02$.
+    \item \textbf{Guidance Parameters:} Label dropout rate $p_{uncond} = 0.10$ during training; guidance scale $w = 2.0$ during inference (producing near-50\% minority ratios).
+    \item \textbf{Embeddings:} Sinusoidal time embeddings with 128-dimensional projection; learned class embeddings for 3 tokens (class 0, class 1, null $\emptyset$).
+\end{itemize}
+
+\subsection{Baseline configurations}
+We compare RE-TabSyn against four state-of-the-art methods:
+\begin{itemize}
+    \item \textbf{CTGAN:} Mode-specific normalization, PAC discriminator, embedding dimension 128, generator dimensions [256, 256], discriminator dimensions [256, 256], batch size 500, trained for 100 epochs. Implemented via SDV library.
+    \item \textbf{TVAE:} Standard VAE with tabular preprocessing, embedding dimension 128, encoder/decoder dimensions [128, 128], trained for 100 epochs. Implemented via SDV library.
+    \item \textbf{TabDDPM:} Gaussian diffusion for numerical features, multinomial diffusion for categorical features, MLP backbone, 1000 diffusion steps, trained for 100 epochs. Implemented from the official repository.
+    \item \textbf{TabSyn:} VAE + Transformer-based latent diffusion (without CFG), representing the current state-of-the-art in fidelity. Implemented from the official repository.
+\end{itemize}
+
+\section{Training Procedures}
+Training proceeds in two distinct, sequential phases:
+
+Phase 1 -- VAE Training, Epochs 1 to 100:
+\begin{enumerate}
+    \item Raw data is preprocessed (imputation, encoding, scaling) and split into training (80\%) and test (20\%) sets.
+    \item The VAE is trained to minimize the combined loss: $\mathcal{L}_{VAE} = \mathcal{L}_{MSE} + \mathcal{L}_{CE} + 0.1 \cdot \mathcal{L}_{KL}$.
+    \item The KL weight $\beta = 0.1$ is fixed (not annealed) to prevent posterior collapse while maintaining reconstruction quality.
+    \item Adam optimizer with learning rate $10^{-3}$, batch size 256.
+    \item Training converges when reconstruction loss stabilizes (typically within 50--80 epochs).
+\end{enumerate}
+
+Phase 2 -- Diffusion Training, Epochs 1 to 100:
+\begin{enumerate}
+    \item VAE weights are frozen; all training data is encoded into the 64-dimensional latent space.
+    \item For each training step: a random timestep $t \sim \mathcal{U}(1, 1000)$ is sampled, noise $\epsilon \sim \mathcal{N}(0, I)$ is added to the latent vector, and with probability $p_{uncond} = 0.10$ the class label is replaced with the null token $\emptyset$.
+    \item The DiT predicts the added noise, and the MSE loss is backpropagated.
+    \item Adam optimizer with learning rate $10^{-3}$, batch size 256.
+    \item All experiments are run with three random seeds (42, 123, 456) for statistical significance.
+\end{enumerate}
+
+\section{Synthetic Data Generation Procedure}
+Generation with RE-TabSyn follows a structured four-step protocol:
+
+Step 1 -- Latent Initialization: Sample $N$ initial noise vectors from $\mathcal{N}(0, I)$ in the 64-dimensional latent space. Assign target class labels---to generate balanced data, 50\% of samples are assigned $y = 1$ and 50\% are assigned $y = 0$.
+
+Step 2 -- CFG-Guided Denoising: For each of the $T = 1000$ reverse diffusion steps:
+\begin{enumerate}
+    \item Compute the conditional noise prediction: $\epsilon_{cond} = \epsilon_\theta(\mathbf{z}_t, t, y)$.
+    \item Compute the unconditional noise prediction: $\epsilon_{uncond} = \epsilon_\theta(\mathbf{z}_t, t, \emptyset)$.
+    \item Apply CFG: $\tilde{\epsilon} = \epsilon_{uncond} + w \cdot (\epsilon_{cond} - \epsilon_{uncond})$.
+    \item Update the latent: $\mathbf{z}_{t-1} = f(\mathbf{z}_t, \tilde{\epsilon}, t)$ using the DDPM reverse step.
+\end{enumerate}
+This requires two forward passes through the DiT per denoising step, making CFG approximately 2$\times$ slower than unconditional generation but providing the critical benefit of class control.
+
+Step 3 -- VAE Decoding: Pass the denoised latents $\mathbf{z}_0$ through the frozen VAE decoder to reconstruct tabular features. Numerical outputs are produced directly; categorical outputs are obtained via argmax over softmax probabilities.
+
+Step 4 -- Reverse Transformation: Apply the inverse of the preprocessing pipeline: inverse quantile transform for numerical features, mapping from $\mathcal{N}(0,1)$ back to the original distribution, and inverse label encoding for categorical features, mapping integers back to category names.
+
+\section{Evaluation Framework}
+Our evaluation follows the three-pillar framework illustrated in Figure~\ref{fig:evaluation_framework}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{img/evaluation_framework.png}
+\caption{The three-pillar evaluation framework for synthetic data quality assessment. Statistical Fidelity is measured by KS Statistic, Chi-Square test, and JSD. Machine Learning Utility is assessed via TSTR AUC-ROC and TSTR F1-score. Privacy Preservation is quantified through DCR and MIA resistance.}
+\label{fig:evaluation_framework}
+\end{figure}
+
+\subsection{Pillar 1: Statistical fidelity}
+\begin{itemize}
+    \item \textbf{Kolmogorov-Smirnov (KS) Statistic:} Measures the maximum difference between the cumulative distribution functions of real and synthetic data for each numerical column. Values range from 0 (identical distributions) to 1 (completely different). We report the average KS across all columns.
+    \item \textbf{Correlation Preservation:} Measures how well the synthetic data preserves pairwise feature correlations from the real data, computed as the mean absolute difference between real and synthetic correlation matrices.
+\end{itemize}
+
+\subsection{Pillar 2: Machine learning utility}
+\begin{itemize}
+    \item \textbf{TSTR AUC-ROC:} An XGBoost \cite{chen2016xgboost} classifier is trained on synthetic data and evaluated on real test data. AUC-ROC measures overall discrimination ability.
+    \item \textbf{Minority F1-Score:} The F1-score specifically for the minority class, computed under the TSTR protocol. This is the most critical utility metric for imbalanced tasks, as it captures both precision and recall for the rare events of interest.
+\end{itemize}
+
+\subsection{Pillar 3: Privacy preservation}
+\begin{itemize}
+    \item \textbf{Distance to Closest Record (DCR):} For each synthetic sample, compute the Euclidean distance to the nearest real training sample. Higher DCR indicates the synthetic data is not memorizing training instances. We report both mean DCR (overall privacy) and minimum DCR (worst-case privacy).
+\end{itemize}
+
+All metrics are computed independently for each of the three random seeds, and results are reported as mean $\pm$ standard deviation to establish statistical significance.

@@ -1,0 +1,30 @@
+\chapter{Conclusion}
+
+This chapter summarizes the key contributions, findings, and limitations of the RE-TabSyn framework, and provides concluding remarks on its broader implications for synthetic tabular data generation.
+
+\section{Summary of Contributions}
+This research presents RE-TabSyn, a novel framework for generating high-fidelity synthetic tabular data with controllable rare event generation. Built on the combination of a Variational Autoencoder for mixed-type encoding, a Latent Diffusion Model for high-quality generation, and Classifier-Free Guidance for inference-time class control, RE-TabSyn addresses a critical gap in the synthetic data literature that no prior method had filled.
+
+The first and most fundamental contribution is the introduction of Classifier-Free Guidance to tabular data synthesis. While CFG has been the driving force behind state-of-the-art text-to-image models since its introduction by Ho and Salimans in 2022, its application to structured tabular data had remained entirely unexplored. Our systematic review of 151 research papers across 10 categories confirmed zero prior instances of CFG applied to tabular synthesis. RE-TabSyn bridges this gap by integrating CFG with latent diffusion for mixed-type tabular data, demonstrating that the guidance mechanism translates effectively from continuous image spaces to the heterogeneous feature spaces of tabular data when mediated through a VAE latent representation.
+
+The second contribution lies in controllable rare event generation through a single, intuitive control parameter---the guidance scale $w$. Our experiments demonstrate remarkable minority class boosting: Adult Income from 24.8\% to 49.6\%, Bank Marketing from 11.3\% to 50.2\%, and Polish Bankruptcy from 4.8\% to 47.8\%---a tenfold increase. This controllable oversampling operates entirely at inference time, requiring no model retraining, no architectural changes, and no dataset-specific tuning.
+
+The third contribution provides the first empirical evidence that guided synthetic data can outperform real data for minority detection tasks. Classifiers trained on RE-TabSyn's balanced synthetic data achieve a mean minority F1-score of 0.472, surpassing the real imbalanced data baseline of 0.458. This result establishes a new paradigm: intelligently balanced synthetic data is more valuable than imbalanced real data for minority-critical tasks.
+
+The fourth contribution is a comprehensive evaluation across three pillars: fidelity with an average KS of 0.171 $\pm$ 0.021, privacy with DCR exceeding 1.0 across all datasets, and utility at a 93.0\% ratio under the TSTR protocol. All results are statistically validated across three random seeds. Finally, the core findings have been accepted for presentation at the I2IT International Conference, validating the scientific merit through external peer review.
+
+\section{Key Findings}
+Four key findings emerge from our experiments. First, latent space diffusion is essential for tabular data---direct diffusion on one-hot encoded data fails catastrophically with KS statistics above 0.70, confirming that VAE-based encoding is a necessary prerequisite. Second, CFG enables precise and continuous minority control through the guidance scale $w$:
+\begin{itemize}
+    \item $w = 0$: Unconditional generation matching the original training distribution
+    \item $w = 1$: Standard conditional generation with mild minority boost
+    \item $w = 2$: Balanced generation producing approximately 50\% minority, and our default setting
+    \item $w > 2$: Minority-dominant generation exceeding 50\%
+\end{itemize}
+Third, balanced synthetic data outperforms imbalanced real data for minority detection across all six financial datasets, validating the practical utility for fraud prevention, risk assessment, and anomaly detection. Fourth, the fidelity-control trade-off is favorable: RE-TabSyn's KS of 0.171 is marginally higher than TabSyn's 0.109 but dramatically lower than TabDDPM's 0.770, and this small cost buys a capability entirely absent from all baselines.
+
+\section{Limitations}
+Transparency about limitations is essential for guiding future work. RE-TabSyn achieves slightly lower statistical fidelity than the unguided TabSyn, which is the fundamental cost of controllability. The current implementation supports only single-table synthesis and binary classification targets. CFG requires two forward passes per denoising step, making generation approximately twice as slow as unconditional diffusion. On small datasets such as German Credit with 1,000 samples and Credit Approval with 690 samples, the framework exhibits higher variance in both fidelity and minority control. Finally, while DCR analysis indicates no systematic memorization, RE-TabSyn does not provide formal differential privacy guarantees, and deployment in privacy-critical settings should integrate DP-SGD during training.
+
+\section{Concluding Remarks}
+RE-TabSyn represents a significant advance in synthetic tabular data generation by introducing controllable rare event synthesis---a capability entirely absent from prior methods. By combining the fidelity benefits of latent diffusion with the flexibility of Classifier-Free Guidance, it provides practitioners in finance, healthcare, and other high-stakes domains with a powerful tool to generate balanced datasets for critical applications. The successful conference publication at I2IT validates the novelty and rigor of this work. Looking forward, the fundamental insight that guided generation can be applied to structured data opens a rich research agenda encompassing fairness-aware generation, privacy-guided generation, and domain-constrained synthesis. RE-TabSyn is not merely a single model---it establishes a new paradigm for controllable tabular data generation.

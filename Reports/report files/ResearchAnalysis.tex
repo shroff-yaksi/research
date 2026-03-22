@@ -37,7 +37,7 @@ CTGAN \cite{xu2019ctgan} extends vanilla GANs for tabular data through two key i
     \item \textbf{Mode-Specific Normalization:} Each numerical column is modeled as a mixture of Gaussians via variational Gaussian mixture models. This captures multimodal distributions common in financial data (e.g., income distributions with distinct modes for different occupations).
     \item \textbf{Conditional Generator with Training-by-Sampling:} A conditional vector specifies which categorical value to generate, and the training procedure oversamples rare categories. This ensures the discriminator sees balanced category distributions during training, though it does not extend to balancing the target class variable.
 \end{itemize}
-Despite these innovations, CTGAN suffers from mode collapse on minority classes---the generator may ``forget'' rare modes because the gradient signal from minority samples is overwhelmed by the majority class. Furthermore, CTGAN provides no mechanism for post-hoc ratio adjustment; the generated data mirrors the training distribution.
+Despite these innovations, CTGAN suffers from mode collapse on minority classes: the generator may ``forget'' rare modes because the gradient signal from minority samples is overwhelmed by the majority class. Furthermore, CTGAN provides no mechanism for post-hoc ratio adjustment; the generated data mirrors the training distribution.
 
 \subsection{Variational autoencoders (VAEs)}
 VAEs \cite{kingma2014vae} model data through latent variables $\mathbf{z}$ using variational inference. The generative model defines a joint distribution $p_\theta(\mathbf{x}, \mathbf{z}) = p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z})$, where $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ is a standard Gaussian prior. Since the true posterior $p_\theta(\mathbf{z}|\mathbf{x})$ is intractable, an approximate posterior $q_\phi(\mathbf{z}|\mathbf{x})$ is introduced. The Evidence Lower Bound (ELBO) provides a tractable training objective:
@@ -116,7 +116,7 @@ The decoder reconstructs from the latent code, utilizing separate loss functions
 \begin{equation}
 \mathcal{L}_{VAE} = \underbrace{\sum_{j=1}^{d_{num}} \|\mathbf{x}_j - \hat{\mathbf{x}}_j\|^2}_{\text{Numerical MSE}} + \underbrace{\sum_{j=1}^{d_{cat}} \text{CE}(\mathbf{x}_j, \hat{\mathbf{x}}_j)}_{\text{Categorical Cross-Entropy}} + \underbrace{\beta \cdot D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \parallel p(\mathbf{z}))}_{\text{KL Regularization}}
 \end{equation}
-where $\beta = 0.1$ balances reconstruction quality and latent space regularization. This $\beta$-VAE formulation prevents posterior collapse---a common failure mode where the model ignores the latent code---while maintaining a smooth latent geometry suitable for downstream diffusion.
+where $\beta = 0.1$ balances reconstruction quality and latent space regularization. This $\beta$-VAE formulation prevents posterior collapse, a common failure mode where the model ignores the latent code, while maintaining a smooth latent geometry suitable for downstream diffusion.
 
 \subsection{Component 2: Latent diffusion model}
 Given the encoded latent representation $\mathbf{z}_0 = \text{Encoder}_\phi(\mathbf{x})$, the forward diffusion process adds noise according to a linear schedule with $T = 1000$ timesteps, $\beta_1 = 10^{-4}$, and $\beta_T = 0.02$.
@@ -145,7 +145,7 @@ Classifier-Free Guidance \cite{ho2022cfg} is the key innovation that enables con
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{img/cfg_mechanism.png}
+\includegraphics[width=0.65\textwidth]{img/cfg_mechanism.png}
 \caption{The Classifier-Free Guidance mechanism during inference. For each denoising step, two forward passes are made through the DiT: one conditional (with target class $y$) producing $\epsilon_{cond}$ and one unconditional (with null token $\emptyset$) producing $\epsilon_{uncond}$. The guided prediction extrapolates beyond the conditional prediction using guidance scale $w = 2.0$, amplifying the class-specific signal.}
 \label{fig:cfg_mechanism}
 \end{figure}
@@ -186,13 +186,13 @@ This effectively samples from a reweighted (``sharpened'') distribution:
 \tilde{p}(\mathbf{z} | y=1) \propto p(\mathbf{z})^{1-w} \cdot p(\mathbf{z}|y=1)^w
 \end{equation}
 
-When $w > 1$, this distribution concentrates probability mass in regions where $p(\mathbf{z}|y=1)$ is high relative to $p(\mathbf{z})$---precisely the regions corresponding to minority class features. The guidance scale $w$ thus provides a smooth, continuous knob for controlling how strongly the generation is biased toward the minority class, without requiring any retraining or architectural changes.
+When $w > 1$, this distribution concentrates probability mass in regions where $p(\mathbf{z}|y=1)$ is high relative to $p(\mathbf{z})$, precisely the regions corresponding to minority class features. The guidance scale $w$ thus provides a smooth, continuous knob for controlling how strongly the generation is biased toward the minority class, without requiring any retraining or architectural changes.
 
-Regarding the fidelity-control trade-off, increasing $w$ improves minority class representation but introduces a distributional shift. The guided distribution $\tilde{p}$ deviates from the true conditional $p(\mathbf{z}|y=1)$ by a factor that increases with $w$. This manifests as a slight increase in KS statistics from 0.109 to 0.171 in our experiments, representing the inherent trade-off between controllability and pure distributional fidelity. As illustrated in Figure~\ref{fig:tradeoff}, this trade-off is favorable: RE-TabSyn maintains competitive fidelity while gaining a capability---class control---entirely absent from all baselines.
+Regarding the fidelity-control trade-off, increasing $w$ improves minority class representation but introduces a distributional shift. The guided distribution $\tilde{p}$ deviates from the true conditional $p(\mathbf{z}|y=1)$ by a factor that increases with $w$. This manifests as a slight increase in KS statistics from 0.109 to 0.171 in our experiments, representing the inherent trade-off between controllability and pure distributional fidelity. As illustrated in Figure~\ref{fig:tradeoff}, this trade-off is favorable: RE-TabSyn maintains competitive fidelity while gaining class control, a capability entirely absent from all baselines.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.65\textwidth]{img/tradeoff.png}
-\caption{Comparison of synthetic data generation models on the fidelity-control spectrum. TabSyn achieves the highest fidelity (KS=0.11) but offers no minority control. TabDDPM fails entirely (KS=0.77). RE-TabSyn occupies a unique position---competitive fidelity (KS=0.17) with full minority control (50\% generation). CTGAN sits between TabSyn and RE-TabSyn on fidelity but also lacks control.}
+\caption{Comparison of synthetic data generation models on the fidelity-control spectrum. TabSyn achieves the highest fidelity (KS=0.11) but offers no minority control. TabDDPM fails entirely (KS=0.77). RE-TabSyn occupies a unique position: competitive fidelity (KS=0.17) with full minority control (50\% generation). CTGAN sits between TabSyn and RE-TabSyn on fidelity but also lacks control.}
 \label{fig:tradeoff}
 \end{figure}

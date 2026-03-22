@@ -1,36 +1,32 @@
 \chapter{Implementation and Experimental Setup}
 
-This chapter describes the complete end-to-end implementation of RE-TabSyn, covering the pipeline architecture, data preprocessing strategies, model configurations, training procedures, and the synthetic data generation protocol. All experiments were conducted using Python 3.10 with PyTorch 2.0 as the deep learning framework.
+This chapter describes the complete end-to-end implementation of RE-TabSyn, covering the pipeline architecture, data preprocessing strategies, model configurations, training procedures, and the synthetic data generation protocol. All experiments were conducted using Python 3.13.5 with PyTorch 2.9.1 as the deep learning framework, on a MacBook Air equipped with an Apple M3 chip and 16 GB of RAM running macOS 26.3.1. Key supporting libraries include NumPy 2.3.5, Pandas 2.3.3, scikit-learn 1.7.2, and XGBoost 3.1.2.
 
 \section{End-to-End Pipeline Architecture}
-The implementation of RE-TabSyn encompasses a complete end-to-end pipeline designed for robustness and reproducibility. Figure~\ref{fig:pipeline} illustrates the high-level flow, while Figure~\ref{fig:pipeline_block_diagram} provides a detailed view of each module and its sub-components.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.5\textwidth]{img/pipeline.png}
-\caption{High-level pipeline of the RE-TabSyn framework. Data flows sequentially from the raw financial dataset through cleaning, encoding, scaling, VAE training, latent representation extraction, diffusion with Classifier-Free Guidance, and finally generation of synthetic samples.}
-\label{fig:pipeline}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{img/pipeline_block_diagram.png}
-\caption{Detailed block diagram of the complete RE-TabSyn pipeline showing all stages: Data Preprocessing (missing value handling, categorical encoding, numerical scaling, train/test split), Model Selection (GAN-based, diffusion-based, and proposed RE-TabSyn), Model Training (VAE training, latent encoding, diffusion training with CFG label dropout), Synthetic Data Sampling (latent sampling, guided denoising, decoding, post-processing), and the three-pillar Evaluation Framework (statistical metrics, ML utility metrics, and privacy metrics).}
-\label{fig:pipeline_block_diagram}
-\end{figure}
+The implementation of RE-TabSyn encompasses a complete end-to-end pipeline designed for robustness and reproducibility. Figure~\ref{fig:pipeline} illustrates the high-level flow through the five pipeline modules.
 
 The pipeline consists of five integrated modules:
 \begin{itemize}
     \item \textbf{Data Ingestion Module:} Provides unified access to all six benchmark datasets with automatic download, caching, and versioning. Each dataset is loaded through a standardized interface that identifies numerical columns, categorical columns, and the target variable.
+
     \item \textbf{Preprocessing Module:} Transforms raw data into model-ready tensors through a sequence of imputation, encoding, and scaling operations (detailed in Section~\ref{sec:preprocessing}).
-    \item \textbf{Model Training Pipeline:} Implements the two-phase training protocol---first training the VAE encoder-decoder, then training the Latent Diffusion Model with Classifier-Free Guidance on frozen VAE latent representations.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{img/pipeline.png}
+\caption{High-level pipeline of the RE-TabSyn framework. Data flows sequentially from the raw financial dataset through cleaning, encoding, scaling, VAE training, latent representation extraction, diffusion with Classifier-Free Guidance, and finally generation of synthetic samples.}
+\label{fig:pipeline}
+\end{figure}
+    
+    \item \textbf{Model Training Pipeline:} Implements the two-phase training protocol: first training the VAE encoder-decoder, then training the Latent Diffusion Model with Classifier-Free Guidance on frozen VAE latent representations.
     \item \textbf{Generation Module:} Performs latent sampling, CFG-guided denoising, VAE decoding, and reverse transformation to produce synthetic tabular data in the original feature space.
     \item \textbf{Evaluation Module:} Computes a comprehensive suite of statistical fidelity, machine learning utility, and privacy metrics, generating both numerical results and visualizations.
 \end{itemize}
 
+
 \section{Data Preprocessing}
 \label{sec:preprocessing}
-The preprocessing module is crucial for the stable training of deep generative models on tabular data. Inadequate preprocessing is a common source of failure in tabular synthesis pipelines.
+The preprocessing module is important for the stable training of deep generative models on tabular data. Inadequate preprocessing is a common source of failure in tabular synthesis pipelines.
 
 \subsection{Missing value handling}
 Missing values are handled through a two-strategy approach:
@@ -55,19 +51,19 @@ Table~\ref{tab:datasets} summarizes the six financial benchmark datasets used in
 \hline
 \textbf{Dataset} & \textbf{Samples} & \textbf{Num.} & \textbf{Cat.} & \textbf{Min. \%} & \textbf{Domain} \\
 \hline
-Adult Income & 48,842 & 6 & 8 & 24.8\% & Income prediction \\
+Adult Income & 45,222 & 6 & 8 & 24.8\% & Income prediction \\
 German Credit & 1,000 & 7 & 13 & 30.0\% & Credit risk \\
-Bank Marketing & 45,211 & 7 & 9 & 11.3\% & Marketing response \\
+Bank Marketing & 41,188 & 10 & 10 & 11.3\% & Marketing response \\
 Credit Approval & 690 & 6 & 9 & 44.5\% & Credit scoring \\
-Lending Club & 42,535 & 7 & 5 & 20.0\% & Loan default \\
-Polish Bankruptcy & 10,503 & 64 & 0 & 4.8\% & Corporate bankruptcy \\
+Lending Club & 10,000 & 8 & 4 & 20.0\% & Loan default \\
+Polish Bankruptcy & 5,000 & 64 & 0 & 4.8\% & Corporate bankruptcy \\
 \hline
 \end{tabular}
 \end{table}
 
 These datasets were selected to cover a wide range of:
 \begin{itemize}
-    \item \textbf{Sample sizes:} From 690 (Credit Approval) to 48,842 (Adult Income), testing scalability.
+    \item \textbf{Sample sizes:} From 690 (Credit Approval) to 45,222 (Adult Income), testing scalability.
     \item \textbf{Feature compositions:} From purely numerical (Polish Bankruptcy with 64 numerical features) to mixed-type (German Credit with 13 categorical and 7 numerical features), testing heterogeneous data handling.
     \item \textbf{Imbalance severities:} From near-balanced (Credit Approval at 44.5\%) to extreme imbalance (Polish Bankruptcy at 4.8\%), testing the limits of minority boosting.
     \item \textbf{Financial sub-domains:} Income prediction, credit risk, marketing, lending, and corporate bankruptcy.
@@ -118,7 +114,7 @@ Phase 2 -- Diffusion Training, Epochs 1 to 100:
 \section{Synthetic Data Generation Procedure}
 Generation with RE-TabSyn follows a structured four-step protocol:
 
-Step 1 -- Latent Initialization: Sample $N$ initial noise vectors from $\mathcal{N}(0, I)$ in the 64-dimensional latent space. Assign target class labels---to generate balanced data, 50\% of samples are assigned $y = 1$ and 50\% are assigned $y = 0$.
+Step 1 -- Latent Initialization: Sample $N$ initial noise vectors from $\mathcal{N}(0, I)$ in the 64-dimensional latent space. To generate balanced data, 50\% of samples are assigned $y = 1$ and 50\% are assigned $y = 0$.
 
 Step 2 -- CFG-Guided Denoising: For each of the $T = 1000$ reverse diffusion steps:
 \begin{enumerate}

@@ -46,7 +46,7 @@ RE-TabSyn became possible in 2024 because four enabling technologies, each from 
 
 \textbf{2024 -- TabSyn (Zhang et al., ICLR 2024).} TabSyn demonstrated that combining a VAE latent space with a Transformer-based diffusion model solved the categorical encoding problem that had plagued all prior tabular diffusion attempts. TabSyn achieved the best tabular fidelity yet reported (average KS = 0.109). It still had no class control, but it provided the exact architectural foundation onto which CFG could be grafted.
 
-The research opportunity opened in early 2024: a method existed that was excellent at tabular fidelity (TabSyn), a guidance mechanism existed that was proven for class control, i.e., CFG,, and a survey (Nidhi et al.\ 2024) explicitly confirmed that no one had combined them. RE-TabSyn connects these three pieces.
+The research opportunity opened in early 2024: a method existed that was excellent at tabular fidelity (TabSyn), a guidance mechanism existed that was proven for class control, i.e., CFG, and a survey (Nidhi et al.\ 2024) explicitly confirmed that no one had combined them. RE-TabSyn connects these three pieces.
 
 The same problem -- class imbalance -- appears in healthcare, cybersecurity, manufacturing, and legal records. Why finance rather than any of these others?
 
@@ -54,7 +54,7 @@ Finance has a specific combination of properties that make it the right domain t
 
 Table~\ref{tab:domain_comparison} formalises this comparison.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Why Finance is the Primary Domain: Comparison with Alternative Domains}
 \label{tab:domain_comparison}
@@ -96,7 +96,7 @@ Tabular data combines heterogeneous feature types that create synthesis challeng
 
 This heterogeneity distinguishes tabular synthesis from image or text generation, where data types are homogeneous (pixels are all in $[0, 255]$; tokens are all drawn from a fixed vocabulary). As illustrated in Figure~\ref{fig:dataset_overview}, the datasets used in this study span a wide range of imbalance ratios and feature compositions, collectively testing RE-TabSyn across the full breadth of this heterogeneity.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/dataset_overview.png}
 \caption{Six benchmark datasets by class imbalance severity: near-balanced (44.5\%) to extreme (4.8\%).}
@@ -125,7 +125,7 @@ Diffusion-based methods present a different set of limitations. TabDDPM \cite{ko
 
 Table~\ref{tab:approaches_comparison} compares the four most common approaches to the class imbalance problem, assessed across the criteria that matter most in a regulated financial environment.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Comparison of Class Imbalance Solutions for Financial Machine Learning}
 \label{tab:approaches_comparison}

@@ -102,7 +102,7 @@ The reverse process learns to denoise by predicting the noise $\epsilon_\theta(\
 
 This says: sample a random timestep $t$, take a data point $\mathbf{z}_0$, add the noise $\boldsymbol{\epsilon}$ corresponding to that timestep to get $\mathbf{z}_t$, and then train the network $\epsilon_\theta$ to predict what noise was added. The mean squared error between the true noise and the predicted noise is the training loss. After enough training, $\epsilon_\theta$ can accurately denoise any $\mathbf{z}_t$ at any timestep, enabling the reverse process.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/diffusion_chain.png}
 \caption{Forward (noising) and reverse (denoising) diffusion process in latent space.}
@@ -117,7 +117,7 @@ TabSyn \cite{zhang2024tabsyn} addresses TabDDPM's limitations by performing diff
 
 RE-TabSyn (Rare-Event Enhanced Tabular Synthesis) combines three interlocking components to achieve both fidelity and controllable minority generation. The complete system architecture is illustrated in Figure~\ref{fig:system_architecture}.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/system_architecture.png}
 \caption{RE-TabSyn system architecture: five modules from raw CSV input to evaluation output.}
@@ -137,7 +137,7 @@ The three components are not independently useful; they work because of how they
 
 The VAE is the foundation of RE-TabSyn, solving the critical problem of encoding heterogeneous tabular data into a smooth, continuous latent space where diffusion can operate effectively. The architecture is illustrated in Figure~\ref{fig:vae_architecture}.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.85\textwidth]{img/vae_architecture.png}
 \caption{Tabular VAE: encoder (256, 128) projects to 64-dim latent $(\mu, \log\sigma^2)$; decoder reconstructs numerical and categorical features via separate output heads.}
@@ -196,7 +196,7 @@ The DiT architecture consists of:
     \item \textbf{Adaptive Layer Normalization (AdaLN)} \cite{ba2016layernorm} that conditions each transformer block on the sum of time and class embeddings, modulating the scale and shift of layer normalization parameters. AdaLN is preferred over concatenation or addition because it allows conditioning information to directly control normalization statistics, providing more expressive conditioning without cross-attention overhead.
 \end{enumerate}
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.5\textwidth]{img/dit_block.png}
 \caption{Single DiT block: AdaLN conditioning on time and class, multi-head self-attention, and residual MLP (256--1024--256).}
@@ -214,7 +214,7 @@ In words: uniformly sample a timestep $t$ between 1 and 1000, take a real latent
 
 Classifier-Free Guidance \cite{ho2022cfg} is the key innovation that enables controllable generation in RE-TabSyn. The mechanism is illustrated in Figure~\ref{fig:cfg_mechanism}.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.65\textwidth]{img/cfg_mechanism.png}
 \caption{CFG inference: two DiT passes (conditional on $y$ and unconditional on $\emptyset$) blended with guidance scale $w=2.0$.}

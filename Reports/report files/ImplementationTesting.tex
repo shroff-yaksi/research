@@ -32,9 +32,9 @@ For the model sizes and dataset sizes in this research (datasets up to 45,222 ro
 
 The implementation of RE-TabSyn encompasses a complete end-to-end pipeline designed for robustness and reproducibility. Figure~\ref{fig:pipeline_detailed} shows every step from raw data ingestion to the final synthetic output. Figure~\ref{fig:pipeline} provides a complementary high-level view of the sequential flow.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=0.70\textwidth]{img/pipeline_detailed.png}
+\includegraphics[width=0.45\textwidth]{img/pipeline_detailed.png}
 \caption{RE-TabSyn step-by-step pipeline: from raw financial data to balanced synthetic output with 50\% minority.}
 \label{fig:pipeline_detailed}
 \end{figure}
@@ -101,7 +101,7 @@ Label encoding avoids this explosion in dimensionality. The VAE encoder then lea
 
 Table~\ref{tab:datasets} summarizes the six financial benchmark datasets used in our experiments. Each dataset was selected to represent a distinct sub-domain of financial machine learning, to cover a range of class imbalance severities, and to test the method on both small and large sample sizes.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Benchmark Dataset Characteristics}
 \label{tab:datasets}
@@ -127,7 +127,7 @@ Polish Bankruptcy & 5,000 & 64 & 0 & 4.8\% & Corporate bankruptcy \\
 
 Table~\ref{tab:dataset_sources} provides the source, URL, and authenticity information for each dataset.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Dataset Sources, Repositories, and Provenance}
 \label{tab:dataset_sources}
@@ -201,7 +201,7 @@ This section details the architectural configurations and hyperparameters for RE
 
 Table~\ref{tab:hyperparams} provides a consolidated reference of all RE-TabSyn hyperparameters. The rationale for each choice is explained in the subsections that follow.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Complete RE-TabSyn Hyperparameter Reference}
 \label{tab:hyperparams}
@@ -274,7 +274,7 @@ We compare RE-TabSyn against four leading methods. All baseline implementations 
 
 Table~\ref{tab:method_comparison} summarises the key architectural properties of all five methods side by side. This makes it easier to understand where RE-TabSyn sits relative to the alternatives and why each architectural choice matters.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Architectural Comparison Across All Methods}
 \label{tab:method_comparison}
@@ -310,7 +310,7 @@ The table confirms a key structural fact: RE-TabSyn is the only method among the
 
 Training proceeds in two distinct, sequential phases. This two-phase approach is a deliberate architectural choice: it decouples the representation learning problem, i.e., VAE, from the generative modeling problem, i.e., diffusion, allowing each component to be optimized independently. Figure~\ref{fig:two_phase_training} shows the structure of both phases.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/two_phase_training.png}
 \caption{Two-phase training: Phase 1 trains the VAE (MSE + CE + KL loss); Phase 2 freezes the VAE and trains the diffusion model (MSE noise prediction).}
@@ -331,7 +331,7 @@ Training proceeds in two distinct, sequential phases. This two-phase approach is
     \item Training converges when reconstruction loss stabilizes, typically within 50--80 epochs. The training loop monitors the validation loss (on the held-out 20\% of training data) and saves the model checkpoint at each epoch. The final model used for latent encoding is the checkpoint with the lowest validation loss.
 \end{enumerate}
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/vae_training_loop.png}
 \caption{VAE training loop: encode to $(\mu, \sigma)$, reparameterise to $\mathbf{z}$, decode to $\hat{\mathbf{x}}$, backpropagate reconstruction + KL loss.}
@@ -352,7 +352,7 @@ Training proceeds in two distinct, sequential phases. This two-phase approach is
     \item All experiments are run with three random seeds (42, 123, 456) for statistical significance. Each seed controls the random initialization of all model weights, the random sampling of timesteps and noise during training, and the random ordering of training batches. Reporting mean and standard deviation across three seeds provides a reliable estimate of result variance and confirms that the findings are not artifacts of a single lucky initialization.
 \end{enumerate}
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/diffusion_training_loop.png}
 \caption{Diffusion training loop: noise frozen latent $\mathbf{z}_0$, predict noise $\hat{\epsilon}$ with DiT, backpropagate MSE loss.}
@@ -373,7 +373,7 @@ Generation with RE-TabSyn follows a structured four-step protocol. Once trained,
     \item Update the latent: $\mathbf{z}_{t-1} = f(\mathbf{z}_t, \tilde{\epsilon}, t)$ using the DDPM reverse step formula.
 \end{enumerate}
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.80\textwidth]{img/cfg_denoising_step.png}
 \caption{Single CFG denoising step: two DiT passes (conditional and unconditional) blended with $w=2.0$ to produce $\mathbf{z}_{t-1}$.}
@@ -394,7 +394,7 @@ The result is a Pandas DataFrame in the original feature space, indistinguishabl
 
 Our evaluation follows the three-pillar framework illustrated in Figure~\ref{fig:evaluation_framework}.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/evaluation_framework.png}
 \caption{Three-pillar evaluation framework: statistical fidelity (KS, Chi-Square, JSD), ML utility (TSTR AUC, F1), and privacy (DCR, MIA).}
@@ -419,7 +419,7 @@ Lower values indicate better preservation of inter-feature relationships. This c
 
 \subsection{Pillar 2: Machine learning utility}
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/tstr_trtr.png}
 \caption{TSTR vs.\ TRTR: utility ratio (TSTR AUC / TRTR AUC) measures how much predictive signal the synthetic data retains.}

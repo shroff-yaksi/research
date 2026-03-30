@@ -12,7 +12,7 @@ The Kolmogorov-Smirnov statistic measures the maximum difference between the cum
 
 Table~\ref{tab:ks_stat} presents per-dataset KS statistics for all models.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{KS Statistic by Dataset and Model (Lower is Better). Bold indicates best performance per dataset. RE-TabSyn maintains competitive fidelity despite the added CFG mechanism. TabDDPM fails catastrophically on all datasets.}
 \label{tab:ks_stat}
@@ -55,7 +55,7 @@ Key observations:
 
 The KS fidelity comparison is further visualized in Figure~\ref{fig:ks_with_ci}, which shows RE-TabSyn's performance with 95\% confidence intervals relative to CTGAN and TabSyn baselines.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/ks_with_ci.png}
 \caption{KS statistic with 95\% CI across three seeds: RE-TabSyn (0.171) falls between CTGAN ($\sim$0.15) and TabSyn ($\sim$0.10).}
@@ -74,7 +74,7 @@ The better correlation preservation of latent diffusion methods (TabSyn and RE-T
 
 Numbers alone do not tell the full story. Dimensionality reduction visualizations provide an intuitive check on whether synthetic data ``looks like'' real data when all features are considered simultaneously.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.85\textwidth]{img/tsne_plot.png}
 \caption{t-SNE: real (blue) vs.\ RE-TabSyn synthetic (orange) for Adult Income; overlap confirms manifold coverage without mode collapse.}
@@ -83,7 +83,7 @@ Numbers alone do not tell the full story. Dimensionality reduction visualization
 
 Figure~\ref{fig:tsne_plot} shows the t-SNE \cite{maaten2008tsne} visualization for the Adult Income dataset. t-SNE projects high-dimensional data into two dimensions while preserving local neighborhood structure, making it a standard tool for checking whether synthetic and real data occupy the same regions of feature space. The blue points (real data) and orange points (synthetic data) show substantial overlap across the visualization, confirming that RE-TabSyn generates samples from the same manifold as the real data. Importantly, there are no ``isolated islands'' of synthetic points in regions with no real data (which would indicate hallucination) and no large regions of real data with no synthetic coverage (which would indicate mode collapse).
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.85\textwidth]{img/pca_plot.png}
 \caption{PCA: real (blue) vs.\ RE-TabSyn synthetic (orange); synthetic data spans the full variance range of the real data manifold.}
@@ -102,7 +102,7 @@ Beyond distributional fidelity, the test that ultimately matters for financial a
 
 In the Train-on-Synthetic, Test-on-Real, i.e., TSTR, protocol, an XGBoost classifier is trained exclusively on synthetic data and evaluated on held-out real test data. This protocol imposes no access to real training data for the ML model -- the synthetic data must stand alone as a training resource. Table~\ref{tab:tstr_auc} presents the results.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{TSTR AUC-ROC by Dataset (Higher is Better). The ``Real Baseline'' column shows performance when training on real data. Utility Ratio = Synthetic AUC / Real AUC.}
 \label{tab:tstr_auc}
@@ -142,7 +142,7 @@ For imbalanced financial tasks, overall AUC can be misleading. A fraud detection
 
 Table~\ref{tab:f1_scores_full} presents the minority F1-score results, and this is where RE-TabSyn's central contribution becomes concrete.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Minority Class F1-Score (Higher is Better). Bold indicates best performance per dataset. RE-TabSyn surpasses the real data baseline on all six datasets, demonstrating that balanced synthetic data enables better minority event detection than training on imbalanced real data.}
 \label{tab:f1_scores_full}
@@ -190,7 +190,7 @@ Privacy is not an afterthought in this work. Any synthetic data method intended 
 
 DCR measures the Euclidean distance from each synthetic sample to its nearest neighbor in the training data. A DCR near zero indicates that a synthetic record is nearly identical to a real training record -- a privacy concern. High DCR values indicate that synthetic records are genuinely novel.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Privacy Analysis: Distance to Closest Record (Higher is Better). Mean DCR measures average privacy, while Min DCR measures worst-case privacy (whether any synthetic sample is an exact or near-exact copy of a real record).}
 \label{tab:privacy_dcr}
@@ -230,7 +230,7 @@ For production financial deployments where formal privacy guarantees are require
 
 The defining capability of RE-TabSyn is controllable class distribution. By setting the guidance scale $w = 2.0$ and assigning 50\% of latent noise vectors to the minority class label at the start of the denoising process, RE-TabSyn aims to generate datasets with approximately 50\% minority representation. Table~\ref{tab:minority_control_target} demonstrates how precisely this control works in practice.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Minority Ratio Control (Target: 50\%). $\Delta$ from Target measures the absolute deviation from the 50\% goal. RE-TabSyn achieves the target within 5.2\% across all datasets, with most within 2\%.}
 \label{tab:minority_control_target}
@@ -268,7 +268,7 @@ Detailed analysis:
 
 Figure~\ref{fig:minority_boost_with_ci} visualizes the dramatic increase from original to RE-TabSyn-generated minority ratios.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/minority_boost_with_ci.png}
 \caption{Minority ratio boost with 95\% CI: original (pink) vs.\ RE-TabSyn achieved (blue) vs.\ 50\% target (dashed green).}
@@ -279,7 +279,7 @@ Figure~\ref{fig:minority_boost_with_ci} visualizes the dramatic increase from or
 
 Figure~\ref{fig:performance_ranking} gives the overall ranking of all five methods, showing where each sits across the two primary axes of this evaluation. Figure~\ref{fig:comparison_with_ci} then provides the full quantitative comparison with confidence intervals.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.70\textwidth]{img/performance_ranking.png}
 \caption{Overall method ranking: TabSyn leads on fidelity, RE-TabSyn leads on minority control, TabDDPM failed on mixed-type data.}
@@ -288,7 +288,7 @@ Figure~\ref{fig:performance_ranking} gives the overall ranking of all five metho
 
 Figure~\ref{fig:comparison_with_ci} compares RE-TabSyn's performance across fidelity and rare event control dimensions side by side.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{img/comparison_with_ci.png}
 \caption{RE-TabSyn performance across fidelity (KS, lower is better) and minority boost (higher is better) with confidence intervals.}
@@ -313,14 +313,14 @@ Financial datasets present unique challenges that our experiments highlight and 
 
 The guidance scale $w$ in CFG is the dial that controls how strongly the generation is pushed toward the specified class. Understanding how $w$ affects the generated minority ratio is important for practitioners who want to target ratios other than 50\%. Figure~\ref{fig:guidance_scale_effect} shows the relationship at a glance; Table~\ref{tab:guidance_sensitivity} gives the precise values measured on the Polish Bankruptcy dataset (the most imbalanced case at 4.8\% original minority).
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{img/guidance_scale_effect.png}
 \caption{Guidance scale effect on Polish Bankruptcy: $w=0.0$ mirrors training (24.8\%); $w=2.0$ reaches $\approx$50\% minority.}
 \label{fig:guidance_scale_effect}
 \end{figure}
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Guidance Scale $w$ vs.\ Achieved Minority Ratio on Polish Bankruptcy (Original: 4.8\%). The relationship is smooth and monotonic, making $w$ a practical control parameter.}
 \label{tab:guidance_sensitivity}
@@ -384,7 +384,7 @@ The minority F1-score improvement from 0.485 (real data baseline) to 0.495 (RE-T
 
 Table~\ref{tab:practical_impact} summarises the practical implication of RE-TabSyn's minority F1 improvement for each dataset, framing the result in terms of a concrete detection scenario.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Practical Interpretation of Minority F1 Improvements Across Six Datasets}
 \label{tab:practical_impact}
@@ -418,7 +418,7 @@ A bank's legal team will ask: can our customers' data be reverse-engineered from
 
 Table~\ref{tab:summary} consolidates the key findings across all evaluation dimensions.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Consolidated Performance Summary Across All Models}
 \label{tab:summary}

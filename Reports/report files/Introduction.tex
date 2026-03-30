@@ -24,7 +24,7 @@ Finance is an unusually well-suited domain for this research: enormous analytica
 
 Financial records contain highly personal information, including income, debt levels, transaction histories, and creditworthiness assessments, whose exposure carries significant legal and reputational consequences. The global financial services industry manages over \$26 trillion in assets, and the integrity of its data pipelines directly impacts economic stability and consumer welfare. A single data breach in the financial sector costs an average of \$5.9 million as per the IBM Cost of a Data Breach Report 2023 -- and those are the direct costs. The indirect costs in regulatory penalties, customer loss, and reputational damage can be far larger. Unlike research datasets with informed consent, production financial data carries fiduciary obligations that preclude casual sharing or publication.
 
-Financial institutions operate under overlapping regulatory frameworks that simultaneously require rigorous data use and restrict it. The Gramm-Leach-Bliley Act (GLBA) mandates protection of consumers' nonpublic personal information, limiting how it can be shared with third parties. PCI-DSS governs payment card data handling through 12 core security requirements -- any system that stores, processes, or transmits cardholder data must comply, making it difficult to share payment records even internally. Basel III/IV requires model validation on representative data: banks must prove their models work, but to prove they work they need data, and to get data they face privacy constraints. Synthetic data breaks this circular constraint. The Fair Lending Laws (ECOA and FCRA) require bias auditing across protected categories including race, gender, and age -- among the most sensitive records a financial institution holds. GDPR restricts cross-border data transfers and mandates data minimization, complicating sharing even within multinational organizations.
+Financial institutions operate under overlapping regulatory frameworks that simultaneously require rigorous data use and restrict it. The Gramm-Leach-Bliley Act, i.e., GLBA, mandates protection of consumers' nonpublic personal information, limiting how it can be shared with third parties. PCI-DSS governs payment card data handling through 12 core security requirements -- any system that stores, processes, or transmits cardholder data must comply, making it difficult to share payment records even internally. Basel III/IV requires model validation on representative data: banks must prove their models work, but to prove they work they need data, and to get data they face privacy constraints. Synthetic data breaks this circular constraint. The Fair Lending Laws, i.e., ECOA and FCRA, require bias auditing across protected categories including race, gender, and age -- among the most sensitive records a financial institution holds. GDPR restricts cross-border data transfers and mandates data minimization, complicating sharing even within multinational organizations.
 
 These regulations simultaneously demand rigorous model validation while restricting the data available for such validation. Synthetic data is well positioned to resolve this tension: a synthetic dataset that faithfully mimics the statistical properties of real customer data provides all the analytical utility without any of the regulatory risk.
 
@@ -46,7 +46,7 @@ RE-TabSyn became possible in 2024 because four enabling technologies, each from 
 
 \textbf{2024 -- TabSyn (Zhang et al., ICLR 2024).} TabSyn demonstrated that combining a VAE latent space with a Transformer-based diffusion model solved the categorical encoding problem that had plagued all prior tabular diffusion attempts. TabSyn achieved the best tabular fidelity yet reported (average KS = 0.109). It still had no class control, but it provided the exact architectural foundation onto which CFG could be grafted.
 
-The research opportunity opened in early 2024: a method existed that was excellent at tabular fidelity (TabSyn), a guidance mechanism existed that was proven for class control (CFG), and a survey (Nidhi et al.\ 2024) explicitly confirmed that no one had combined them. RE-TabSyn connects these three pieces.
+The research opportunity opened in early 2024: a method existed that was excellent at tabular fidelity (TabSyn), a guidance mechanism existed that was proven for class control, i.e., CFG,, and a survey (Nidhi et al.\ 2024) explicitly confirmed that no one had combined them. RE-TabSyn connects these three pieces.
 
 The same problem -- class imbalance -- appears in healthcare, cybersecurity, manufacturing, and legal records. Why finance rather than any of these others?
 
@@ -132,7 +132,7 @@ Table~\ref{tab:approaches_comparison} compares the four most common approaches t
 \small
 \begin{tabularx}{\textwidth}{|l|C|C|C|C|C|}
 \hline
-\textbf{Criterion} & \textbf{Random Oversamp.} & \textbf{SMOTE} & \textbf{GAN (CTGAN)} & \textbf{Diffusion (TabSyn)} & \textbf{RE-TabSyn} \\
+\textbf{Criterion} & \textbf{Random Oversamp.} & \textbf{SMOTE} & \textbf{CTGAN} & \textbf{TabSyn} & \textbf{RE-TabSyn} \\
 \hline
 Generates realistic new samples & No (copies) & Partial (interpolates) & Yes & Yes & Yes \\
 \hline
@@ -161,7 +161,7 @@ We identify a fundamental gap in the literature, confirmed through systematic re
 
 \textit{No existing synthetic tabular data method enables practitioners to specify the desired class distribution during generation.}
 
-This gap matters most in financial applications, where balanced training data would directly improve fraud detection, default prediction, and risk assessment. Classifier-Free Guidance (CFG) \cite{ho2022cfg} has enabled precise control in image generation -- enabling text-to-image models like Stable Diffusion \cite{rombach2022ldm} and DALL-E to produce highly specific outputs from natural language prompts -- its application to structured tabular data had remained entirely unexplored before this work.
+This gap matters most in financial applications, where balanced training data would directly improve fraud detection, default prediction, and risk assessment. Classifier-Free Guidance, i.e., CFG \cite{ho2022cfg}, has enabled precise control in image generation -- enabling text-to-image models like Stable Diffusion \cite{rombach2022ldm} and DALL-E to produce highly specific outputs from natural language prompts -- its application to structured tabular data had remained entirely unexplored before this work.
 
 The gap has a practical implication that is easy to state: a bank that uses TabSyn to generate synthetic fraud data for model training will still end up with a synthetic dataset where 0.5\% of transactions are fraudulent, exactly the same proportion as in the real data. They cannot use that synthetic data to train a better fraud detector than the real data would allow. RE-TabSyn closes this gap.
 
@@ -170,7 +170,7 @@ The gap has a practical implication that is easy to state: a bank that uses TabS
 This research makes five concrete, verifiable contributions:
 
 \textbf{1. Novel Application of Classifier-Free Guidance to Tabular Data.}
-RE-TabSyn (Rare-Event Enhanced Tabular Synthesis) is the first application of Classifier-Free Guidance (CFG) to tabular data synthesis. CFG, previously successful only in image generation \cite{ho2022cfg}, enables controllable generation without auxiliary classifiers by jointly training conditional and unconditional models through a simple label dropout mechanism ($p_{uncond} = 0.10$). The adaptation to tabular data required both an architectural solution (the VAE latent space to handle mixed types) and an empirical validation across diverse financial datasets. This contribution opens a new research direction at the intersection of guided generation and structured data.
+RE-TabSyn, i.e., Rare-Event Enhanced Tabular Synthesis, is the first application of Classifier-Free Guidance, i.e., CFG, to tabular data synthesis. CFG, previously successful only in image generation \cite{ho2022cfg}, enables controllable generation without auxiliary classifiers by jointly training conditional and unconditional models through a simple label dropout mechanism ($p_{uncond} = 0.10$). The adaptation to tabular data required both an architectural solution (the VAE latent space to handle mixed types) and an empirical validation across diverse financial datasets. This contribution opens a new research direction at the intersection of guided generation and structured data.
 
 \textbf{2. Controllable Minority Class Generation.}
 RE-TabSyn allows practitioners to specify target minority ratios via a single guidance scale parameter $w$ at inference time, with no model retraining required. In our experiments, minority representation is boosted from original training ratios of 4.8--44.5\% to generated ratios of 44.8--50.2\%, with an average deviation from the 50\% target of just 1.7\%. Polish Bankruptcy is boosted from 4.8\% to 47.8\% minority, a nearly tenfold increase in rare event representation.
@@ -198,7 +198,7 @@ What is explicitly out of scope: multi-table synthesis, multi-class targets, for
 
 For financial institutions, the practical benefits are direct. Balanced synthetic training data enables more effective fraud and default detection models. Bias auditing across demographic groups becomes feasible without exposing real protected-class records, satisfying fair lending law requirements. Synthetic data also enables safe cross-institutional data sharing for collaborative modeling without raw data transfer.
 
-From a research perspective, this work bridges controllable image generation techniques (CFG) to the tabular domain for the first time, establishing a methodological connection that opens multiple follow-on directions. The evaluation benchmark introduced here — covering six financial datasets, four baselines, and three evaluation pillars — provides future researchers with appropriate protocols for minority-aware synthesis evaluation, filling a gap that prior work had not addressed.
+From a research perspective, this work bridges controllable image generation techniques, i.e., CFG, to the tabular domain for the first time, establishing a methodological connection that opens multiple follow-on directions. The evaluation benchmark introduced here — covering six financial datasets, four baselines, and three evaluation pillars — provides future researchers with appropriate protocols for minority-aware synthesis evaluation, filling a gap that prior work had not addressed.
 
 The societal dimension extends further. Better fraud detection protects consumers; fairer credit models reduce false rejections of qualified borrowers; improved AML systems protect the financial system from criminal exploitation. Financial institutions benefit through reduced fraud losses and more defensible regulatory compliance. Regulators gain access to synthetic benchmarks that make stress testing and fairness auditing feasible without institutions surrendering sensitive demographic records.
 
@@ -225,11 +225,18 @@ Business and regulatory professionals should read this chapter in full, then jum
     \item \textit{Minority class:} The rare event category (fraud, default, bankruptcy) in an imbalanced dataset.
     \item \textit{KS statistic:} A number between 0 and 1 measuring distributional difference. Closer to 0 means the synthetic data matches the real data more closely.
     \item \textit{F1-score:} A number between 0 and 1 measuring how well a model detects the rare event. Closer to 1 is better.
-    \item \textit{VAE (Variational Autoencoder):} A model that compresses data into a compact representation and reconstructs it, used here to convert financial tables into a format suitable for diffusion.
+    \item \textit{VAE, i.e., Variational Autoencoder:} A model that compresses data into a compact representation and reconstructs it, used here to convert financial tables into a format suitable for diffusion.
     \item \textit{Diffusion model:} A generative model that learns to produce realistic data by reversing a noise-adding process.
-    \item \textit{Classifier-Free Guidance (CFG):} A technique for controlling what a generative model produces, originally developed for AI image generation and applied to financial tables here for the first time.
+    \item \textit{CFG, i.e., Classifier-Free Guidance:} A technique for controlling what a generative model produces, originally developed for AI image generation and applied to financial tables here for the first time.
 \end{enumerate}
 
 \section{Organization of the Report}
 
-Chapter~2 presents the formal problem formulation, mathematical foundations of the baseline methods, and the RE-TabSyn architecture. Chapter~3 surveys 151 peer-reviewed publications across generative models, tabular synthesis, privacy mechanisms, and evaluation frameworks, leading to a gap analysis that positions this work. Chapter~4 covers the complete implementation pipeline: data preprocessing, model configurations, training procedures, generation protocol, and evaluation methodology. Chapter~5 presents results across fidelity, utility, privacy, and minority control metrics for all six datasets and four baselines. Chapter~6 summarizes key findings, discusses limitations, and provides concluding remarks. Chapter~7 outlines future research directions: architectural improvements, differential privacy integration, extended synthesis capabilities, and deployment pathways.
+\begin{enumerate}
+    \item \textbf{Chapter 2: Research Analysis and Methodology} --- Formal problem formulation, mathematical foundations of baseline methods, and the detailed RE-TabSyn architecture with theoretical analysis.
+    \item \textbf{Chapter 3: Literature Review} --- Survey of 151 peer-reviewed publications across generative models, tabular synthesis, privacy mechanisms, and evaluation frameworks, concluding with the gap analysis that positions this work.
+    \item \textbf{Chapter 4: Implementation and Experimental Setup} --- Complete end-to-end pipeline: data preprocessing, model configurations, training procedures, generation protocol, and evaluation methodology.
+    \item \textbf{Chapter 5: Research Outcomes} --- Results across fidelity, utility, privacy, and minority control metrics for all six datasets and four baselines.
+    \item \textbf{Chapter 6: Conclusion} --- Summary of key findings, limitations, and concluding remarks on the contribution to the field.
+    \item \textbf{Chapter 7: Future Scope} --- Research directions including architectural improvements, differential privacy integration, extended synthesis capabilities, and deployment pathways.
+\end{enumerate}

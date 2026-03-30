@@ -20,11 +20,11 @@ The core learning objective is: learn a generative model $G_\theta$ that synthes
 
 The following desiderata guide the framework design:
 \begin{enumerate}
-    \item \textbf{Fidelity:} $p_\theta(\mathbf{x}) \approx p_{data}(\mathbf{x})$ (distributional similarity), measured by the Kolmogorov-Smirnov (KS) statistic, where lower values indicate better fidelity. In practice, this means that each column of the synthetic data should have roughly the same distribution as the corresponding column in the real data, and the correlations between columns should be preserved.
+    \item \textbf{Fidelity:} $p_\theta(\mathbf{x}) \approx p_{data}(\mathbf{x})$ (distributional similarity), measured by the Kolmogorov-Smirnov, i.e., KS, statistic, where lower values indicate better fidelity. In practice, this means that each column of the synthetic data should have roughly the same distribution as the corresponding column in the real data, and the correlations between columns should be preserved.
 
-    \item \textbf{Utility:} Classifiers trained on synthetic data perform comparably to those trained on real data, measured via the Train-on-Synthetic, Test-on-Real (TSTR) protocol using AUC-ROC and F1-score. A synthetic dataset has high utility if a fraud detector trained on it generalizes well to real transactions.
+    \item \textbf{Utility:} Classifiers trained on synthetic data perform comparably to those trained on real data, measured via the Train-on-Synthetic Test-on-Real, i.e., TSTR, protocol using AUC-ROC and F1-score. A synthetic dataset has high utility if a fraud detector trained on it generalizes well to real transactions.
 
-    \item \textbf{Privacy:} Synthetic samples do not memorize training instances, measured by Distance to Closest Record (DCR), where higher values indicate stronger privacy. The concern here is that a model which has seen all 5,000 training records might sometimes generate synthetic records that are near-identical to real ones, effectively leaking private information.
+    \item \textbf{Privacy:} Synthetic samples do not memorize training instances, measured by Distance to Closest Record, i.e., DCR, where higher values indicate stronger privacy. The concern here is that a model which has seen all 5,000 training records might sometimes generate synthetic records that are near-identical to real ones, effectively leaking private information.
 
     \item \textbf{Controllability:} User-specified class ratio $\pi = P(y=1)$ achievable without model retraining, measured by the deviation between target and achieved minority ratios. A practitioner should be able to say ``generate me a balanced dataset with 50\% minority'' and the model should comply without needing to retrain on new data.
 \end{enumerate}
@@ -48,18 +48,18 @@ In practice, however, training dynamics are notoriously unstable. The discrimina
 
 CTGAN \cite{xu2019ctgan} extends vanilla GANs for tabular data through two key innovations:
 \begin{enumerate}
-    \item \textbf{Mode-Specific Normalization:} Each numerical column is modeled as a mixture of Gaussians via variational Gaussian mixture models (VGMMs). This step identifies the multiple peaks in a column's distribution (income might have peaks around \$30K, \$60K, \$100K) and transforms each value relative to its nearest peak. This is more expressive than min-max or z-score normalization, which assume a single unimodal distribution.
+    \item \textbf{Mode-Specific Normalization:} Each numerical column is modeled as a mixture of Gaussians via variational Gaussian mixture models, i.e., VGMMs. This step identifies the multiple peaks in a column's distribution (income might have peaks around \$30K, \$60K, \$100K) and transforms each value relative to its nearest peak. This is more expressive than min-max or z-score normalization, which assume a single unimodal distribution.
 
     \item \textbf{Conditional Generator with Training-by-Sampling:} A conditional vector specifies which categorical value to generate, and training oversamples rare categories. This ensures balanced category distributions during training, though it does not extend to balancing the target class variable $y$. CTGAN can balance rare occupation types, but cannot balance the fraud/non-fraud ratio without breaking the training-by-sampling logic.
 \end{enumerate}
 
 Despite these innovations, CTGAN suffers from mode collapse on minority classes: the generator may ``forget'' rare modes because the gradient signal from minority samples is overwhelmed by the majority class signal. CTGAN also provides no mechanism for post-hoc ratio adjustment; the generated data mirrors the training distribution. In experiments on the Polish Bankruptcy dataset (4.8\% minority), CTGAN achieves a minority F1-score of just 0.112, barely above random guessing, confirming that mode collapse on extreme minority classes is a practical failure, not merely a theoretical concern.
 
-\subsection{Variational autoencoders (VAEs)}
+\subsection{Variational autoencoders}
 
 VAEs \cite{kingma2014vae} model data through latent variables $\mathbf{z}$ using variational inference. The core idea: instead of directly modeling the complicated high-dimensional data distribution $p(\mathbf{x})$, introduce a simpler latent variable $\mathbf{z}$ and model the joint distribution $p(\mathbf{x}, \mathbf{z})$. Generation then proceeds by first sampling $\mathbf{z} \sim p(\mathbf{z})$ from the simple prior (a standard Gaussian) and then decoding $\mathbf{x} \sim p_\theta(\mathbf{x}|\mathbf{z})$.
 
-The generative model defines a joint distribution $p_\theta(\mathbf{x}, \mathbf{z}) = p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z})$, where $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ is a standard Gaussian prior. Since the true posterior $p_\theta(\mathbf{z}|\mathbf{x})$ is intractable (computing it exactly would require summing over all possible values of $\mathbf{z}$, which is computationally infeasible), an approximate posterior $q_\phi(\mathbf{z}|\mathbf{x})$ is introduced. This is the encoder: a neural network that takes a data point and outputs the parameters of a Gaussian approximation to its posterior. The Evidence Lower Bound (ELBO) provides a tractable training objective:
+The generative model defines a joint distribution $p_\theta(\mathbf{x}, \mathbf{z}) = p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z})$, where $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ is a standard Gaussian prior. Since the true posterior $p_\theta(\mathbf{z}|\mathbf{x})$ is intractable (computing it exactly would require summing over all possible values of $\mathbf{z}$, which is computationally infeasible), an approximate posterior $q_\phi(\mathbf{z}|\mathbf{x})$ is introduced. This is the encoder: a neural network that takes a data point and outputs the parameters of a Gaussian approximation to its posterior. The Evidence Lower Bound, i.e., ELBO, provides a tractable training objective:
 \begin{equation}
 \log p_\theta(\mathbf{x}) \geq \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]}_{\text{Reconstruction Term}} - \underbrace{D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \parallel p(\mathbf{z}))}_{\text{Regularization Term}}
 \end{equation}
@@ -126,9 +126,9 @@ RE-TabSyn (Rare-Event Enhanced Tabular Synthesis) combines three interlocking co
 
 The three core components are:
 \begin{enumerate}
-    \item \textbf{Variational Autoencoder (VAE)} for mixed-type encoding into continuous latent space
-    \item \textbf{Latent Diffusion Model (LDM)} for generation in the smooth continuous latent space
-    \item \textbf{Classifier-Free Guidance (CFG)} for controllable class ratios at inference time
+    \item \textbf{Variational Autoencoder, i.e., VAE} --- mixed-type encoding into continuous latent space
+    \item \textbf{Latent Diffusion Model, i.e., LDM} --- generation in the smooth continuous latent space
+    \item \textbf{Classifier-Free Guidance, i.e., CFG} --- controllable class ratios at inference time
 \end{enumerate}
 
 The three components are not independently useful; they work because of how they interact. The VAE solves the encoding problem so that the diffusion model operates in a well-behaved continuous space. The diffusion model learns a powerful generative model of that space. And the CFG mechanism leverages the diffusion model's conditioning architecture to steer generation toward the desired class. Remove any one component and the system breaks: without the VAE, diffusion fails on categorical features; without the diffusion model, there is no way to apply CFG; without CFG, class control is impossible.
@@ -164,7 +164,7 @@ The decoder reconstructs from the latent code, utilizing separate loss functions
 \end{equation}
 where $\beta = 0.1$ balances reconstruction quality and latent space regularization.
 
-This mixed-type loss is a key design choice. For numerical features, mean squared error (MSE) is appropriate because these are real-valued quantities where the difference between prediction and target has a natural meaning. For categorical features, cross-entropy is appropriate because these are discrete class labels where we want the decoder to output a probability distribution over possible categories; the argmax of this distribution gives the predicted category. Using MSE for categorical features would imply that the numerical difference between category labels has semantic meaning, which it does not.
+This mixed-type loss is a key design choice. For numerical features, mean squared error, i.e., MSE, is appropriate because these are real-valued quantities where the difference between prediction and target has a natural meaning. For categorical features, cross-entropy is appropriate because these are discrete class labels where we want the decoder to output a probability distribution over possible categories; the argmax of this distribution gives the predicted category. Using MSE for categorical features would imply that the numerical difference between category labels has semantic meaning, which it does not.
 
 The weight $\beta = 0.1$ is lower than the standard $\beta = 1$ used in vanilla VAEs. This $\beta$-VAE formulation \cite{kingma2014vae} prevents posterior collapse: a smaller KL weight means the model is less aggressively regularized toward the prior, making it more likely to use the latent space meaningfully. However, it also means the latent space geometry is slightly less Gaussian, which is why careful noise schedule calibration in the diffusion model matters. In practice, $\beta = 0.1$ was found to achieve a good balance between reconstruction quality and latent regularity across all six datasets.
 
@@ -210,7 +210,7 @@ The training objective minimizes the expected squared error between the true noi
 
 In words: uniformly sample a timestep $t$ between 1 and 1000, take a real latent vector $\mathbf{z}_0$ (the VAE encoding of a training example), sample random Gaussian noise $\boldsymbol{\epsilon}$, mix them according to the noise schedule to get $\mathbf{z}_t$, predict the noise using the DiT, and compute the mean squared error between the prediction and the true noise. The expectation over all three random variables ($t$, $\mathbf{z}_0$, $\boldsymbol{\epsilon}$) means training covers the full range of timesteps, data points, and noise realizations.
 
-\subsection{Component 3: Classifier-free guidance (CFG)}
+\subsection{Component 3: Classifier-free guidance}
 
 Classifier-Free Guidance \cite{ho2022cfg} is the key innovation that enables controllable generation in RE-TabSyn. The mechanism is illustrated in Figure~\ref{fig:cfg_mechanism}.
 

@@ -10,7 +10,7 @@ All experiments were run on a single machine with a fixed hardware and software 
 
 \subsection{Hardware}
 
-The Apple M3 chip is a system-on-chip (SoC) design that integrates the CPU, GPU, and memory onto a single die. The critical property for this research is \textit{unified memory}: the CPU and GPU share the same 16 GB of RAM rather than maintaining separate memory pools. For deep learning, this eliminates the bottleneck of copying data between CPU memory and a discrete GPU's dedicated VRAM, which is often the limiting factor in small-to-medium model training workflows. The M3 chip's Neural Engine provides hardware acceleration for matrix multiplication, the core operation in neural network forward and backward passes.
+The Apple M3 chip is a system-on-chip, i.e., SoC, design that integrates the CPU, GPU, and memory onto a single die. The critical property for this research is \textit{unified memory}: the CPU and GPU share the same 16 GB of RAM rather than maintaining separate memory pools. For deep learning, this eliminates the bottleneck of copying data between CPU memory and a discrete GPU's dedicated VRAM, which is often the limiting factor in small-to-medium model training workflows. The M3 chip's Neural Engine provides hardware acceleration for matrix multiplication, the core operation in neural network forward and backward passes.
 
 For the model sizes and dataset sizes in this research (datasets up to 45,222 rows, models with up to a few million parameters), the M3 chip provides sufficient computational capacity. The largest training run (RE-TabSyn on Polish Bankruptcy, which has 64 features) completes within a few hours. Larger-scale production deployments would benefit from dedicated GPU hardware, but for research-scale validation the M3 setup is adequate and reproducible on accessible consumer hardware.
 
@@ -26,7 +26,7 @@ For the model sizes and dataset sizes in this research (datasets up to 45,222 ro
 
 \textbf{scikit-learn 1.7.2} provides the preprocessing transformers (QuantileTransformer, LabelEncoder) and evaluation utilities used throughout the pipeline. Its API design, with \texttt{fit} on training data and \texttt{transform} on both training and test data, prevents data leakage by ensuring that preprocessing statistics are computed only from training data.
 
-\textbf{XGBoost 3.1.2} is used as the downstream classifier in the TSTR evaluation. XGBoost (eXtreme Gradient Boosting) \cite{chen2016xgboost} is a highly optimized implementation of gradient-boosted decision trees. On tabular classification tasks, XGBoost consistently outperforms or matches deep learning methods, making it the appropriate choice for evaluating whether synthetic data preserves ML-relevant signal. Using a powerful classifier for evaluation rather than a weaker one (like logistic regression) ensures that fidelity differences between synthetic data methods are not masked by the classifier's inability to exploit the training data.
+\textbf{XGBoost 3.1.2} is used as the downstream classifier in the TSTR evaluation. XGBoost, i.e., eXtreme Gradient Boosting \cite{chen2016xgboost}, is a highly optimized implementation of gradient-boosted decision trees. On tabular classification tasks, XGBoost consistently outperforms or matches deep learning methods, making it the appropriate choice for evaluating whether synthetic data preserves ML-relevant signal. Using a powerful classifier for evaluation rather than a weaker one (like logistic regression) ensures that fidelity differences between synthetic data methods are not masked by the classifier's inability to exploit the training data.
 
 \section{End-to-End Pipeline Architecture}
 
@@ -183,7 +183,7 @@ Contains application attributes and repayment outcomes for loans issued by Lendi
 \textit{Selection rationale:} This dataset is the only one in the benchmark sourced from a publicly traded company with regulatory disclosure obligations, giving it the strongest real-world provenance of the six. The features (debt-to-income ratio, loan grade, employment length) are the exact variables used in actual underwriting decisions, making performance on this dataset directly relevant to production deployment. The 20\% default rate represents a realistic operational imbalance for consumer lending.
 
 \textbf{Polish Bankruptcy} \cite{uci_polishbankruptcy} \textbf{(UCI Machine Learning Repository):}
-Financial ratio data for Polish companies collected from the Emerging Markets Information Service (EMIS) database, covering the years 2000--2012. Compiled by Zieba et al.\ for their 2016 bankruptcy prediction study. Contains 64 purely numerical financial ratios (current ratio, debt-to-equity, return on assets, and similar) with a 4.8\% bankruptcy rate.
+Financial ratio data for Polish companies collected from the Emerging Markets Information Service, i.e., EMIS, database, covering the years 2000--2012. Compiled by Zieba et al.\ for their 2016 bankruptcy prediction study. Contains 64 purely numerical financial ratios (current ratio, debt-to-equity, return on assets, and similar) with a 4.8\% bankruptcy rate.
 
 \textit{Selection rationale:} Polish Bankruptcy is the hardest dataset in the benchmark on two dimensions simultaneously. First, the 4.8\% minority ratio is the most extreme imbalance, where class-conditional generation must work hardest. Second, the 64-dimensional purely numerical feature space is the largest in the benchmark, testing whether the 64-dimensional VAE latent space is sufficient to encode all relevant structure. This dataset is where RE-TabSyn's CFG mechanism produces its most visible effect, boosting minority representation from 4.8\% to 47.8\%.
 
@@ -248,7 +248,7 @@ Table~\ref{tab:hyperparams} provides a consolidated reference of all RE-TabSyn h
 
 The full RE-TabSyn architecture is configured as follows:
 
-\textbf{VAE Encoder:} A Multi-Layer Perceptron (MLP) with hidden dimensions [256, 128] and ReLU activations. ReLU (Rectified Linear Unit) was chosen over alternatives like GELU or Tanh because it is computationally cheap, avoids saturation in the middle layers, and provides sufficient non-linearity for the encoding task. The two hidden layers compress the data progressively from the input dimension down to 64. The encoder produces both a mean vector $\mu \in \mathbb{R}^{64}$ and a log-variance vector $\log \sigma^2 \in \mathbb{R}^{64}$ for the 64-dimensional latent space.
+\textbf{VAE Encoder:} A Multi-Layer Perceptron, i.e., MLP, with hidden dimensions [256, 128] and ReLU activations. ReLU, i.e., Rectified Linear Unit, was chosen over alternatives like GELU or Tanh because it is computationally cheap, avoids saturation in the middle layers, and provides sufficient non-linearity for the encoding task. The two hidden layers compress the data progressively from the input dimension down to 64. The encoder produces both a mean vector $\mu \in \mathbb{R}^{64}$ and a log-variance vector $\log \sigma^2 \in \mathbb{R}^{64}$ for the 64-dimensional latent space.
 
 \textbf{VAE Decoder:} A mirror architecture [128, 256] with separate output heads. The mirror structure is not strictly required but is a common and effective design: the decoder should roughly invert the encoder, and matching the hidden dimensions provides a natural correspondence. The separate output heads are the key design choice: a linear projection (followed by the inverse quantile transform) for numerical features, and a softmax projection (followed by argmax) for categorical features. This means each categorical column gets its own softmax head with dimensionality equal to the number of categories in that column, ensuring the decoder can produce a valid probability distribution over all possible values.
 
@@ -308,7 +308,7 @@ The table confirms a key structural fact: RE-TabSyn is the only method among the
 
 \section{Training Procedures}
 
-Training proceeds in two distinct, sequential phases. This two-phase approach is a deliberate architectural choice: it decouples the representation learning problem (VAE) from the generative modeling problem (diffusion), allowing each component to be optimized independently. Figure~\ref{fig:two_phase_training} shows the structure of both phases.
+Training proceeds in two distinct, sequential phases. This two-phase approach is a deliberate architectural choice: it decouples the representation learning problem, i.e., VAE, from the generative modeling problem, i.e., diffusion, allowing each component to be optimized independently. Figure~\ref{fig:two_phase_training} shows the structure of both phases.
 
 \begin{figure}[htbp]
 \centering
@@ -405,7 +405,7 @@ Our evaluation follows the three-pillar framework illustrated in Figure~\ref{fig
 
 Statistical fidelity measures how closely the marginal and joint distributions of synthetic data match those of real data.
 
-\textbf{Kolmogorov-Smirnov (KS) Statistic} \cite{massey1951ks}: For each numerical column, compute the maximum absolute difference between the empirical cumulative distribution functions (CDFs) of the real and synthetic data:
+\textbf{Kolmogorov-Smirnov, i.e., KS, Statistic} \cite{massey1951ks}: For each numerical column, compute the maximum absolute difference between the empirical cumulative distribution functions (CDFs) of the real and synthetic data:
 \[
 D_{KS} = \sup_x |F_{real}(x) - F_{synth}(x)|
 \]
@@ -448,7 +448,7 @@ For fraud detection and similar applications, recall (catching actual fraud) is 
 \label{fig:dcr_flowchart}
 \end{figure}
 
-\textbf{Distance to Closest Record (DCR):} For each synthetic sample $\tilde{\mathbf{x}}_i$, compute the Euclidean distance to the nearest real training sample:
+\textbf{Distance to Closest Record, i.e., DCR:} For each synthetic sample $\tilde{\mathbf{x}}_i$, compute the Euclidean distance to the nearest real training sample:
 \[
 \text{DCR}(\tilde{\mathbf{x}}_i) = \min_{j} \|\tilde{\mathbf{x}}_i - \mathbf{x}_j\|_2
 \]

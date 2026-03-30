@@ -38,7 +38,7 @@ Domain generalization (healthcare, cyber) & Long-term (12--24 months) & Broader 
 
 The current RE-TabSyn architecture uses an MLP-based VAE encoder, a fixed 4-layer DiT, a linear noise schedule, and a 1,000-step DDPM sampler. Each of these components has a natural upgrade path that would improve either fidelity or generation speed without requiring changes to the overall framework.
 
-The current VAE encoder is a Multi-Layer Perceptron (MLP): a straightforward sequence of linear layers and activations. MLPs treat each feature independently at each layer, without explicitly modeling relationships between features. For tabular data, where feature relationships are central (income and credit score are correlated; employment status affects plausible income ranges), this is a meaningful limitation.
+The current VAE encoder is a Multi-Layer Perceptron, i.e., MLP: a straightforward sequence of linear layers and activations. MLPs treat each feature independently at each layer, without explicitly modeling relationships between features. For tabular data, where feature relationships are central (income and credit score are correlated; employment status affects plausible income ranges), this is a meaningful limitation.
 
 A natural upgrade is to replace the MLP encoder with a Transformer-based architecture that processes each feature as a ``token'' and uses self-attention to capture inter-feature relationships during encoding. This is the approach taken by REaLTabFormer \cite{solatorio2023realtabformer} and SAINT \cite{somepalli2021saint} for tabular prediction, and it could be adapted for the VAE encoding task. The expected benefit: better latent representations that capture the joint structure of features, including their pairwise dependencies rather than treating each feature independently. This would reduce the fidelity gap between RE-TabSyn (KS = 0.171) and TabSyn (KS = 0.109), since the latent representations would be more faithful to the inter-feature correlations.
 
@@ -60,7 +60,7 @@ Scaling from 4 to 8--12 DiT layers with larger hidden dimensions (512 or 1024) w
 
 The current generation procedure runs the full 1,000-step DDPM reverse process. Each step requires two forward passes through the DiT (one conditional, one unconditional for CFG), totaling 2,000 DiT evaluations per generated sample. For generating large synthetic datasets (millions of records), this computational cost becomes significant.
 
-Denoising Diffusion Implicit Models (DDIM) \cite{ho2020ddpm} provide a deterministic sampling procedure that achieves comparable generation quality in as few as 50--100 steps rather than 1,000, by taking larger steps along the denoising trajectory. Integrating DDIM would reduce generation time by 10--20$\times$ with minimal quality loss. For a production system that needs to generate synthetic datasets on demand, this speedup would be the difference between a query taking minutes and one taking seconds.
+Denoising Diffusion Implicit Models, i.e., DDIM, \cite{ho2020ddpm} provide a deterministic sampling procedure that achieves comparable generation quality in as few as 50--100 steps rather than 1,000, by taking larger steps along the denoising trajectory. Integrating DDIM would reduce generation time by 10--20$\times$ with minimal quality loss. For a production system that needs to generate synthetic datasets on demand, this speedup would be the difference between a query taking minutes and one taking seconds.
 
 DDIM integration is technically straightforward: the trained diffusion model requires no retraining; only the sampling loop changes. It could be implemented as an optional generation parameter, allowing users to trade off speed against quality.
 
@@ -90,7 +90,7 @@ This direction is particularly relevant for anti-money laundering applications, 
 
 The current privacy evaluation uses DCR as a proxy for memorization risk. DCR is an empirical measure: it tells you whether synthetic samples are close to real training samples, but it does not directly answer whether an adversary can determine whether a specific record was in the training data.
 
-A more rigorous privacy evaluation would use shadow model techniques for Membership Inference Attacks (MIA). In a shadow model MIA, an adversary trains multiple ``shadow'' generative models on data that is either from the training set or not, observing the model's behavior in each case. The adversary then trains a classifier to distinguish between the two cases, and its success rate measures the model's vulnerability to membership inference. A model that achieves 50\% MIA success rate is perfectly private (because 50\% is random guessing); higher success rates indicate privacy leakage.
+A more rigorous privacy evaluation would use shadow model techniques for Membership Inference Attacks, i.e., MIA. In a shadow model MIA, an adversary trains multiple ``shadow'' generative models on data that is either from the training set or not, observing the model's behavior in each case. The adversary then trains a classifier to distinguish between the two cases, and its success rate measures the model's vulnerability to membership inference. A model that achieves 50\% MIA success rate is perfectly private (because 50\% is random guessing); higher success rates indicate privacy leakage.
 
 Conducting a formal MIA evaluation using the TAMIS framework \cite{meeus2024tamis} or the MIDST challenge methodology \cite{meeus2024midst} would provide a more complete picture of RE-TabSyn's privacy properties and would be expected by reviewers at top venues for future publication.
 
@@ -192,8 +192,8 @@ None of these extensions alone transforms the value proposition. Together, they 
 The synthetic tabular data field is moving quickly. TabSyn was published in January 2024. By the time this thesis was completed, at least three follow-on papers had appeared that built on TabSyn's architecture. The window for establishing CFG-for-tables as a recognised paradigm is open now.
 
 \begin{enumerate}
-    \item A follow-on journal paper extending RE-TabSyn with formal differential privacy would be competitive at venues such as the Journal of Machine Learning Research (JMLR), IEEE Transactions on Neural Networks, or NeurIPS workshops on synthetic data.
-    \item A federated extension would be relevant to the ACM Conference on Fairness, Accountability, and Transparency (FAccT) and to IEEE Security \& Privacy.
+    \item A follow-on journal paper extending RE-TabSyn with formal differential privacy would be competitive at venues such as the Journal of Machine Learning Research, i.e., JMLR, IEEE Transactions on Neural Networks, or NeurIPS workshops on synthetic data.
+    \item A federated extension would be relevant to the ACM Conference on Fairness, Accountability, and Transparency, i.e., FAccT, and to IEEE Security \& Privacy.
     \item A healthcare domain application would be competitive at AMIA, the primary medical informatics conference.
 \end{enumerate}
 

@@ -6,7 +6,7 @@ This chapter reports what RE-TabSyn actually achieves when run against six finan
 
 Statistical fidelity measures how closely the synthetic data distributions match those of the real data. A synthetic dataset with high fidelity will have approximately the same distribution for each numerical column, the same category frequencies for each categorical column, and the same inter-column correlations as the real dataset.
 
-\subsection{Kolmogorov-Smirnov (KS) statistics}
+\subsection{Kolmogorov-Smirnov statistics}
 
 The Kolmogorov-Smirnov statistic measures the maximum difference between the cumulative distribution functions (CDFs) of real and synthetic data for each numerical feature, averaged across all features. Lower KS values indicate higher distributional fidelity. A value of 0 means the two distributions are identical; a value of 1 means they are completely non-overlapping. In practice, values below 0.20 indicate good fidelity for tabular synthesis tasks.
 
@@ -90,7 +90,7 @@ Figure~\ref{fig:tsne_plot} shows the t-SNE \cite{maaten2008tsne} visualization f
 \label{fig:pca_plot}
 \end{figure}
 
-Figure~\ref{fig:pca_plot} shows the PCA (Principal Component Analysis) visualization. PCA projects data onto the directions of maximum variance, providing a complementary view to t-SNE. The synthetic data spans the same principal component range as the real data, confirming that RE-TabSyn captures the dominant axes of variation. The banding pattern visible in the synthetic data is an expected artifact of categorical features: categories encoded as integers create discrete banding when projected onto continuous principal component axes, and this structure is present in both real and synthetic data.
+Figure~\ref{fig:pca_plot} shows the PCA, i.e., Principal Component Analysis, visualization. PCA projects data onto the directions of maximum variance, providing a complementary view to t-SNE. The synthetic data spans the same principal component range as the real data, confirming that RE-TabSyn captures the dominant axes of variation. The banding pattern visible in the synthetic data is an expected artifact of categorical features: categories encoded as integers create discrete banding when projected onto continuous principal component axes, and this structure is present in both real and synthetic data.
 
 Both visualizations confirm that RE-TabSyn generates synthetic data occupying the same manifold as real data. This is not guaranteed by the KS statistics alone -- a synthetic dataset could have perfect marginal distributions while occupying a completely different region of feature space. The visual confirmation that the joint distribution is also well-captured provides additional confidence in the fidelity results.
 
@@ -98,9 +98,9 @@ Both visualizations confirm that RE-TabSyn generates synthetic data occupying th
 
 Beyond distributional fidelity, the test that ultimately matters for financial applications is whether a machine learning model trained on synthetic data can do its job on real data. This section evaluates downstream model performance, with particular attention to minority class detection.
 
-\subsection{TSTR performance (AUC-ROC)}
+\subsection{TSTR performance}
 
-In the Train-on-Synthetic, Test-on-Real (TSTR) protocol, an XGBoost classifier is trained exclusively on synthetic data and evaluated on held-out real test data. This protocol imposes no access to real training data for the ML model -- the synthetic data must stand alone as a training resource. Table~\ref{tab:tstr_auc} presents the results.
+In the Train-on-Synthetic, Test-on-Real, i.e., TSTR, protocol, an XGBoost classifier is trained exclusively on synthetic data and evaluated on held-out real test data. This protocol imposes no access to real training data for the ML model -- the synthetic data must stand alone as a training resource. Table~\ref{tab:tstr_auc} presents the results.
 
 \begin{table}[htbp]
 \centering
@@ -186,7 +186,7 @@ For a bank training a fraud detector on real data with 0.5\% fraud prevalence, s
 
 \section{Privacy Analysis}
 
-Privacy is not an afterthought in this work. Any synthetic data method intended for financial applications must demonstrate that it does not inadvertently memorize and reproduce sensitive training records. This section evaluates privacy through the Distance to Closest Record (DCR) metric.
+Privacy is not an afterthought in this work. Any synthetic data method intended for financial applications must demonstrate that it does not inadvertently memorize and reproduce sensitive training records. This section evaluates privacy through the Distance to Closest Record, i.e., DCR, metric.
 
 DCR measures the Euclidean distance from each synthetic sample to its nearest neighbor in the training data. A DCR near zero indicates that a synthetic record is nearly identical to a real training record -- a privacy concern. High DCR values indicate that synthetic records are genuinely novel.
 

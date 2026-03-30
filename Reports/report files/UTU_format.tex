@@ -8,9 +8,9 @@
 %Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 % Enter your details in following lines:
-\newcommand{\studentNameone}{Yaksi Shroff}
-\newcommand{\studentNametwo}{Yaksi Shroff}
-\newcommand{\studentNamethree}{Yaksi Shroff}
+\newcommand{\studentNameone}{Yaksi Ketan Shroff}
+\newcommand{\studentNametwo}{Yaksi Ketan Shroff}
+\newcommand{\studentNamethree}{Yaksi Ketan Shroff}
 %\newcommand{\studentNamefour}{Student Full Name}
 \newcommand{\guideName}{Dr. Vishvajit Bakrola}
 \newcommand{\headName}{Prof. Vishvendu Bhatt}
@@ -26,9 +26,9 @@
 \newcommand{\branchName}{Computer Science and Engineering}
 \newcommand{\departmentName}{Department of Computer Science and Engineering}
 
-\newcommand{\locationName}{UTU, Bardoli}
+\newcommand{\locationName}{Uka Tarsadia University, Bardoli}
 \newcommand{\universityName}{Uka Tarsadia University}
-\newcommand{\academicYear}{April-2026}
+\newcommand{\academicYear}{April 2026}
 
 %***************************************************
 % DO NOT CHANGE BELOW THIS LINE
@@ -39,6 +39,7 @@
 \graphicspath{{./}{./img/}}
 \usepackage{setspace} %for line spacing
 \usepackage{tabularx} %for basic spacing in caption and table
+\newcolumntype{C}{>{\centering\arraybackslash}X}  % centered X column
 \usepackage{amsmath}  %for math equations
 \usepackage{amssymb}  %for math symbols
 \renewcommand{\baselinestretch}{1.5}
@@ -100,6 +101,9 @@ opacity=0.2
 \usepackage{notoccite}
 \usepackage{float}
 \usepackage{pdflscape}
+\usepackage{multirow}
+\usepackage{booktabs}
+\renewcommand{\arraystretch}{1.5}
 
 %\usepackage{indentfirst }
 %\usepackage{subcaption}
@@ -170,6 +174,10 @@ opacity=0.2
 \addcontentsline{toc}{chapter}{LIST OF ABBREVIATIONS}\index{Abbreviations}
 %\listofabbrevations
 \include{Abbreviations}
+
+\newpage
+\addcontentsline{toc}{chapter}{MATHEMATICAL NOTATION}
+\include{MathNotation}
 
 \newpage
 \pagenumbering{arabic}

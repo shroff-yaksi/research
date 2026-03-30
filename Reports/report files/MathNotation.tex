@@ -1,0 +1,57 @@
+\chapter*{MATHEMATICAL NOTATION}
+
+The table below lists all mathematical symbols used throughout this thesis. Readers following the formal derivations in Chapter~2 may find it useful as a quick reference.
+
+\begin{table}[htbp]
+\centering
+\caption*{\textbf{Mathematical Notation Reference for RE-TabSyn Framework}}
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Symbol} & \textbf{Meaning} \\
+\hline
+$\mathcal{D}$ & The training dataset (collection of all training rows and their labels) \\
+\hline
+$\mathbf{x}$ & A single row of the dataset (feature vector) \\
+\hline
+$y \in \{0, 1\}$ & The class label for a row (1 for minority event, 0 for majority) \\
+\hline
+$\rho$ & Minority ratio: fraction of rows belonging to the minority class \\
+\hline
+$d_{num}$, $d_{cat}$ & Number of numerical and categorical features respectively \\
+\hline
+$\mathbf{z}$ & Latent vector (compressed representation produced by the VAE encoder) \\
+\hline
+$d_z = 64$ & Dimensionality of the latent space \\
+\hline
+$\boldsymbol{\mu}$, $\boldsymbol{\sigma}^2$ & Mean and variance output by the VAE encoder \\
+\hline
+$\boldsymbol{\epsilon}$ & Random Gaussian noise used in the reparameterization trick or diffusion \\
+\hline
+$\beta$ (VAE) & KL weight in the VAE loss (set to 0.1 to prevent posterior collapse) \\
+\hline
+$\mathbf{z}_t$ & Noisy latent vector at diffusion timestep $t$ \\
+\hline
+$T = 1000$ & Total number of diffusion timesteps \\
+\hline
+$\beta_t$ & Noise variance added at diffusion timestep $t$ (linearly increasing) \\
+\hline
+$\bar{\alpha}_t$ & Cumulative signal retention factor at timestep $t$ \\
+\hline
+$\epsilon_\theta$ & The DiT noise prediction network (parameterized by $\theta$) \\
+\hline
+$w$ & Guidance scale for CFG (set to 2.0 for default operation) \\
+\hline
+$p_{uncond}$ & Probability of replacing class label with null token during training (0.10) \\
+\hline
+$\emptyset$ & Null token: used when the class label is dropped during CFG training \\
+\hline
+$\tilde{\epsilon}$ & Guided noise prediction (output of the CFG formula) \\
+\hline
+$\text{KS}$ & Kolmogorov-Smirnov statistic (measures distributional fidelity) \\
+\hline
+$\text{F1}_{min}$ & F1-score for the minority class (primary evaluation metric) \\
+\hline
+$\text{DCR}$ & Distance to Closest Record (measures empirical privacy) \\
+\hline
+\end{tabularx}
+\end{table}

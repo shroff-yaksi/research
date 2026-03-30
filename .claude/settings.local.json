@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -oE 'isHidden[^,;\\)]{0,60}')",
+      "Bash(grep -oE '\\\\$39[^;\\)]{0,300}')",
+      "Bash(grep -oE 'userInvocable[^,]{0,100}')",
+      "WebFetch(domain:www.montclair.edu)",
+      "WebFetch(domain:www.grammarly.com)",
+      "WebFetch(domain:stryng.io)",
+      "WebFetch(domain:gist.github.com)",
+      "WebFetch(domain:detector-checker.ai)",
+      "Bash(grep:*)",
+      "Bash(wc -w \"/Users/shroffyaksi/Desktop/Research/Reports/report files/\"*.tex)",
+      "Bash(for f:*)",
+      "Bash(do wc:*)",
+      "Bash(done)",
+      "Bash(wc:*)",
+      "Bash(python3:*)",
+      "Bash(brew list:*)",
+      "Bash(pdflatex --version)",
+      "Read(//usr/local/**)",
+      "Read(//Library/TeX/**)",
+      "Bash(brew install:*)",
+      "Bash(ls -lh ~/Library/Caches/Homebrew/downloads/*mactex* 2)",
+      "Bash(/dev/null ps:*)",
+      "Bash(ls:*)",
+      "Bash(while ls:*)",
+      "Bash(do sleep:*)",
+      "Bash(brew info:*)",
+      "Bash(find '/Users/shroffyaksi/Desktop/Research/Reports/report files' -name \"*.tex\" -exec grep -roh '\\\\b[A-Z][A-Z][A-Z]\\\\+\\\\b' {})",
+      "Bash(/tmp/check_abbr.txt:*)",
+      "Read(//tmp/**)"
+    ]
+  }
+}

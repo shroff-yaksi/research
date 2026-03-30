@@ -1,30 +1,114 @@
 \chapter{Conclusion}
 
-This chapter summarizes the key contributions, findings, and limitations of the RE-TabSyn framework, and provides concluding remarks on its broader implications for synthetic tabular data generation.
+This chapter summarizes contributions and experimental results, gives an honest account of limitations, and situates the findings in the broader context of synthetic data research.
 
 \section{Summary of Contributions}
-This research presents RE-TabSyn, a novel framework for generating high-fidelity synthetic tabular data with controllable rare event generation. Built on the combination of a Variational Autoencoder for mixed-type encoding, a Latent Diffusion Model for high-quality generation, and Classifier-Free Guidance for inference-time class control, RE-TabSyn addresses a critical gap in the synthetic data literature that no prior method had filled.
 
-The first and most fundamental contribution is the introduction of Classifier-Free Guidance to tabular data synthesis. While CFG has been the driving force behind state-of-the-art text-to-image models since its introduction by Ho and Salimans in 2022, its application to structured tabular data had remained entirely unexplored. Our systematic review of 151 research papers across 10 categories confirmed zero prior instances of CFG applied to tabular synthesis. RE-TabSyn bridges this gap by integrating CFG with latent diffusion for mixed-type tabular data, demonstrating that the guidance mechanism translates effectively from continuous image spaces to the heterogeneous feature spaces of tabular data when mediated through a VAE latent representation.
+This research presents RE-TabSyn, a framework for generating high-fidelity synthetic tabular data with controllable rare event generation. Built on the combination of a Variational Autoencoder for mixed-type encoding, a Latent Diffusion Model for generation in a smooth continuous latent space, and Classifier-Free Guidance for inference-time class control, RE-TabSyn addresses a gap in the synthetic data literature that no prior method had filled. Each contribution is described below.
 
-The second contribution lies in controllable rare event generation through a single, intuitive control parameter, the guidance scale $w$. The experiments demonstrate substantial minority class boosting: Adult Income from 24.8\% to 49.6\%, Bank Marketing from 11.3\% to 50.2\%, and Polish Bankruptcy from 4.8\% to 47.8\%, a tenfold increase. This controllable oversampling operates entirely at inference time, requiring no model retraining, no architectural changes, and no dataset-specific tuning.
+\textbf{Contribution 1: First application of Classifier-Free Guidance to tabular data synthesis.}
+The primary contribution of this work is the introduction of CFG to the tabular domain. CFG had been the driving force behind leading text-to-image models since its introduction by Ho and Salimans in 2022 \cite{ho2022cfg}, but its application to structured tabular data had remained entirely unexplored. This is not because the need was unrecognized: the 2024 survey by Nidhi et al.\ \cite{nidhi2024rare} explicitly identified controllable rare event generation as an open challenge. The barrier was methodological. Applying CFG to tabular data requires solving the categorical encoding problem (since standard one-hot encoding is incompatible with the continuous diffusion process), which in turn requires the VAE latent space as an intermediary. RE-TabSyn solves both problems in a single integrated framework.
 
-The third contribution provides the first empirical evidence that guided synthetic data can outperform real data for minority detection tasks. Classifiers trained on RE-TabSyn's balanced synthetic data achieve a mean minority F1-score of 0.472, surpassing the real imbalanced data baseline of 0.458. This result establishes a new paradigm: intelligently balanced synthetic data is more valuable than imbalanced real data for minority-critical tasks.
+The systematic review of 151 papers across 10 categories confirmed zero prior instances of CFG applied to tabular synthesis, establishing that this is a genuine first. The adaptation demonstrates that the guidance mechanism translates effectively from continuous image spaces to the heterogeneous feature spaces of tabular data when mediated through a learned continuous latent representation. This conceptual bridge, from image CFG to tabular CFG through a VAE, opens a research direction that did not previously exist.
 
-The fourth contribution is a comprehensive evaluation across three pillars: fidelity with an average KS of 0.171 $\pm$ 0.021, privacy with DCR exceeding 1.0 across all datasets, and utility at a 93.0\% ratio under the TSTR protocol. All results are statistically validated across three random seeds. Finally, the core findings have been accepted for presentation at the I2IT International Conference, validating the scientific merit through external peer review.
+\textbf{Contribution 2: Controllable minority class generation through a single inference-time parameter.}
+RE-TabSyn enables practitioners to specify target minority ratios via the guidance scale $w$ at inference time, with no model retraining required. This ``post-hoc control'' property is operationally important: a model trained once on a given dataset can be used to generate synthetic data with any desired class balance. A bank building a fraud detection pipeline does not need to retrain the generative model each time it wants to experiment with different levels of minority oversampling; it simply changes $w$.
+
+The experimental results demonstrate the precision of this control: minority ratios are achieved within an average of 1.7\% of the 50\% target. On large datasets (Adult Income, Bank Marketing, Lending Club), the achieved ratios are within 0.5\% of target. The boost magnitude is substantial: Polish Bankruptcy goes from 4.8\% to 47.8\% minority, a nearly tenfold increase; Bank Marketing goes from 11.3\% to 50.2\%, a 4.4-fold increase. No other tabular synthesis method in the literature can produce these results.
+
+\textbf{Contribution 3: Empirical demonstration that balanced synthetic data improves minority detection over imbalanced real data.}
+The finding with the most direct practical implication is that classifiers trained on RE-TabSyn's balanced synthetic data outperform classifiers trained on the original imbalanced real data for minority event detection. The mean minority F1-score of 0.472 surpasses the real data baseline of 0.458 by 3.1\%, consistently across all six datasets. The improvement is largest for the most severely imbalanced datasets.
+
+This finding establishes a new paradigm for practitioners. Previously, the argument for synthetic data was: ``use it when you cannot access real data due to privacy constraints.'' RE-TabSyn adds a stronger argument: ``use it when you want better minority detection, even if you have access to the real data, because the real data's imbalance is actively hurting your model.'' This reframes synthetic data as a performance improvement strategy for imbalanced classification, independent of any privacy motivation.
+
+\textbf{Contribution 4: A financial benchmark for minority-aware synthesis evaluation.}
+RE-TabSyn is evaluated on six financial datasets spanning credit risk, income prediction, marketing response, loan performance, and corporate bankruptcy, with minority ratios from 4.8\% to 44.5\%. This benchmark systematically compares four baselines (CTGAN, TVAE, TabDDPM, TabSyn) across fidelity, utility, and privacy metrics, with statistical significance established across three random seeds. The resulting benchmark provides a reusable evaluation framework for future work in this area. Researchers building on RE-TabSyn or proposing competing methods now have a clear set of datasets, metrics, and baselines to compare against.
+
+\textbf{Contribution 5: Conference publication at I2IT International Conference.}
+The core findings were accepted for presentation at the I2IT International Conference. The paper title ``Controllable Rare Event Synthetic Data Generation for Financial Tabular Data via Classifier Free Guidance'' passed external peer review, providing independent validation that the contributions are both novel and scientifically sound. Conference acceptance at an early stage of a research career also demonstrates that the work meets the standards expected of published research.
+
+\section{At-a-Glance: What RE-TabSyn Achieves}
+
+Table~\ref{tab:conclusion_summary} provides a single-table summary of what RE-TabSyn achieves versus the alternatives. This table is designed to answer the question: ``If I have a financial dataset with class imbalance and I want to generate synthetic data, which method should I use?''
+
+\begin{table}[htbp]
+\centering
+\caption{Summary: Which Method to Use for Which Goal}
+\label{tab:conclusion_summary}
+\small
+\begin{tabularx}{\textwidth}{|X|C|X|C|C|}
+\hline
+\textbf{Goal} & \textbf{Best Method} & \textbf{Why} & \textbf{RE-TabSyn Score} & \textbf{Leader Score} \\
+\hline
+Maximum fidelity (lowest KS) & TabSyn & No class control overhead & 0.171 & 0.109 (TabSyn) \\
+\hline
+Maximum TSTR AUC & TabSyn & Highest distributional quality & 0.762 & 0.800 (TabSyn) \\
+\hline
+Minority class detection (F1) & \textbf{RE-TabSyn} & Balanced training data & \textbf{0.472} & 0.458 (Real data) \\
+\hline
+Minority ratio control & \textbf{RE-TabSyn} & Only method with CFG & \textbf{1.7\% avg $\Delta$} & N/A (no other method) \\
+\hline
+Stable training & TabSyn / RE-TabSyn & Diffusion stability & Equal & Equal \\
+\hline
+Privacy (DCR) & TabSyn / RE-TabSyn & Latent space buffering & Comparable & Comparable \\
+\hline
+\end{tabularx}
+\end{table}
 
 \section{Key Findings}
-Four key findings emerge from our experiments. First, latent space diffusion is essential for tabular data: direct diffusion on one-hot encoded data fails catastrophically with KS statistics above 0.70, confirming that VAE-based encoding is a necessary prerequisite. Second, CFG enables precise and continuous minority control through the guidance scale $w$:
-\begin{itemize}
-    \item $w = 0$: Unconditional generation matching the original training distribution
-    \item $w = 1$: Standard conditional generation with mild minority boost
-    \item $w = 2$: Balanced generation producing approximately 50\% minority, and our default setting
-    \item $w > 2$: Minority-dominant generation exceeding 50\%
-\end{itemize}
-Third, balanced synthetic data outperforms imbalanced real data for minority detection across all six financial datasets, validating the practical utility for fraud prevention, risk assessment, and anomaly detection. Fourth, the fidelity-control trade-off is favorable: RE-TabSyn's KS of 0.171 is marginally higher than TabSyn's 0.109 but dramatically lower than TabDDPM's 0.770, and this small cost buys a capability entirely absent from all baselines.
+
+Four key findings emerge from the experiments, each with practical implications.
+
+\textbf{Finding 1: Latent space diffusion is a prerequisite for tabular data.}
+TabDDPM's catastrophic failure (average KS = 0.770) on mixed-type financial data demonstrates that direct diffusion on raw tabular features, particularly one-hot encoded categorical features, is not viable. The continuous Gaussian noise process used by diffusion models is incompatible with the discrete, sparse structure of one-hot vectors. The VAE latent space is not a convenience; it is a necessity. RE-TabSyn inherits this design from TabSyn and confirms that it is essential.
+
+\textbf{Finding 2: CFG provides precise and continuous minority ratio control.}
+The guidance scale $w$ gives practitioners continuous control over the generated class distribution. At $w = 0$, generation mirrors the training distribution. At $w = 2.0$, generation produces approximately 50\% minority. The relationship between $w$ and achieved minority ratio is smooth and predictable, making $w$ a practical control parameter rather than a brittle hyperparameter. This finding confirms that the CFG mechanism, well-understood in image generation, transfers reliably to tabular synthesis.
+
+\textbf{Finding 3: Balanced synthetic training data outperforms imbalanced real data for minority detection.}
+A classifier trained on RE-TabSyn synthetic data (50\% minority) detects minority events better than a classifier trained on the real data (5--44\% minority). This is the central practical finding of the work. It holds for all six datasets and is most pronounced for the most imbalanced datasets, where the benefit of balanced training is largest.
+
+\textbf{Finding 4: The fidelity-control trade-off is acceptable for imbalanced tasks.}
+RE-TabSyn's KS statistic of 0.171 is marginally higher than TabSyn's 0.109, and its AUC utility ratio of 93.0\% is slightly lower than TabSyn's 97.7\%. These are the costs of adding class control. For tasks where overall fidelity and AUC are the primary metrics, TabSyn remains the better choice. For tasks where minority detection is the goal, RE-TabSyn's gains more than compensate for these costs. The choice of method should be driven by the downstream application requirements.
 
 \section{Limitations}
-Transparency about limitations is essential for guiding future work. RE-TabSyn achieves slightly lower statistical fidelity than the unguided TabSyn, which is the fundamental cost of controllability. The current implementation supports only single-table synthesis and binary classification targets. CFG requires two forward passes per denoising step, making generation approximately twice as slow as unconditional diffusion. On small datasets such as German Credit with 1,000 samples and Credit Approval with 690 samples, the framework exhibits higher variance in both fidelity and minority control. Finally, while DCR analysis indicates no systematic memorization, RE-TabSyn does not provide formal differential privacy guarantees, and deployment in privacy-critical settings should integrate DP-SGD during training.
+
+No research work is without limitations, and being explicit about them is important for guiding follow-on work and for setting appropriate expectations for practitioners who might deploy RE-TabSyn.
+
+\textbf{Fidelity cost of controllability.} RE-TabSyn achieves slightly lower statistical fidelity than TabSyn (KS = 0.171 vs 0.109). This is a trade-off built into CFG: the guidance mechanism pushes the generation distribution away from the overall data distribution and toward the minority class, and this necessarily increases the distributional distance from the real data. The gap might be reduced by better architecture (a Transformer-based VAE encoder, more DiT layers, or a better noise schedule) but cannot be entirely eliminated while maintaining strong class control.
+
+\textbf{Binary classification only.} The current implementation supports only binary classification targets. Many real-world financial problems involve multiple classes: credit risk ratings (AAA through D), transaction categories (dozens of merchant category codes), or multi-level severity of suspicious activity. Extending CFG to multi-class settings requires a different conditioning architecture and more sophisticated guidance mechanisms.
+
+\textbf{Single-table synthesis only.} RE-TabSyn operates on a single tabular dataset in isolation. Real financial data is relational: a customer table links to an account table, which links to a transaction table. Generating realistic synthetic data across multiple linked tables while preserving referential integrity is a considerably harder problem that the current framework does not address.
+
+\textbf{Generation speed.} CFG requires two forward passes through the DiT per denoising step: one conditional and one unconditional. With 1,000 denoising steps, generating each batch of synthetic data takes approximately twice as long as unconditional TabSyn generation. For research-scale generation of thousands of records, this is acceptable. For production use cases requiring real-time generation of synthetic records, the computational cost may be prohibitive without fast sampling methods like DDIM.
+
+\textbf{Variance on small datasets.} On Credit Approval (690 records) and German Credit (1,000 records), the model shows higher variance across seeds in both fidelity and minority control. With so few training examples, the learned VAE and diffusion model are less stable. Practitioners applying RE-TabSyn to small datasets should expect wider confidence intervals and consider ensemble approaches.
+
+\textbf{No formal differential privacy guarantees.} While DCR analysis shows no systematic memorization, RE-TabSyn does not provide formal $(\epsilon, \delta)$-differential privacy guarantees. For deployment in settings where formal privacy proofs are legally or contractually required, DP-SGD integration is necessary.
+
+\section{Lessons Learned}
+
+Several non-obvious lessons emerged from this project that are worth recording for practitioners considering similar work.
+
+\textbf{The preprocessing is half the battle.} Before any model architecture decisions, the most important implementation choices were in preprocessing: using median imputation instead of mean (because financial distributions are skewed), using quantile normalization instead of min-max scaling (because outlier transactions would dominate), and using label encoding instead of one-hot (because one-hot encoding is what caused TabDDPM to fail). None of these are exotic choices; all are standard in tabular machine learning. But getting them right was the difference between a working model and a broken one.
+
+\textbf{Smaller $\beta$ matters more than architecture.} The most impactful hyperparameter in the VAE was not the network architecture but the KL weight $\beta = 0.1$. Running experiments with the standard $\beta = 1.0$ caused posterior collapse on three of the six datasets (German Credit, Credit Approval, and Polish Bankruptcy), rendering the entire framework useless. The fix was simple -- reduce $\beta$ -- but identifying that posterior collapse was the root cause required careful analysis of the latent representations.
+
+\textbf{CFG's ``magic'' has a cost that is worth paying.} The 0.062 increase in KS statistic from adding CFG felt significant at first. It was only after computing the minority F1-scores and seeing consistent improvements across all six datasets that it became clear the cost was worth it. The lesson is that evaluation metrics should be chosen to match the application goal: if minority detection is the goal, optimize for minority F1, not KS.
+
+\textbf{Multiple seeds are not optional.} Two of the most striking single-seed results (a KS of 0.14 for RE-TabSyn on Lending Club with seed 42, and 0.19 with seed 456) would have led to very different conclusions about the method's fidelity if reported alone. Across three seeds, the variance is exposed and the mean provides a reliable estimate. For small datasets like German Credit, even three seeds can show wide variance; future work should consider five or more seeds for definitive claims.
+
+\textbf{Visualizations tell stories numbers cannot.} The t-SNE and PCA plots confirmed several things that the KS statistics missed: that the synthetic data covers the full data manifold rather than collapsing to the center, that mode collapse is not occurring, and that the class-specific regions of the data distribution are being captured correctly. These visualizations added confidence to the numerical results and would have caught several subtle issues (like partial manifold coverage on Credit Approval) that the KS statistic alone did not reveal.
 
 \section{Concluding Remarks}
-RE-TabSyn represents a significant advance in synthetic tabular data generation by introducing controllable rare event synthesis, a capability entirely absent from prior methods. By combining the fidelity benefits of latent diffusion with the flexibility of Classifier-Free Guidance, it provides practitioners in finance, healthcare, and other high-stakes domains with a practical tool to generate balanced datasets for critical applications. The successful conference publication at I2IT validates the novelty and rigor of this work. The fundamental insight that guided generation can be applied to structured data opens a research agenda covering fairness-aware generation, privacy-guided generation, and domain-constrained synthesis. RE-TabSyn establishes a new paradigm for controllable tabular data generation.
+
+RE-TabSyn addresses a specific, well-motivated, and previously unsolved problem: how to generate synthetic tabular data with controllable class distribution. The solution is technically clean: three components (VAE, latent diffusion, CFG) that each solve one part of the problem and reinforce each other. The results are clear: better minority detection across six financial datasets, precise ratio control, and strong empirical privacy.
+
+The broader takeaway from this work is that controllability and fidelity are not in direct conflict. The KS fidelity gap between RE-TabSyn and TabSyn is 0.062 -- meaningful but not catastrophic. In exchange for that gap, practitioners gain a capability that previously did not exist at all. For the financial institutions that most need effective minority detection (fraud departments, credit risk teams, AML compliance officers), that is a trade worth making.
+
+Looking beyond the immediate results, RE-TabSyn establishes that guided generation techniques developed for continuous data (images, audio) can be adapted to heterogeneous structured data through a principled latent space intermediary. This methodological insight is generalizable. Future work could apply the same principle to bring other guidance mechanisms (classifier guidance, text conditioning, attribute-specific control) into the tabular domain, potentially enabling a new generation of controllable structured data synthesis tools.
+
+The conference acceptance at I2IT validates that the research community recognizes the contribution. The limitations section above outlines the honest next steps. The most impactful near-term extension would be formal differential privacy integration, which would make RE-TabSyn deployable in regulated financial environments without relying solely on empirical privacy metrics. The most interesting long-term extension would be multi-class and multi-attribute conditioning, which would allow practitioners to simultaneously control class balance, demographic composition, and other distributional properties of the synthetic data.
+
+Synthetic tabular data generation has moved quickly from an academic curiosity to a practical tool that financial institutions are actively evaluating. RE-TabSyn's contribution to that progression is the addition of controllability: the ability to generate the specific kind of realistic data that makes machine learning models more effective on the problems that matter most.

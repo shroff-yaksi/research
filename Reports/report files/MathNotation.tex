@@ -1,57 +1,49 @@
 \chapter*{MATHEMATICAL NOTATION}
 
-The table below lists all mathematical symbols used throughout this thesis. Readers following the formal derivations in Chapter~2 may find it useful as a quick reference.
+The following symbols are used throughout this thesis. Readers following the formal derivations in Chapter~2 may use this as a quick reference.
 
-\begin{table}[htbp]
-\centering
-\caption*{\textbf{Mathematical Notation Reference for RE-TabSyn Framework}}
-\begin{tabularx}{\textwidth}{|l|X|}
-\hline
-\textbf{Symbol} & \textbf{Meaning} \\
-\hline
-$\mathcal{D}$ & The training dataset (collection of all training rows and their labels) \\
-\hline
-$\mathbf{x}$ & A single row of the dataset (feature vector) \\
-\hline
-$y \in \{0, 1\}$ & The class label for a row (1 for minority event, 0 for majority) \\
-\hline
-$\rho$ & Minority ratio: fraction of rows belonging to the minority class \\
-\hline
-$d_{num}$, $d_{cat}$ & Number of numerical and categorical features respectively \\
-\hline
-$\mathbf{z}$ & Latent vector (compressed representation produced by the VAE encoder) \\
-\hline
-$d_z = 64$ & Dimensionality of the latent space \\
-\hline
-$\boldsymbol{\mu}$, $\boldsymbol{\sigma}^2$ & Mean and variance output by the VAE encoder \\
-\hline
-$\boldsymbol{\epsilon}$ & Random Gaussian noise used in the reparameterization trick or diffusion \\
-\hline
-$\beta$ (VAE) & KL weight in the VAE loss (set to 0.1 to prevent posterior collapse) \\
-\hline
-$\mathbf{z}_t$ & Noisy latent vector at diffusion timestep $t$ \\
-\hline
-$T = 1000$ & Total number of diffusion timesteps \\
-\hline
-$\beta_t$ & Noise variance added at diffusion timestep $t$ (linearly increasing) \\
-\hline
-$\bar{\alpha}_t$ & Cumulative signal retention factor at timestep $t$ \\
-\hline
-$\epsilon_\theta$ & The DiT noise prediction network (parameterized by $\theta$) \\
-\hline
-$w$ & Guidance scale for CFG (set to 2.0 for default operation) \\
-\hline
-$p_{uncond}$ & Probability of replacing class label with null token during training (0.10) \\
-\hline
-$\emptyset$ & Null token: used when the class label is dropped during CFG training \\
-\hline
-$\tilde{\epsilon}$ & Guided noise prediction (output of the CFG formula) \\
-\hline
-$\text{KS}$ & Kolmogorov-Smirnov statistic (measures distributional fidelity) \\
-\hline
-$\text{F1}_{min}$ & F1-score for the minority class (primary evaluation metric) \\
-\hline
-$\text{DCR}$ & Distance to Closest Record (measures empirical privacy) \\
-\hline
-\end{tabularx}
-\end{table}
+\vspace{0.5em}
+\begin{tabbing}
+\textbf{Symbol} \hspace{2.5cm} \= \textbf{Meaning} \\[0.4em]
+$\mathcal{D}$ \> Training dataset: all rows and their class labels \\
+$\mathbf{x}$ \> A single data row (feature vector) \\
+$y \in \{0, 1\}$ \> Class label (1 = minority event, 0 = majority) \\
+$N$ \> Total number of rows in the dataset \\
+$N_1$ \> Count of minority class rows \\
+$\rho = N_1/N$ \> Minority ratio: fraction of minority rows \\
+$\pi = P(y=1)$ \> Target minority ratio specified at generation time \\
+$\mathcal{X}$ \> Feature space \\
+$d_{num}$, $d_{cat}$ \> Number of numerical and categorical features \\
+$\mathcal{C}_j$ \> Categorical domain for feature $j$ \\
+$G_\theta$ \> Generative model parameterised by $\theta$ \\
+$G$, $D$ \> Generator and discriminator networks in a GAN \\
+$\mathcal{L}_{GAN}$ \> GAN minimax objective \\
+$p_{data}(\mathbf{x})$ \> True data distribution \\
+$p_\theta(\mathbf{x})$ \> Model's learned distribution \\
+$q_\phi(\mathbf{z}|\mathbf{x})$ \> VAE encoder distribution parameterised by $\phi$ \\
+$p_\theta(\mathbf{x}|\mathbf{z})$ \> VAE decoder distribution parameterised by $\theta$ \\
+$\phi$ \> Encoder network parameters \\
+$\mathbf{z}$ \> Latent vector produced by the VAE encoder \\
+$d_z = 64$ \> Dimensionality of the latent space \\
+$\boldsymbol{\mu}$, $\boldsymbol{\sigma}^2$ \> Mean and variance output by the VAE encoder \\
+$\boldsymbol{\epsilon}$ \> Random Gaussian noise (reparameterisation or diffusion) \\
+$\beta_{\text{VAE}}$ \> KL weight in the VAE loss (set to 0.1) \\
+$t$ \> Diffusion timestep \\
+$\mathbf{z}_t$ \> Noisy latent vector at timestep $t$ \\
+$T = 1000$ \> Total number of diffusion timesteps \\
+$\beta_t$ \> Noise variance added at timestep $t$ (linearly increasing) \\
+$\alpha_t = 1 - \beta_t$ \> Signal retention at timestep $t$ \\
+$\bar{\alpha}_t$ \> Cumulative signal retention factor at timestep $t$ \\
+$\epsilon_\theta$ \> DiT noise prediction network parameterised by $\theta$ \\
+$w$ \> CFG guidance scale (default 2.0) \\
+$p_{uncond}$ \> Label dropout probability during CFG training (0.10) \\
+$\emptyset$ \> Null token used when class label is dropped \\
+$\tilde{\epsilon}$ \> Guided noise prediction (CFG output) \\
+$\mathcal{L}_{VAE}$ \> Total VAE training loss \\
+$\mathcal{L}_{recon}$ \> Reconstruction loss component of VAE \\
+$D_{KL}$ \> Kullback-Leibler divergence \\
+$\text{KS}$ \> Kolmogorov-Smirnov statistic (distributional fidelity) \\
+$\text{F1}_{min}$ \> F1-score for the minority class (primary utility metric) \\
+$\text{AUC}$ \> Area Under the ROC Curve (overall utility metric) \\
+$\text{DCR}$ \> Distance to Closest Record (empirical privacy metric) \\
+\end{tabbing}

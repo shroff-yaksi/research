@@ -29,7 +29,11 @@
       "Bash(brew info:*)",
       "Bash(find '/Users/shroffyaksi/Desktop/Research/Reports/report files' -name \"*.tex\" -exec grep -roh '\\\\b[A-Z][A-Z][A-Z]\\\\+\\\\b' {})",
       "Bash(/tmp/check_abbr.txt:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(cd:*)",
+      "Read(//Users/shroffyaksi/.claude/projects/-Users-shroffyaksi-Desktop-Research/d0b8d825-2b4c-412e-a6b6-b259dae1098c/subagents/**)"
     ]
   }
 }

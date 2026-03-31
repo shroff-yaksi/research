@@ -33,7 +33,7 @@ No previous method satisfies all four desiderata simultaneously. TabSyn satisfie
 
 \section{Baseline Methods: Theoretical Foundations}
 
-This section provides the mathematical foundations of the four baseline methods against which RE-TabSyn is evaluated. Understanding their theoretical underpinnings is essential for appreciating both their strengths and the specific limitations that motivate the proposed approach.
+This section provides the mathematical foundations of the four baseline methods against which RE-TabSyn is evaluated. Each method's limitations motivate specific design choices in the proposed approach.
 
 \subsection{Generative adversarial networks (GANs)}
 
@@ -46,7 +46,7 @@ What this equation says: the discriminator $D$ tries to maximize the probability
 
 In practice, however, training dynamics are notoriously unstable. The discriminator may become too strong (causing vanishing gradients for $G$) or too weak (providing no learning signal). There is a fundamental tension: if the discriminator is perfect, the generator gets no useful gradient information because $\log(1 - D(G(\mathbf{z})))$ is nearly constant; if the discriminator is too weak, the generator is not being pushed to improve. Various techniques have been proposed to stabilize training, including Wasserstein distance \cite{arjovsky2017wgan}, spectral normalization, and progressive growing.
 
-CTGAN \cite{xu2019ctgan} extends vanilla GANs for tabular data through two key innovations:
+CTGAN \cite{xu2019ctgan} extends vanilla GANs for tabular data through two innovations:
 \begin{enumerate}
     \item \textbf{Mode-Specific Normalization:} Each numerical column is modeled as a mixture of Gaussians via variational Gaussian mixture models, i.e., VGMMs. This step identifies the multiple peaks in a column's distribution (income might have peaks around \$30K, \$60K, \$100K) and transforms each value relative to its nearest peak. This is more expressive than min-max or z-score normalization, which assume a single unimodal distribution.
 
@@ -78,7 +78,7 @@ RE-TabSyn addresses these limitations by using a $\beta$-VAE formulation ($\beta
 
 \subsection{Diffusion models}
 
-Diffusion models \cite{ho2020ddpm} define a forward noising process that gradually destroys data structure, and then learn to reverse it. The mathematical framework is elegant and the intuition is straightforward: if you know how data is destroyed, you can learn to reconstruct it.
+Diffusion models \cite{ho2020ddpm} define a forward noising process that gradually destroys data structure, and then learn to reverse it. The intuition is straightforward: if you know how data is destroyed, you can learn to reconstruct it.
 
 The forward process is a Markov chain that adds Gaussian noise over $T$ timesteps according to a variance schedule $\{\beta_t\}_{t=1}^{T}$:
 \begin{equation}
@@ -87,7 +87,7 @@ q(\mathbf{z}_t | \mathbf{z}_{t-1}) = \mathcal{N}(\mathbf{z}_t; \sqrt{1-\beta_t}\
 
 This says: at each step $t$, the previous latent vector $\mathbf{z}_{t-1}$ is slightly scaled down (by $\sqrt{1 - \beta_t}$, a value close to 1) and a small amount of Gaussian noise (with variance $\beta_t$) is added. After many steps, the data has been completely buried in noise.
 
-A key property enables direct sampling of any timestep $t$ without iterating through all previous steps:
+A useful property enables direct sampling of any timestep $t$ without iterating through all previous steps:
 \begin{equation}
 q(\mathbf{z}_t | \mathbf{z}_0) = \mathcal{N}(\mathbf{z}_t; \sqrt{\bar{\alpha}_t}\,\mathbf{z}_0, (1-\bar{\alpha}_t)\mathbf{I})
 \end{equation}
@@ -131,7 +131,7 @@ The three core components are:
     \item \textbf{Classifier-Free Guidance, i.e., CFG} --- controllable class ratios at inference time
 \end{enumerate}
 
-The three components are not independently useful; they work because of how they interact. The VAE solves the encoding problem so that the diffusion model operates in a well-behaved continuous space. The diffusion model learns a powerful generative model of that space. And the CFG mechanism leverages the diffusion model's conditioning architecture to steer generation toward the desired class. Remove any one component and the system breaks: without the VAE, diffusion fails on categorical features; without the diffusion model, there is no way to apply CFG; without CFG, class control is impossible.
+The three components are not independently useful; they work because of how they interact. The VAE solves the encoding problem so that the diffusion model operates in a well-behaved continuous space. The diffusion model learns a powerful generative model of that space. And the CFG mechanism uses the diffusion model's conditioning architecture to steer generation toward the desired class. Remove any one component and the system breaks: without the VAE, diffusion fails on categorical features; without the diffusion model, there is no way to apply CFG; without CFG, class control is impossible.
 
 \subsection{Component 1: Tabular VAE}
 
@@ -164,7 +164,7 @@ The decoder reconstructs from the latent code, utilizing separate loss functions
 \end{equation}
 where $\beta = 0.1$ balances reconstruction quality and latent space regularization.
 
-This mixed-type loss is a key design choice. For numerical features, mean squared error, i.e., MSE, is appropriate because these are real-valued quantities where the difference between prediction and target has a natural meaning. For categorical features, cross-entropy is appropriate because these are discrete class labels where we want the decoder to output a probability distribution over possible categories; the argmax of this distribution gives the predicted category. Using MSE for categorical features would imply that the numerical difference between category labels has semantic meaning, which it does not.
+This mixed-type loss is a deliberate design choice. For numerical features, mean squared error, i.e., MSE, is appropriate because these are real-valued quantities where the difference between prediction and target has a natural meaning. For categorical features, cross-entropy is appropriate because these are discrete class labels where we want the decoder to output a probability distribution over possible categories; the argmax of this distribution gives the predicted category. Using MSE for categorical features would imply that the numerical difference between category labels has semantic meaning, which it does not.
 
 The weight $\beta = 0.1$ is lower than the standard $\beta = 1$ used in vanilla VAEs. This $\beta$-VAE formulation \cite{kingma2014vae} prevents posterior collapse: a smaller KL weight means the model is less aggressively regularized toward the prior, making it more likely to use the latent space meaningfully. However, it also means the latent space geometry is slightly less Gaussian, which is why careful noise schedule calibration in the diffusion model matters. In practice, $\beta = 0.1$ was found to achieve a good balance between reconstruction quality and latent regularity across all six datasets.
 
@@ -212,7 +212,7 @@ In words: uniformly sample a timestep $t$ between 1 and 1000, take a real latent
 
 \subsection{Component 3: Classifier-free guidance}
 
-Classifier-Free Guidance \cite{ho2022cfg} is the key innovation that enables controllable generation in RE-TabSyn. The mechanism is illustrated in Figure~\ref{fig:cfg_mechanism}.
+Classifier-Free Guidance \cite{ho2022cfg} enables controllable generation in RE-TabSyn. The mechanism is illustrated in Figure~\ref{fig:cfg_mechanism}.
 
 \begin{figure}[!ht]
 \centering
@@ -286,7 +286,7 @@ This manifests as a modest increase in KS statistics from 0.109 (TabSyn, no guid
 
 Whether this trade-off is acceptable depends entirely on the application. For a practitioner trying to train a better fraud detection model, the relevant question is not ``is the KS statistic as low as possible?'' but ``does training on this synthetic data produce a better fraud detector than training on the original imbalanced data?'' The answer, as shown in Chapter~5, is yes: RE-TabSyn's balanced synthetic data produces a minority F1-score of 0.472, compared to 0.458 when training on the real imbalanced data. The small fidelity cost buys a measurable improvement in the task that matters.
 
-As illustrated in Figure~\ref{fig:tradeoff}, this trade-off is favorable: RE-TabSyn maintains competitive fidelity while gaining class control, a combination that was entirely unavailable before this work.
+As illustrated in Figure~\ref{fig:tradeoff}, RE-TabSyn maintains competitive fidelity while gaining class control. None of the baseline methods offer both properties simultaneously.
 
 \begin{figure}[!ht]
 \centering
@@ -297,7 +297,7 @@ As illustrated in Figure~\ref{fig:tradeoff}, this trade-off is favorable: RE-Tab
 
 \section{Design Decisions Summary}
 
-Table~\ref{tab:design_decisions} consolidates the key architectural decisions in RE-TabSyn and the specific problem each one addresses. This table is provided as a reference for readers who want to understand both what was built and why each element was included.
+Table~\ref{tab:design_decisions} consolidates the architectural decisions in RE-TabSyn and the specific problem each one addresses.
 
 \begin{table}[!ht]
 \centering
@@ -312,7 +312,7 @@ VAE latent space & One-hot encoding is incompatible with continuous diffusion no
 \hline
 64-dimensional latent & Match largest dataset (Polish Bankruptcy, 64 features) & Smaller (32-d) reduces capacity; larger (128-d) adds training instability on small datasets \\
 \hline
-MLP encoder [256, 128] & Compact feature compression with stable gradients & Transformer encoder: better quality but significantly higher training cost; deferred to future work \\
+MLP encoder [256, 128] & Compact feature compression with stable gradients & Transformer encoder: better quality but considerably higher training cost; deferred to future work \\
 \hline
 $\beta = 0.1$ KL weight & Prevents posterior collapse without over-regularizing & $\beta = 1.0$ (standard VAE): causes posterior collapse on small datasets; $\beta = 0.01$: insufficient regularization \\
 \hline
@@ -320,7 +320,7 @@ DiT Transformer backbone & Models inter-feature correlations via self-attention 
 \hline
 4 DiT layers, dim 256 & Balance capacity and overfitting risk for datasets up to 45K rows & More layers: overfitting on small datasets; fewer layers: insufficient capacity \\
 \hline
-$T = 1000$ timesteps & Smooth noise trajectory for stable training and generation & $T = 100$: too coarse, worse quality; $T = 2000$: no quality gain, significantly slower generation \\
+$T = 1000$ timesteps & Smooth noise trajectory for stable training and generation & $T = 100$: too coarse, worse quality; $T = 2000$: no quality gain, noticeably slower generation \\
 \hline
 Linear $\beta$ schedule & Proven stable across diverse datasets & Cosine schedule: marginally better for images, no benefit observed for tabular data \\
 \hline

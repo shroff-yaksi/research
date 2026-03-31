@@ -2,7 +2,7 @@
 
 This chapter describes the complete end-to-end implementation of RE-TabSyn, covering pipeline architecture, data preprocessing, model configurations, training procedures, and the generation protocol. Every choice is explained in sufficient detail to allow replication.
 
-All experiments were conducted using Python 3.13.5 with PyTorch 2.9.1 as the deep learning framework, on a MacBook Air equipped with an Apple M3 chip and 16 GB of unified RAM running macOS 26.3.1. Key supporting libraries include NumPy 2.3.5, Pandas 2.3.3, scikit-learn 1.7.2, and XGBoost 3.1.2. The full software stack is documented in this chapter, including the rationale for each technology choice.
+All experiments were conducted using Python 3.13.5 with PyTorch 2.9.1 as the deep learning framework, on a MacBook Air equipped with an Apple M3 chip and 16 GB of unified RAM running macOS 26.3.1. Supporting libraries include NumPy 2.3.5, Pandas 2.3.3, scikit-learn 1.7.2, and XGBoost 3.1.2. The full software stack is documented in this chapter, including the rationale for each technology choice.
 
 \section{Experimental Environment}
 
@@ -10,7 +10,7 @@ All experiments were run on a single machine with a fixed hardware and software 
 
 \subsection{Hardware}
 
-The Apple M3 chip is a system-on-chip, i.e., SoC, design that integrates the CPU, GPU, and memory onto a single die. The critical property for this research is \textit{unified memory}: the CPU and GPU share the same 16 GB of RAM rather than maintaining separate memory pools. For deep learning, this eliminates the bottleneck of copying data between CPU memory and a discrete GPU's dedicated VRAM, which is often the limiting factor in small-to-medium model training workflows. The M3 chip's Neural Engine provides hardware acceleration for matrix multiplication, the core operation in neural network forward and backward passes.
+The Apple M3 chip is a system-on-chip, i.e., SoC, design that integrates the CPU, GPU, and memory onto a single die. The property relevant to this research is \textit{unified memory}: the CPU and GPU share the same 16 GB of RAM rather than maintaining separate memory pools. For deep learning, this removes the bottleneck of copying data between CPU memory and a discrete GPU's dedicated VRAM, which is often the limiting factor in small-to-medium model training workflows. The M3 chip's Neural Engine provides hardware acceleration for matrix multiplication, the core operation in neural network forward and backward passes.
 
 For the model sizes and dataset sizes in this research (datasets up to 45,222 rows, models with up to a few million parameters), the M3 chip provides sufficient computational capacity. The largest training run (RE-TabSyn on Polish Bankruptcy, which has 64 features) completes within a few hours. Larger-scale production deployments would benefit from dedicated GPU hardware, but for research-scale validation the M3 setup is adequate and reproducible on accessible consumer hardware.
 
@@ -18,7 +18,7 @@ For the model sizes and dataset sizes in this research (datasets up to 45,222 ro
 
 \textbf{Python 3.13.5} was used as the primary programming language. Python is the standard language for machine learning research due to its extensive ecosystem of scientific computing libraries, readability, and the availability of PyTorch bindings.
 
-\textbf{PyTorch 2.9.1} was chosen as the deep learning framework over alternatives like TensorFlow or JAX for two reasons. First, PyTorch's eager execution model (where operations execute immediately rather than being compiled into a static graph) makes debugging considerably easier: you can inspect intermediate tensors, add print statements, and use standard Python debuggers. For research involving novel architectures, this flexibility is worth more than the performance benefits of compiled execution. Second, the official implementations of TabSyn and TabDDPM that we use as baselines are both written in PyTorch, ensuring consistency and avoiding potential discrepancies from framework-porting.
+\textbf{PyTorch 2.9.1} was chosen as the deep learning framework over alternatives like TensorFlow or JAX for two reasons. First, PyTorch's eager execution model (where operations execute immediately rather than being compiled into a static graph) makes debugging considerably easier: you can inspect intermediate tensors, add print statements, and use standard Python debuggers. For research involving non-standard architectures, this flexibility outweighs the performance benefits of compiled execution. Second, the official implementations of TabSyn and TabDDPM that we use as baselines are both written in PyTorch, ensuring consistency and avoiding potential discrepancies from framework-porting.
 
 \textbf{NumPy 2.3.5} handles numerical array operations outside of PyTorch, including preprocessing steps that operate on CPU arrays before model input and postprocessing steps that convert model outputs back to tabular form.
 
@@ -26,11 +26,11 @@ For the model sizes and dataset sizes in this research (datasets up to 45,222 ro
 
 \textbf{scikit-learn 1.7.2} provides the preprocessing transformers (QuantileTransformer, LabelEncoder) and evaluation utilities used throughout the pipeline. Its API design, with \texttt{fit} on training data and \texttt{transform} on both training and test data, prevents data leakage by ensuring that preprocessing statistics are computed only from training data.
 
-\textbf{XGBoost 3.1.2} is used as the downstream classifier in the TSTR evaluation. XGBoost, i.e., eXtreme Gradient Boosting \cite{chen2016xgboost}, is a highly optimized implementation of gradient-boosted decision trees. On tabular classification tasks, XGBoost consistently outperforms or matches deep learning methods, making it the appropriate choice for evaluating whether synthetic data preserves ML-relevant signal. Using a powerful classifier for evaluation rather than a weaker one (like logistic regression) ensures that fidelity differences between synthetic data methods are not masked by the classifier's inability to exploit the training data.
+\textbf{XGBoost 3.1.2} is used as the downstream classifier in the TSTR evaluation. XGBoost, i.e., eXtreme Gradient Boosting \cite{chen2016xgboost}, is a well-optimized implementation of gradient-boosted decision trees. On tabular classification tasks, XGBoost consistently outperforms or matches deep learning methods, making it the appropriate choice for evaluating whether synthetic data preserves ML-relevant signal. Using a powerful classifier for evaluation rather than a weaker one (like logistic regression) ensures that fidelity differences between synthetic data methods are not masked by the classifier's inability to exploit the training data.
 
 \section{End-to-End Pipeline Architecture}
 
-The implementation of RE-TabSyn encompasses a complete end-to-end pipeline designed for robustness and reproducibility. Figure~\ref{fig:pipeline_detailed} shows every step from raw data ingestion to the final synthetic output. Figure~\ref{fig:pipeline} provides a complementary high-level view of the sequential flow.
+The implementation of RE-TabSyn covers a complete end-to-end pipeline designed for reliability and reproducibility. Figure~\ref{fig:pipeline_detailed} shows every step from raw data ingestion to the final synthetic output. Figure~\ref{fig:pipeline} provides a complementary high-level view of the sequential flow.
 
 \begin{figure}[!ht]
 \centering
@@ -64,7 +64,7 @@ The pipeline consists of five integrated modules:
 \section{Data Preprocessing}
 \label{sec:preprocessing}
 
-Preprocessing is where many tabular synthesis attempts fail. A model cannot recover structure that preprocessing has distorted, regardless of architectural sophistication.
+Preprocessing is where many tabular synthesis attempts fail. A model cannot recover structure that preprocessing has distorted, regardless of architectural complexity.
 
 The preprocessing pipeline for RE-TabSyn follows four steps applied in order: (1) missing value imputation, (2) feature encoding, (3) feature scaling, and (4) train-test splitting. Each step is fit on training data only. Figure~\ref{fig:preprocessing_flow} shows the full flow from raw CSV to the final train/test splits.
 
@@ -79,13 +79,13 @@ The preprocessing pipeline for RE-TabSyn follows four steps applied in order: (1
 
 Missing values are handled through a two-strategy approach, with the choice depending on the feature type:
 
-\textbf{Numerical columns} have missing values imputed with the column median. The median is preferred over the mean for financial data because financial distributions are often heavily skewed: a small number of very high incomes or very large transactions can pull the mean far from where most of the data lies. The median, defined as the 50th percentile, is robust to these outliers and provides a more representative central value. For example, if a household income column has values ranging from \$20K to \$5M, the mean might be \$80K (inflated by a few ultra-high earners) while the median is \$52K (reflecting where the bulk of the population actually sits). Imputing with \$52K is more likely to produce realistic-looking records than imputing with \$80K.
+\textbf{Numerical columns} have missing values imputed with the column median. The median is preferred over the mean for financial data because financial distributions are often heavily skewed: a small number of very high incomes or very large transactions can pull the mean far from where most of the data lies. The median, defined as the 50th percentile, is resistant to these outliers and provides a more representative central value. For example, if a household income column has values ranging from \$20K to \$5M, the mean might be \$80K (inflated by a few ultra-high earners) while the median is \$52K (reflecting where the bulk of the population actually sits). Imputing with \$52K is more likely to produce realistic-looking records than imputing with \$80K.
 
 \textbf{Categorical columns} have missing values imputed with the column mode (the most frequently occurring category). The rationale is that the mode represents the typical case for that column: if 60\% of applicants list ``employed'' as their employment status and the field is missing, ``employed'' is the most plausible fill. An alternative approach, treating missingness as a distinct category (for instance, ``employment\_status\_unknown''), is also supported and can be useful when the pattern of missingness itself carries information (e.g., fields that are left blank on loan applications may correlate with certain applicant behaviors).
 
 \subsection{Feature encoding and scaling}
 
-\textbf{Numerical Features} are transformed using a Quantile Transformer that maps arbitrary distributions to a standard normal distribution ($\mathcal{N}(0, 1)$). This step addresses a fundamental problem with financial data: it is almost never normally distributed.
+\textbf{Numerical Features} are transformed using a Quantile Transformer that maps arbitrary distributions to a standard normal distribution ($\mathcal{N}(0, 1)$). This step addresses a persistent problem with financial data: it is almost never normally distributed.
 
 Consider transaction amounts. Most transactions are for small amounts (groceries, utility bills), while a few are for very large amounts (car purchases, property transactions). The resulting distribution has an extremely long right tail. If we feed this raw distribution into a VAE, the model will spend most of its capacity modelling the common small-transaction case and will poorly represent the rare large-transaction case, which is precisely where fraud and risk events are more likely to occur.
 
@@ -250,9 +250,9 @@ The full RE-TabSyn architecture is configured as follows:
 
 \textbf{VAE Encoder:} A Multi-Layer Perceptron, i.e., MLP, with hidden dimensions [256, 128] and ReLU activations. ReLU, i.e., Rectified Linear Unit, was chosen over alternatives like GELU or Tanh because it is computationally cheap, avoids saturation in the middle layers, and provides sufficient non-linearity for the encoding task. The two hidden layers compress the data progressively from the input dimension down to 64. The encoder produces both a mean vector $\mu \in \mathbb{R}^{64}$ and a log-variance vector $\log \sigma^2 \in \mathbb{R}^{64}$ for the 64-dimensional latent space.
 
-\textbf{VAE Decoder:} A mirror architecture [128, 256] with separate output heads. The mirror structure is not strictly required but is a common and effective design: the decoder should roughly invert the encoder, and matching the hidden dimensions provides a natural correspondence. The separate output heads are the key design choice: a linear projection (followed by the inverse quantile transform) for numerical features, and a softmax projection (followed by argmax) for categorical features. This means each categorical column gets its own softmax head with dimensionality equal to the number of categories in that column, ensuring the decoder can produce a valid probability distribution over all possible values.
+\textbf{VAE Decoder:} A mirror architecture [128, 256] with separate output heads. The mirror structure is not strictly required but is a common and effective design: the decoder should roughly invert the encoder, and matching the hidden dimensions provides a natural correspondence. The separate output heads are the distinguishing design choice: a linear projection (followed by the inverse quantile transform) for numerical features, and a softmax projection (followed by argmax) for categorical features. This means each categorical column gets its own softmax head with dimensionality equal to the number of categories in that column, ensuring the decoder can produce a valid probability distribution over all possible values.
 
-\textbf{Diffusion Backbone (DiT):} A Diffusion Transformer architecture with 4 layers, hidden dimension 256, and 4 attention heads (64 dimensions per head). The noise schedule uses $T = 1000$ timesteps with linear $\beta$ variance schedule from $\beta_1 = 10^{-4}$ to $\beta_T = 0.02$. These are the default settings from the original DDPM paper \cite{ho2020ddpm} and have proven robust across many subsequent applications.
+\textbf{Diffusion Backbone (DiT):} A Diffusion Transformer architecture with 4 layers, hidden dimension 256, and 4 attention heads (64 dimensions per head). The noise schedule uses $T = 1000$ timesteps with linear $\beta$ variance schedule from $\beta_1 = 10^{-4}$ to $\beta_T = 0.02$. These are the default settings from the original DDPM paper \cite{ho2020ddpm} and have produced consistent results across many subsequent applications.
 
 \textbf{Guidance Parameters:} Label dropout rate $p_{uncond} = 0.10$ during training, meaning 10\% of training samples have their class label replaced with the null token $\emptyset$. Guidance scale $w = 2.0$ during inference, producing near-50\% minority ratios in practice.
 
@@ -260,7 +260,7 @@ The full RE-TabSyn architecture is configured as follows:
 
 \subsection{Baseline configurations}
 
-We compare RE-TabSyn against four leading methods. All baseline implementations use their official codebases to ensure fair comparison:
+RE-TabSyn is compared against four established methods. All baseline implementations use their official codebases to ensure fair comparison:
 
 \textbf{CTGAN:} Mode-specific normalization (with variational Gaussian mixture models), a PAC (Packing) discriminator that looks at a pack of 10 samples simultaneously to reduce mode collapse, embedding dimension 128 for categorical features, generator and discriminator hidden dimensions both [256, 256], batch size 500, trained for 100 epochs. The PAC discriminator is a specific improvement to the standard GAN discriminator that helps detect mode collapse by comparing batches of generated samples. Implemented via the SDV (Synthetic Data Vault) library.
 
@@ -272,7 +272,7 @@ We compare RE-TabSyn against four leading methods. All baseline implementations 
 
 \subsection{Method comparison at a glance}
 
-Table~\ref{tab:method_comparison} summarises the key architectural properties of all five methods side by side. This makes it easier to understand where RE-TabSyn sits relative to the alternatives and why each architectural choice matters.
+Table~\ref{tab:method_comparison} summarises the architectural properties of all five methods side by side, showing where RE-TabSyn sits relative to the alternatives and why each architectural choice differs.
 
 \begin{table}[!ht]
 \centering
@@ -304,11 +304,11 @@ Formal DP support & No & No & No & No & Planned (Opacus) \\
 \end{tabularx}
 \end{table}
 
-The table confirms a key structural fact: RE-TabSyn is the only method among the five that offers minority class control. Every other method generates data according to whatever class distribution exists in the training data. If fraud is 5\% of the training set, every other method will generate fraud 5\% of the time. RE-TabSyn can change this at inference time, with no retraining.
+The table confirms one structural fact: RE-TabSyn is the only method among the five that offers minority class control. Every other method generates data according to whatever class distribution exists in the training data. If fraud is 5\% of the training set, every other method will generate fraud 5\% of the time. RE-TabSyn can change this at inference time, with no retraining.
 
 \section{Training Procedures}
 
-Training proceeds in two distinct, sequential phases. This two-phase approach is a deliberate architectural choice: it decouples the representation learning problem, i.e., VAE, from the generative modeling problem, i.e., diffusion, allowing each component to be optimized independently. Figure~\ref{fig:two_phase_training} shows the structure of both phases.
+Training proceeds in two distinct, sequential phases. The two-phase structure decouples the representation learning problem, i.e., VAE, from the generative modeling problem, i.e., diffusion, allowing each component to be optimized independently. Figure~\ref{fig:two_phase_training} shows the structure of both phases.
 
 \begin{figure}[!ht]
 \centering
@@ -341,7 +341,7 @@ Training proceeds in two distinct, sequential phases. This two-phase approach is
 \textbf{Phase 2 -- Diffusion Training (Epochs 1--100):}
 
 \begin{enumerate}
-    \item VAE weights are frozen. This is critical: if the VAE continued training during Phase 2, the latent representations of training data would shift, invalidating the latent codes that the diffusion model has already learned to model. Freezing ensures the latent space is stable throughout Phase 2.
+    \item VAE weights are frozen. Freezing is necessary: if the VAE continued training during Phase 2, the latent representations of training data would shift, invalidating the latent codes that the diffusion model has already learned to model. Freezing ensures the latent space is stable throughout Phase 2.
 
     \item All training data is encoded into the 64-dimensional latent space using the frozen VAE encoder. This encoding step is done once, before training begins, and the resulting latent vectors are cached. This avoids the computational cost of re-encoding the training data at every training step.
 
@@ -349,7 +349,7 @@ Training proceeds in two distinct, sequential phases. This two-phase approach is
 
     \item Adam optimizer with the same learning rate $10^{-3}$ and batch size 256 as Phase 1. Using the same optimizer settings for both phases simplifies the hyperparameter search.
 
-    \item All experiments are run with three random seeds (42, 123, 456) for statistical significance. Each seed controls the random initialization of all model weights, the random sampling of timesteps and noise during training, and the random ordering of training batches. Reporting mean and standard deviation across three seeds provides a reliable estimate of result variance and confirms that the findings are not artifacts of a single lucky initialization.
+    \item All experiments are run with three random seeds (42, 123, 456) to assess result variance. Each seed controls the random initialization of all model weights, the random sampling of timesteps and noise during training, and the random ordering of training batches. Reporting mean and standard deviation across three seeds confirms that the findings are not artifacts of a single initialization.
 \end{enumerate}
 
 \begin{figure}[!ht]
@@ -388,7 +388,7 @@ Numerical features are produced directly from the decoder's linear output heads 
 
 \textbf{Step 4 -- Reverse Transformation:} Apply the inverse preprocessing pipeline to convert model outputs back to the original feature space. Numerical features are mapped from the Gaussian $\mathcal{N}(0,1)$ representation back to the original distribution via the Inverse Quantile Transformer — an exact inverse that preserves percentile rank. Categorical features are recovered by Inverse Label Encoding, mapping integers back to their original string values (e.g., 2 maps back to ``self-employed'').
 
-The result is a Pandas DataFrame in the original feature space, indistinguishable in format from the real data. This can be directly used for downstream machine learning tasks without any additional processing.
+The result is a Pandas DataFrame in the original feature space, matching the format of the real data exactly. It can be used directly for downstream machine learning tasks without any additional processing.
 
 \section{Evaluation Framework}
 
@@ -403,19 +403,19 @@ Our evaluation follows the three-pillar framework illustrated in Figure~\ref{fig
 
 \subsection{Pillar 1: Statistical fidelity}
 
-Statistical fidelity measures how closely the marginal and joint distributions of synthetic data match those of real data.
+Statistical fidelity measures how closely the marginal and joint distributions of synthetic data match those of real data. Two metrics are used.
 
 \textbf{Kolmogorov-Smirnov, i.e., KS, Statistic} \cite{massey1951ks}: For each numerical column, compute the maximum absolute difference between the empirical cumulative distribution functions (CDFs) of the real and synthetic data:
 \[
 D_{KS} = \sup_x |F_{real}(x) - F_{synth}(x)|
 \]
-where $F_{real}$ and $F_{synth}$ are the empirical CDFs of the real and synthetic column values respectively. Values range from 0 (identical distributions) to 1 (completely different). We report the average KS across all numerical columns. The KS test has the advantage of being non-parametric: it makes no assumptions about the shape of the distribution and detects differences anywhere in the distribution, not just in the mean or variance.
+where $F_{real}$ and $F_{synth}$ are the empirical CDFs of the real and synthetic column values respectively. Values range from 0 (identical distributions) to 1 (completely different). We report the average KS across all numerical columns. The KS test is non-parametric: it makes no assumptions about the shape of the distribution and detects differences anywhere in the distribution, not just in the mean or variance.
 
 \textbf{Correlation Preservation:} Compute the $d \times d$ pairwise Pearson correlation matrices for the real and synthetic data (where $d$ is the number of features). Report the mean absolute difference between corresponding entries:
 \[
 \text{Corr Error} = \frac{1}{d^2} \sum_{i,j} |r_{ij}^{real} - r_{ij}^{synth}|
 \]
-Lower values indicate better preservation of inter-feature relationships. This captures a dimension of fidelity that the KS statistic misses: two synthetic datasets could have identical marginal distributions but completely different correlation structures, making them very different for downstream modeling.
+Lower values indicate better preservation of inter-feature relationships. This captures a dimension that the KS statistic misses: two synthetic datasets could have identical marginal distributions but completely different correlation structures, making them unsuitable for downstream modeling despite appearing similar column-by-column.
 
 \subsection{Pillar 2: Machine learning utility}
 
@@ -426,7 +426,7 @@ Lower values indicate better preservation of inter-feature relationships. This c
 \label{fig:tstr_trtr}
 \end{figure}
 
-\textbf{TSTR AUC-ROC:} An XGBoost \cite{chen2016xgboost} classifier is trained exclusively on synthetic data (no real training data is used) and evaluated on the real held-out test set. AUC-ROC (Area Under the Receiver Operating Characteristic Curve) measures discrimination ability across all classification thresholds. A value of 0.5 indicates random guessing; a value of 1.0 indicates perfect classification. The TSTR protocol is the most stringent utility test: it asks whether the synthetic data is informative enough to train a fully functional classifier, not merely whether it looks statistically similar.
+\textbf{TSTR AUC-ROC:} An XGBoost \cite{chen2016xgboost} classifier is trained exclusively on synthetic data (no real training data is used) and evaluated on the real held-out test set. AUC-ROC (Area Under the Receiver Operating Characteristic Curve) measures discrimination ability across all classification thresholds. A value of 0.5 indicates random guessing; a value of 1.0 indicates perfect classification. The TSTR protocol is the most demanding utility test: it asks whether the synthetic data is informative enough to train a fully functional classifier, not merely whether it looks statistically similar.
 
 The XGBoost hyperparameters are fixed across all experiments (learning rate 0.1, 100 estimators, max depth 6) to ensure fair comparison across synthetic data methods. Any performance differences between methods reflect differences in synthetic data quality, not differences in classifier tuning.
 
@@ -435,7 +435,7 @@ The XGBoost hyperparameters are fixed across all experiments (learning rate 0.1,
 F1_{minority} = \frac{2 \cdot \text{Precision}_{minority} \cdot \text{Recall}_{minority}}{\text{Precision}_{minority} + \text{Recall}_{minority}}
 \]
 
-This is the most critical utility metric for imbalanced tasks. Precision for the minority class measures: of all records the classifier flagged as minority events, what fraction were actually minority events? Recall measures: of all actual minority events, what fraction did the classifier catch? F1 is their harmonic mean, which is low unless both are high. A model that flags everything as minority has high recall but zero precision (and low F1); a model that flags nothing has neither. F1 captures this balance.
+This is the most directly relevant utility metric for imbalanced tasks. Precision for the minority class measures: of all records the classifier flagged as minority events, what fraction were actually minority events? Recall measures: of all actual minority events, what fraction did the classifier catch? F1 is their harmonic mean, which is low unless both are high. A model that flags everything as minority has high recall but zero precision (and low F1); a model that flags nothing has neither. F1 captures this balance.
 
 For fraud detection and similar applications, recall (catching actual fraud) is often more important than precision (avoiding false alarms). The F1 metric provides a balanced assessment. In practice, fraud teams might use recall-optimized thresholds, but F1 at the default threshold provides a standardized comparison point.
 
@@ -453,8 +453,8 @@ For fraud detection and similar applications, recall (catching actual fraud) is 
 \text{DCR}(\tilde{\mathbf{x}}_i) = \min_{j} \|\tilde{\mathbf{x}}_i - \mathbf{x}_j\|_2
 \]
 
-We report both mean DCR (average privacy across all synthetic samples) and minimum DCR (worst-case privacy). A low minimum DCR indicates that at least one synthetic sample is very close to a real training record, which could represent a privacy risk in settings where the training data is sensitive. A high mean DCR indicates that synthetic samples are generally far from real records, suggesting the model is generating novel samples rather than memorizing its training data.
+We report both mean DCR (average privacy across all synthetic samples) and minimum DCR (worst-case privacy). A low minimum DCR indicates that at least one synthetic sample is very close to a real training record, which could represent a privacy risk in settings where the training data is sensitive. A high mean DCR indicates that synthetic samples are generally far from real records, suggesting the model is generating new samples rather than memorizing its training data.
 
 Higher DCR values indicate better empirical privacy. The intuition: if a synthetic record is a near-duplicate of a real record, an adversary who obtains the synthetic data can infer information about the real individual it resembles. If synthetic records are always far from real records, no such inference is possible.
 
-All metrics are computed independently for each of the three random seeds (42, 123, 456), and results are reported as mean $\pm$ standard deviation. This practice allows us to assess whether performance differences between methods are consistent (low standard deviation) or variable (high standard deviation), and provides the basis for drawing statistically meaningful conclusions. A difference between two methods is more credible when it is consistent across all three seeds than when it is large in one seed and reversed in another.
+All metrics are computed independently for each of the three random seeds (42, 123, 456), and results are reported as mean $\pm$ standard deviation. This allows assessment of whether performance differences between methods are consistent (low standard deviation) or variable (high standard deviation). A difference between two methods is more credible when it holds across all three seeds than when it is large in one seed and reversed in another.

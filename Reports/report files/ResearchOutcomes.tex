@@ -53,7 +53,7 @@ Key observations:
     \item \textbf{Credit Approval shows the highest variance} ($\pm$ 0.063), a consequence of its small size (690 records). With so few training examples, the model's learned distributions vary more across different random seeds, making results less stable.
 \end{enumerate}
 
-The KS fidelity comparison is further visualized in Figure~\ref{fig:ks_with_ci}, which shows RE-TabSyn's performance with 95\% confidence intervals relative to CTGAN and TabSyn baselines.
+The KS fidelity comparison is visualized in Figure~\ref{fig:ks_with_ci}, which shows RE-TabSyn's performance with 95\% confidence intervals relative to CTGAN and TabSyn baselines.
 
 \begin{figure}[!ht]
 \centering
@@ -68,7 +68,7 @@ Individual column distributions can look perfect while the relationships between
 
 RE-TabSyn preserves inter-feature correlations better than GAN-based methods (CTGAN, TVAE) but slightly worse than TabSyn. The mean absolute difference between the real and synthetic pairwise correlation matrices is 0.08 for TabSyn, 0.12 for RE-TabSyn, and 0.15 for CTGAN. These numbers mean: on average, each pairwise correlation in the synthetic data deviates from the corresponding real correlation by 0.12 units (on a scale of $-1$ to $+1$). This is a small deviation -- correlations of 0.3 in real data would appear as approximately 0.18 or 0.42 in RE-TabSyn's synthetic data -- and it is unlikely to materially affect downstream model training.
 
-The better correlation preservation of latent diffusion methods (TabSyn and RE-TabSyn) compared to GANs is a direct consequence of the Transformer backbone: self-attention explicitly models pairwise feature interactions during the denoising process, encouraging the model to generate feature combinations that respect the real data's correlation structure.
+The stronger correlation preservation of latent diffusion methods (TabSyn and RE-TabSyn) compared to GANs follows directly from the Transformer backbone: self-attention models pairwise feature interactions during the denoising process, which encourages the model to generate feature combinations that respect the real data's correlation structure.
 
 \subsection{Visual assessment of distribution quality}
 
@@ -92,11 +92,11 @@ Figure~\ref{fig:tsne_plot} shows the t-SNE \cite{maaten2008tsne} visualization f
 
 Figure~\ref{fig:pca_plot} shows the PCA, i.e., Principal Component Analysis, visualization. PCA projects data onto the directions of maximum variance, providing a complementary view to t-SNE. The synthetic data spans the same principal component range as the real data, confirming that RE-TabSyn captures the dominant axes of variation. The banding pattern visible in the synthetic data is an expected artifact of categorical features: categories encoded as integers create discrete banding when projected onto continuous principal component axes, and this structure is present in both real and synthetic data.
 
-Both visualizations confirm that RE-TabSyn generates synthetic data occupying the same manifold as real data. This is not guaranteed by the KS statistics alone -- a synthetic dataset could have perfect marginal distributions while occupying a completely different region of feature space. The visual confirmation that the joint distribution is also well-captured provides additional confidence in the fidelity results.
+Both visualizations confirm that RE-TabSyn generates synthetic data that occupies the same manifold as real data. The KS statistics alone do not guarantee this -- a synthetic dataset could have perfect marginal distributions while occupying a completely different region of feature space. The visual confirmation that the joint distribution is also well-captured provides additional confidence in the fidelity results.
 
 \section{Machine Learning Utility Analysis}
 
-Beyond distributional fidelity, the test that ultimately matters for financial applications is whether a machine learning model trained on synthetic data can do its job on real data. This section evaluates downstream model performance, with particular attention to minority class detection.
+Beyond distributional fidelity, the test that matters for financial applications is whether a machine learning model trained on synthetic data generalises to real data. This section evaluates downstream model performance, with particular attention to minority class detection.
 
 \subsection{TSTR performance}
 
@@ -140,7 +140,7 @@ TabDDPM achieves only 63.2\% utility ratio (average AUC 0.518, barely above rand
 
 For imbalanced financial tasks, overall AUC can be misleading. A fraud detection model that classifies 99.5\% of transactions correctly by labeling everything ``legitimate'' achieves high AUC while detecting zero fraud. The minority F1-score cuts through this deception: it measures the harmonic mean of precision (of all transactions the model flags as fraud, what fraction are actually fraud?) and recall (of all actual fraud, what fraction does the model catch?). It is low unless the model is genuinely good at finding rare events.
 
-Table~\ref{tab:f1_scores_full} presents the minority F1-score results, and this is where RE-TabSyn's central contribution becomes concrete.
+Table~\ref{tab:f1_scores_full} presents the minority F1-score results, where RE-TabSyn's central contribution becomes concrete.
 
 \begin{table}[!ht]
 \centering
@@ -172,7 +172,7 @@ Polish Bankruptcy & 4.8\% & 0.285 & 0.112 & 0.245 & \textbf{0.305} \\
 
 Key findings from this table:
 
-\textbf{RE-TabSyn surpasses the real data baseline} on minority F1 across all six datasets (mean 0.472 vs.\ 0.458, a +3.1\% improvement). This is the most important finding in the paper: a classifier trained exclusively on RE-TabSyn's balanced synthetic data is better at detecting minority events in real data than a classifier trained on the real imbalanced data itself. The mechanism is straightforward: by generating balanced training data with 50\% minority representation, RE-TabSyn gives the classifier equal exposure to both classes during training, allowing it to learn a better decision boundary near the minority class.
+\textbf{RE-TabSyn surpasses the real data baseline} on minority F1 across all six datasets (mean 0.472 vs.\ 0.458, a +3.1\% improvement). This is the central finding: a classifier trained exclusively on RE-TabSyn's balanced synthetic data detects minority events in real data more accurately than a classifier trained on the real imbalanced data itself. The mechanism is direct: by generating balanced training data with 50\% minority representation, RE-TabSyn gives the classifier equal exposure to both classes during training, allowing it to learn a better decision boundary near the minority class.
 
 For a bank training a fraud detector on real data with 0.5\% fraud prevalence, switching to RE-TabSyn's 50\% balanced synthetic data is expected to improve detection. The 3.1\% F1 gain translates directly to more fraud caught.
 
@@ -182,13 +182,13 @@ For a bank training a fraud detector on real data with 0.5\% fraud prevalence, s
 
 \textbf{The gains are largest for the most imbalanced datasets.} Bank Marketing (11.3\% minority) improves by 0.020 F1 points; Polish Bankruptcy (4.8\% minority) improves by 0.020 F1 points. This makes intuitive sense: the more imbalanced the original data, the more benefit the model gets from balanced synthetic training data.
 
-\textbf{RE-TabSyn acts as intelligent oversampling.} Unlike SMOTE, which creates interpolated samples that may not represent realistic feature combinations, RE-TabSyn generates minority samples by drawing from the learned conditional distribution $p(\mathbf{x} | y=1)$. Every generated minority sample is a plausible financial record drawn from the model's learned understanding of what minority-class records look like. This principled approach to minority sample generation is why RE-TabSyn outperforms both SMOTE-style interpolation and GAN-based generation for minority detection.
+\textbf{RE-TabSyn acts as model-based oversampling.} Unlike SMOTE, which creates interpolated samples that may not represent realistic feature combinations, RE-TabSyn generates minority samples by drawing from the learned conditional distribution $p(\mathbf{x} | y=1)$. Every generated minority sample is a plausible financial record drawn from the model's learned understanding of what minority-class records look like. This grounded approach to minority sample generation is why RE-TabSyn outperforms both SMOTE-style interpolation and GAN-based generation for minority detection.
 
 \section{Privacy Analysis}
 
 Privacy is not an afterthought in this work. Any synthetic data method intended for financial applications must demonstrate that it does not inadvertently memorize and reproduce sensitive training records. This section evaluates privacy through the Distance to Closest Record, i.e., DCR, metric.
 
-DCR measures the Euclidean distance from each synthetic sample to its nearest neighbor in the training data. A DCR near zero indicates that a synthetic record is nearly identical to a real training record -- a privacy concern. High DCR values indicate that synthetic records are genuinely novel.
+DCR measures the Euclidean distance from each synthetic sample to its nearest neighbor in the training data. A DCR near zero indicates that a synthetic record is nearly identical to a real training record, which is a privacy concern. High DCR values indicate that synthetic records are distinct from training records.
 
 \begin{table}[!ht]
 \centering
@@ -228,7 +228,7 @@ For production financial deployments where formal privacy guarantees are require
 
 \section{Minority Class Control Analysis}
 
-The defining capability of RE-TabSyn is controllable class distribution. By setting the guidance scale $w = 2.0$ and assigning 50\% of latent noise vectors to the minority class label at the start of the denoising process, RE-TabSyn aims to generate datasets with approximately 50\% minority representation. Table~\ref{tab:minority_control_target} demonstrates how precisely this control works in practice.
+The defining capability of RE-TabSyn is controllable class distribution. By setting the guidance scale $w = 2.0$ and assigning 50\% of latent noise vectors to the minority class label at the start of the denoising process, RE-TabSyn targets datasets with approximately 50\% minority representation. Table~\ref{tab:minority_control_target} shows how precisely this control works in practice.
 
 \begin{table}[!ht]
 \centering
@@ -297,11 +297,11 @@ Figure~\ref{fig:comparison_with_ci} compares RE-TabSyn's performance across fide
 
 \section{Financial Domain Peculiarities}
 
-Financial datasets present unique challenges that our experiments highlight and that are worth discussing explicitly, because they inform both the interpretation of results and the design of future work.
+Financial datasets present distinct challenges that emerge from the experiments, and these are worth discussing explicitly because they affect both the interpretation of results and the design of future work.
 
-\textbf{Extreme imbalance is the hardest case, and the most important.} Polish Bankruptcy (4.8\% minority) represents a scenario common in real-world financial applications: bankruptcy events are rare by design, because most businesses successfully service their debts. Models trained on such data without any balance correction achieve less than 29\% minority F1, systematically underpredicting these critical events. RE-TabSyn's ability to boost this dataset to 47.8\% minority representation directly addresses the operational need for better bankruptcy prediction models.
+\textbf{Extreme imbalance is the hardest case, and the most important.} Polish Bankruptcy (4.8\% minority) represents a scenario common in real-world financial applications: bankruptcy events are rare by design, because most businesses successfully service their debts. Models trained on such data without any balance correction achieve less than 29\% minority F1, systematically underpredicting these events. RE-TabSyn's ability to boost this dataset to 47.8\% minority representation directly addresses the operational requirement for better bankruptcy prediction models.
 
-\textbf{High dimensionality is manageable but adds variance.} Polish Bankruptcy has 64 numerical features (financial ratios such as current ratio, debt-to-equity, profit margin, return on assets, and similar). High-dimensional financial ratios pose challenges to correlation preservation: the pairwise correlation matrix has $\binom{64}{2} = 2,016$ entries, each of which must be approximately correct in the synthetic data for it to be useful. RE-TabSyn's VAE+Transformer architecture handles this reasonably well, preserving the dominant correlation structures while allowing minor deviations in less significant feature pairs.
+\textbf{High dimensionality is manageable but adds variance.} Polish Bankruptcy has 64 numerical features (financial ratios such as current ratio, debt-to-equity, profit margin, return on assets, and similar). High-dimensional financial ratios strain correlation preservation: the pairwise correlation matrix has $\binom{64}{2} = 2,016$ entries, each of which must be approximately correct in the synthetic data for it to be useful. RE-TabSyn's VAE+Transformer architecture handles this adequately, preserving dominant correlation structures while allowing minor deviations in less influential feature pairs.
 
 \textbf{Dataset size drives control precision.} The Credit Approval dataset (690 records) shows the highest variance in both KS statistics ($\pm$ 0.063) and minority control ($\pm$ 2.5\%). With fewer than 700 training examples, the VAE and diffusion model have limited data to learn from, and their learned distributions are less stable across random initializations. This finding suggests that for very small datasets, additional regularization or data augmentation during training may be necessary before applying RE-TabSyn.
 
@@ -311,7 +311,7 @@ Financial datasets present unique challenges that our experiments highlight and 
 
 \section{Guidance Scale Sensitivity}
 
-The guidance scale $w$ in CFG is the dial that controls how strongly the generation is pushed toward the specified class. Understanding how $w$ affects the generated minority ratio is important for practitioners who want to target ratios other than 50\%. Figure~\ref{fig:guidance_scale_effect} shows the relationship at a glance; Table~\ref{tab:guidance_sensitivity} gives the precise values measured on the Polish Bankruptcy dataset (the most imbalanced case at 4.8\% original minority).
+The guidance scale $w$ in CFG is the dial that controls how strongly the generation is pushed toward the specified class. Understanding how $w$ affects the generated minority ratio matters for practitioners who want to target ratios other than 50\%. Figure~\ref{fig:guidance_scale_effect} shows the relationship at a glance; Table~\ref{tab:guidance_sensitivity} gives the precise values measured on the Polish Bankruptcy dataset (the most imbalanced case at 4.8\% original minority).
 
 \begin{figure}[!ht]
 \centering
@@ -348,19 +348,19 @@ The guidance scale $w$ in CFG is the dial that controls how strongly the generat
 
 The relationship between $w$ and minority ratio is smooth and monotonic: increasing $w$ consistently increases the minority ratio. At $w = 0$, the model generates data that mirrors the training distribution (4.9\% minority, effectively the same as unconditional generation). At $w = 2.0$ -- our chosen operating point -- it generates 47.8\% minority. At higher values ($w > 2.5$), minority representation begins to exceed 50\%, meaning the model generates more minority samples than majority samples.
 
-This smooth, predictable relationship is what makes $w$ useful in practice. A practitioner who wants 30\% minority representation (not 50\%) can simply set $w \approx 1.0$ and achieve it. The guidance scale is not a brittle on/off switch but a continuous tuning parameter.
+This smooth, predictable relationship makes $w$ useful in practice. A practitioner who wants 30\% minority representation (not 50\%) can simply set $w \approx 1.0$ and achieve it. The guidance scale is not a brittle on/off switch but a continuous tuning parameter.
 
-There is, however, a practical upper limit: at very high $w$ values (above 3.0--4.0), generation quality begins to degrade as the CFG mechanism overrides the model's learned data manifold. Samples generated at $w = 5.0$ may be statistically labelled as minority-class but may no longer resemble realistic financial records. The default value of $w = 2.0$ was chosen as a conservative operating point that achieves near-50\% minority representation while maintaining good statistical fidelity.
+There is, however, a practical upper limit: at very high $w$ values (above 3.0--4.0), generation quality degrades as the CFG mechanism overrides the model's learned data manifold. Samples generated at $w = 5.0$ may be labelled as minority-class but no longer resemble plausible financial records. The default value of $w = 2.0$ was chosen as a conservative operating point that achieves near-50\% minority representation while maintaining acceptable statistical fidelity.
 
 \section{What the Results Mean in Practice}
 
-This section translates the chapter's abstract metrics into operational consequences for financial institutions, mapping each key result to a concrete business scenario.
+This section translates the chapter's metrics into operational consequences for financial institutions, mapping each result to a concrete business scenario.
 
 \subsection{Polish Bankruptcy: the extreme imbalance case}
 
 Original minority ratio: 4.8\%. RE-TabSyn achieved: 47.8\%.
 
-A corporate credit analyst at a bank responsible for a loan portfolio of 1,000 companies is trying to identify which loans are at risk of default over the next 12 months. History shows that roughly 48 companies out of 1,000 will default (4.8\%). A machine learning model trained on this history, without synthetic augmentation, achieves a minority F1-score of approximately 0.285, meaning it struggles to distinguish the rare defaulters from the majority of healthy companies.
+A corporate credit analyst at a bank responsible for a loan portfolio of 1,000 companies is trying to identify which loans are at risk of default over the next 12 months. History shows that roughly 48 companies out of 1,000 will default (4.8\%). A machine learning model trained on this history without synthetic augmentation achieves a minority F1-score of approximately 0.285, meaning it fails to separate the rare defaulters from the majority of healthy companies.
 
 After generating RE-TabSyn synthetic training data with 47.8\% minority representation, the same model family achieves a minority F1-score of 0.305, a 7\% relative improvement. In a portfolio of 1,000 loans, if the model's improved recall catches even 2-3 additional defaults that would have been missed, and if those defaults average \$500,000 in exposure, the model improvement is worth \$1--1.5 million in prevented losses per year. For a bank with a \$10 billion portfolio, the scaling is direct.
 
@@ -408,7 +408,7 @@ Polish Bankruptcy & 0.285 & 0.305 & More early-warning signs of corporate distre
 \end{tabularx}
 \end{table}
 
-The Credit Approval row deserves special mention. With 44.5\% minority -- nearly balanced -- RE-TabSyn improves the F1-score only marginally (0.612 to 0.618). This is the expected behaviour: CFG is most valuable when the imbalance is severe. For near-balanced datasets, the benefit of generating balanced synthetic training data is small, and RE-TabSyn behaves accordingly. It does not degrade performance even when its main feature (minority boosting) is less needed.
+The Credit Approval row deserves separate attention. With 44.5\% minority -- nearly balanced -- RE-TabSyn improves the F1-score only marginally (0.612 to 0.618). This is the expected behaviour: CFG is most valuable when the imbalance is severe. For near-balanced datasets, the benefit of generating balanced synthetic training data is small, and RE-TabSyn behaves accordingly. It does not degrade performance even when minority boosting is less relevant.
 
 \subsection{The privacy dimension in practice}
 
@@ -442,6 +442,6 @@ Privacy (DCR $>$ 1) & Partial & Partial & Yes & Yes \\
 \end{tabularx}
 \end{table}
 
-Reading this table across the four methods, the picture is clear. CTGAN and TabDDPM offer no minority control and trail the leading methods on fidelity and utility respectively. TabSyn leads on fidelity and utility but offers no minority control. RE-TabSyn alone occupies the intersection of competitive fidelity, strong minority F1-score, meaningful privacy, and full minority ratio controllability.
+Reading this table across the four methods, the pattern is clear. CTGAN and TabDDPM offer no minority control and trail the leading methods on fidelity and utility respectively. TabSyn leads on fidelity and utility but offers no minority control. RE-TabSyn alone sits at the intersection of competitive fidelity, strong minority F1-score, meaningful privacy, and full minority ratio controllability.
 
-The 0.062 increase in KS relative to TabSyn (the fidelity cost of adding CFG) and the 4.7-point drop in AUC utility ratio are the prices paid for the unique capability. Whether those prices are worth paying depends entirely on the application. For any application where detecting rare events matters -- fraud, default, bankruptcy, AML -- the answer is yes: a 3.1\% improvement in minority F1-score, achieved consistently across six datasets, is worth a slight reduction in overall distributional similarity.
+The 0.062 increase in KS relative to TabSyn (the fidelity cost of adding CFG) and the 4.7-point drop in AUC utility ratio are the prices paid for this capability. Whether those prices are worth paying depends on the application. For any application where detecting rare events matters -- fraud, default, bankruptcy, AML -- the answer is yes: a 3.1\% improvement in minority F1-score, achieved consistently across six datasets, justifies a slight reduction in overall distributional similarity.

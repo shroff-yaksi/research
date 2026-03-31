@@ -25,7 +25,7 @@ This finding establishes a new paradigm for practitioners. Previously, the argum
 RE-TabSyn is evaluated on six financial datasets spanning credit risk, income prediction, marketing response, loan performance, and corporate bankruptcy, with minority ratios from 4.8\% to 44.5\%. This benchmark systematically compares four baselines (CTGAN, TVAE, TabDDPM, TabSyn) across fidelity, utility, and privacy metrics, with statistical significance established across three random seeds. The resulting benchmark provides a reusable evaluation framework for future work in this area. Researchers building on RE-TabSyn or proposing competing methods now have a clear set of datasets, metrics, and baselines to compare against.
 
 \textbf{Contribution 5: Conference publication at I2IT International Conference.}
-The core findings were accepted for presentation at the I2IT International Conference. The paper title ``Controllable Rare Event Synthetic Data Generation for Financial Tabular Data via Classifier Free Guidance'' passed external peer review, providing independent validation that the contributions are both novel and scientifically sound. Conference acceptance at an early stage of a research career also demonstrates that the work meets the standards expected of published research.
+The core findings were accepted for presentation at the I2IT International Conference. The paper title ``Controllable Rare Event Synthetic Data Generation for Financial Tabular Data via Classifier Free Guidance'' passed external peer review, providing independent validation that the contributions are original and scientifically sound. Conference acceptance at an early stage of a research career also demonstrates that the work meets the standards expected of published research.
 
 \section{At-a-Glance: What RE-TabSyn Achieves}
 
@@ -73,7 +73,7 @@ RE-TabSyn's KS statistic of 0.171 is marginally higher than TabSyn's 0.109, and 
 
 \section{Limitations}
 
-No research work is without limitations, and being explicit about them is important for guiding follow-on work and for setting appropriate expectations for practitioners who might deploy RE-TabSyn.
+No research work is without limitations. The following account is intended to guide follow-on work and to set appropriate expectations for practitioners who might deploy RE-TabSyn.
 
 \textbf{Fidelity cost of controllability.} RE-TabSyn achieves slightly lower statistical fidelity than TabSyn (KS = 0.171 vs 0.109). This is a trade-off built into CFG: the guidance mechanism pushes the generation distribution away from the overall data distribution and toward the minority class, and this necessarily increases the distributional distance from the real data. The gap might be reduced by better architecture (a Transformer-based VAE encoder, more DiT layers, or a better noise schedule) but cannot be entirely eliminated while maintaining strong class control.
 
@@ -95,7 +95,7 @@ Several non-obvious lessons emerged from this project that are worth recording f
 
 \textbf{Smaller $\beta$ matters more than architecture.} The most impactful hyperparameter in the VAE was not the network architecture but the KL weight $\beta = 0.1$. Running experiments with the standard $\beta = 1.0$ caused posterior collapse on three of the six datasets (German Credit, Credit Approval, and Polish Bankruptcy), rendering the entire framework useless. The fix was simple -- reduce $\beta$ -- but identifying that posterior collapse was the root cause required careful analysis of the latent representations.
 
-\textbf{CFG's ``magic'' has a cost that is worth paying.} The 0.062 increase in KS statistic from adding CFG felt significant at first. It was only after computing the minority F1-scores and seeing consistent improvements across all six datasets that it became clear the cost was worth it. The lesson is that evaluation metrics should be chosen to match the application goal: if minority detection is the goal, optimize for minority F1, not KS.
+\textbf{CFG's ``magic'' has a cost that is worth paying.} The 0.062 increase in KS statistic from adding CFG felt large at first. It was only after computing the minority F1-scores and seeing consistent improvements across all six datasets that it became clear the cost was worth it. The lesson is that evaluation metrics should be chosen to match the application goal: if minority detection is the goal, optimize for minority F1, not KS.
 
 \textbf{Multiple seeds are not optional.} Two of the most striking single-seed results (a KS of 0.14 for RE-TabSyn on Lending Club with seed 42, and 0.19 with seed 456) would have led to very different conclusions about the method's fidelity if reported alone. Across three seeds, the variance is exposed and the mean provides a reliable estimate. For small datasets like German Credit, even three seeds can show wide variance; future work should consider five or more seeds for definitive claims.
 

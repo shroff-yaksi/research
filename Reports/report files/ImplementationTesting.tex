@@ -30,14 +30,7 @@ For the model sizes and dataset sizes in this research (datasets up to 45,222 ro
 
 \section{End-to-End Pipeline Architecture}
 
-The implementation of RE-TabSyn covers a complete end-to-end pipeline designed for reliability and reproducibility. Figure~\ref{fig:pipeline_detailed} shows every step from raw data ingestion to the final synthetic output. Figure~\ref{fig:pipeline} provides a complementary high-level view of the sequential flow.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=0.45\textwidth]{img/pipeline_detailed.png}
-\caption{RE-TabSyn step-by-step pipeline: from raw financial data to balanced synthetic output with 50\% minority.}
-\label{fig:pipeline_detailed}
-\end{figure}
+The implementation of RE-TabSyn covers a complete end-to-end pipeline designed for reliability and reproducibility. Figure~\ref{fig:pipeline} shows the sequential flow from raw data ingestion to the final synthetic output.
 
 Each module is independent, receiving a well-defined input and producing a well-defined output. This modularity allows fidelity issues to be traced to a specific stage rather than the system as a whole.
 

@@ -2718,3 +2718,451 @@ flowchart LR
 
 ---
 
+<!-- START OF thesis_final.md -->
+# SECTION: THESIS — FINAL OFFICIAL DOCUMENT (April 2026)
+
+> This section is derived from the final, submitted Bachelor's thesis, which supersedes all earlier drafts. Where numbers differ from previous sections, the values below are authoritative. Nothing has been removed from the rest of this document; this section adds what was not previously captured.
+
+---
+
+## Thesis Metadata
+
+| Field | Detail |
+|:------|:-------|
+| **Full Title** | RE-TabSyn: Controllable Rare-Event Synthetic Data Generation for Financial Tabular Data via Classifier-Free Guidance |
+| **Author** | Yaksi Ketan Shroff (Enrolment: 202203103510201) |
+| **Degree** | Bachelor of Technology in Computer Science and Engineering |
+| **Institution** | Asha M. Tarsadia Institute of Computer Science and Technology, Uka Tarsadia University, Bardoli |
+| **Supervisor** | Dr. Vishvajit Bakrola, Associate Professor & Director, AMTICS |
+| **Submission Date** | April 2026 |
+| **Conference** | I2IT International Conference — **Accepted for Oral Presentation** |
+| **Paper Title at Conference** | Controllable Rare Event Synthetic Data Generation for Financial Tabular Data via Classifier Free Guidance |
+
+---
+
+## 17. Official Thesis Abstract
+
+Predictive modeling in finance is hampered by class imbalance: fraud, loan defaults, and bankruptcies constitute less than 5% of observations in most real-world datasets. Existing generative methods — CTGAN, TVAE, and TabSyn — faithfully replicate these skewed distributions with no mechanism to adjust the class ratio at generation time. Direct diffusion on raw tabular features, as in TabDDPM, fails on mixed-type data due to incompatibility with one-hot encoded categorical features (KS ≈ 0.77).
+
+This work presents **RE-TabSyn (Rare-Event Enhanced Tabular Synthesis)**, a framework that applies Classifier-Free Guidance (CFG) with latent diffusion to enable explicit, inference-time control over synthetic class proportions. RE-TabSyn combines three components: a Variational Autoencoder that encodes heterogeneous tabular features into a continuous latent space; a Transformer-based Latent Diffusion Model that generates samples within that space; and a CFG mechanism that lets practitioners specify the target minority ratio through a single guidance scale parameter `w`, without retraining.
+
+To the best of the authors' knowledge, this is the **first application of CFG to tabular data synthesis**, confirmed through a systematic review of 151 papers across 10 categories.
+
+RE-TabSyn is evaluated on six financial benchmark datasets — credit risk, income prediction, marketing response, loan performance, and corporate bankruptcy — with minority ratios from 4.8% to 44.5%, across three random seeds. Three findings emerge:
+
+1. RE-TabSyn achieves approximately 50% minority representation **within 1.7% of target on average**, boosting minority rates by up to **10×**.
+2. Classifiers trained on RE-TabSyn's balanced synthetic data reach a **mean minority F1-score of 0.472**, surpassing the real imbalanced-data baseline of 0.458, despite an acceptable fidelity trade-off (KS 0.171 vs. TabSyn's 0.109).
+3. **No systematic memorisation** is observed, with mean Distance to Closest Record exceeding 1.0 across all datasets.
+
+The core findings have been accepted for presentation at the I2IT International Conference.
+
+---
+
+## 17.1 Authoritative Benchmark Numbers (Final Thesis Values)
+
+> **Note:** These supersede earlier draft values. The KS values from the final multi-seed benchmark differ slightly from pre-audit figures.
+
+| Metric | RE-TabSyn | TabSyn | CTGAN | TVAE | TabDDPM |
+|:-------|:---------:|:------:|:-----:|:----:|:-------:|
+| Mean KS Statistic (↓) | **0.171** | **0.109** | ~0.15 | ~0.17 | **0.770** |
+| Minority Control | ✅ Full (CFG) | ❌ None | ❌ None | ❌ None | ❌ None |
+| Mean Minority F1 (TSTR) | **0.472** | ~0.45 | ~0.45 | ~0.41 | N/A |
+| Real Data Baseline F1 | 0.458 | — | — | — | — |
+| Mean DCR (Privacy ↑) | > 1.0 all datasets | Comparable | Weak | Good | N/A |
+| TSTR AUC | 0.762 | **0.800** | — | — | — |
+
+### Per-Dataset Final Results
+
+| Dataset | KS (mean ± std) | Minority: Real → RE-TabSyn | F1 Improvement | DCR |
+|:--------|:----------------|:---------------------------|:---------------|:----|
+| Polish Bankruptcy | 0.158 ± 0.018 | 4.8% → **47.8%** | +0.020 | 1.87 |
+| Bank Marketing | 0.211 ± 0.011 | 11.3% → **50.2%** | +0.012 | 15.1 |
+| Lending Club | 0.140 ± 0.009 | 20.0% → **50.1%** | +0.008 | 4,986 |
+| Adult Income | 0.152 ± 0.003 | 24.8% → **49.6%** | +0.003 | 1.87 |
+| German Credit | 0.156 ± 0.024 | 30.0% → **44.8%** | +0.003 | 90.0 |
+| Credit Approval | 0.209 ± 0.063 | 44.5% → **48.1%** | +0.001 | 587.8 |
+
+---
+
+## 17.2 Five Formal Contributions
+
+The thesis formally delineates five original contributions:
+
+### Contribution 1: First Application of CFG to Tabular Data Synthesis
+RE-TabSyn demonstrates that Classifier-Free Guidance — previously exclusive to continuous image and text generation — transfers successfully to the heterogeneous feature spaces of tabular data when mediated through a learned continuous VAE latent representation. This conceptual bridge (image CFG → tabular CFG via VAE) opens a research direction that did not previously exist. Systematic review of 151 papers across 10 categories confirmed zero prior applications of CFG to tabular synthesis.
+
+### Contribution 2: Controllable Minority Class Generation via a Single Inference-Time Parameter
+RE-TabSyn enables practitioners to specify target minority ratios via the guidance scale `w` **at inference time, with no model retraining required**. This "post-hoc control" property is operationally critical: a model trained once can generate datasets with any desired class balance by changing a single scalar.
+
+- Achieved ratios are within **1.7% of target** on average
+- On large datasets (Adult, Bank Marketing, Lending Club): within **0.5%** of target
+- Polish Bankruptcy: 4.8% → 47.8% (≈ **10× increase**)
+- Bank Marketing: 11.3% → 50.2% (**4.4× increase**)
+
+No other tabular synthesis method in the literature can produce these results.
+
+### Contribution 3: Balanced Synthetic Data Outperforms Imbalanced Real Data for Minority Detection
+Classifiers trained on RE-TabSyn's balanced synthetic data outperform classifiers trained on the original imbalanced real data for minority event detection:
+- Mean minority F1: **0.472** (RE-TabSyn) vs. **0.458** (real data baseline) — a **3.1% relative improvement**
+- Improvement is **consistent across all six datasets** and highest for the most severely imbalanced datasets
+- This reframes synthetic data as a **performance improvement strategy** for imbalanced classification, independent of privacy motivation
+
+### Contribution 4: A Financial Benchmark for Minority-Aware Synthesis Evaluation
+A reusable evaluation benchmark across six financial datasets (credit risk, income prediction, marketing response, loan performance, corporate bankruptcy), four baselines (CTGAN, TVAE, TabDDPM, TabSyn), and three evaluation pillars (fidelity, utility, privacy), with statistical significance across three random seeds. Researchers building on RE-TabSyn now have a clear set of datasets, metrics, and baselines to compare against.
+
+### Contribution 5: Conference Publication at I2IT International Conference
+The core findings were accepted for **oral presentation** at the I2IT International Conference, providing independent peer-reviewed validation that the contributions are original and scientifically sound.
+
+---
+
+## 17.3 Guidance Scale Sensitivity (Detailed)
+
+The guidance scale `w` is a smooth, monotonic control parameter. Below are empirical measurements on Polish Bankruptcy (the most imbalanced dataset at 4.8% original minority):
+
+| Guidance Scale (w) | Achieved Minority % | Interpretation |
+|:------------------:|:-------------------:|:---------------|
+| 0.0 | 4.9% | Unconditional — mirrors training distribution |
+| 0.5 | 12.3% | Mild conditioning |
+| 1.0 | 28.5% | Moderate conditioning |
+| 1.5 | 39.8% | Strong conditioning |
+| **2.0** | **47.8%** | **Default — near-balanced** |
+| 2.5 | 51.2% | Over-conditioned |
+| 3.0 | 54.7% | Strong over-conditioning |
+
+**Key observations:**
+- The relationship is smooth and monotonic — `w` is a practical continuous dial, not a brittle on/off switch
+- At `w = 0`, unconditional generation mirrors the training imbalance
+- At `w > 2.5`, minority representation exceeds 50% (more minority than majority)
+- At very high values (`w > 3.0–4.0`), generation quality degrades as CFG overrides the learned data manifold
+- **Default `w = 2.0`** was chosen as a conservative operating point balancing control and fidelity
+- A practitioner wanting 30% minority (not 50%) can simply set `w ≈ 1.0`
+
+---
+
+## 17.4 Detailed Limitations (Chapter 6.4 of Thesis)
+
+### Fidelity Cost of Controllability
+RE-TabSyn achieves slightly lower statistical fidelity than TabSyn (**KS = 0.171 vs. 0.109**). This is a trade-off built into CFG: the guidance mechanism pushes the generation distribution away from the overall data distribution and toward the minority class, necessarily increasing distributional distance from real data. The gap might be reduced by better architecture (Transformer VAE encoder, more DiT layers, better noise schedule) but **cannot be entirely eliminated** while maintaining strong class control.
+
+### Binary Classification Only
+The current implementation supports only **binary classification targets**. Real financial problems often involve multiple classes (credit risk ratings AAA–D, dozens of merchant category codes, multi-level AML severity). Extending CFG to multi-class settings requires a different conditioning architecture and more sophisticated guidance mechanisms.
+
+### Single-Table Synthesis Only
+RE-TabSyn operates on a **single tabular dataset in isolation**. Real financial data is relational: customer tables link to account tables, which link to transaction tables. Generating realistic synthetic data across multiple linked tables while preserving referential integrity is not addressed by the current framework.
+
+### Generation Speed
+CFG requires **two forward passes** through the DiT per denoising step (one conditional, one unconditional). With 1,000 denoising steps, generating synthetic data takes approximately **2× longer** than unconditional TabSyn generation. For production use cases requiring real-time or large-scale generation, fast sampling methods (DDIM) are necessary.
+
+### Variance on Small Datasets
+On Credit Approval (690 records) and German Credit (1,000 records), the model shows **higher variance across seeds** in both fidelity and minority control. With few training examples, the learned VAE and diffusion model are less stable. Practitioners applying RE-TabSyn to small datasets should expect wider confidence intervals and consider ensemble approaches.
+
+### No Formal Differential Privacy Guarantees
+While DCR analysis shows no systematic memorisation, RE-TabSyn does **not provide formal (ε, δ)-differential privacy guarantees**. For deployment in settings where formal privacy proofs are legally or contractually required, DP-SGD integration is necessary.
+
+---
+
+## 17.5 Lessons Learned (Chapter 6.5 of Thesis)
+
+Several non-obvious lessons emerged from this project:
+
+### The Preprocessing is Half the Battle
+The most important implementation choices were in preprocessing, before any architecture decisions:
+- **Median imputation** instead of mean (financial distributions are skewed)
+- **Quantile normalization** instead of min-max scaling (outlier transactions would dominate)
+- **Label encoding** instead of one-hot (one-hot encoding caused TabDDPM to fail)
+
+Getting these right was the difference between a working model and a broken one.
+
+### Smaller β Matters More Than Architecture
+The most impactful VAE hyperparameter was the **KL weight β = 0.1**, not the network architecture. Using standard β = 1.0 caused **posterior collapse on three of six datasets** (German Credit, Credit Approval, Polish Bankruptcy), rendering the entire framework useless. The fix was simple (reduce β), but identifying posterior collapse as the root cause required careful analysis of latent representations.
+
+### CFG's "Magic" Has a Cost That Is Worth Paying
+The 0.062 increase in KS statistic from adding CFG felt large in isolation. It was only after computing minority F1-scores and seeing consistent improvements across all six datasets that it became clear the cost was justified. **Evaluation metrics must match the application goal**: if minority detection is the goal, optimise for minority F1, not KS.
+
+### Multiple Seeds Are Not Optional
+Single-seed results on Lending Club varied from KS = 0.14 (seed 42) to KS = 0.19 (seed 456). Reporting only the most favourable seed would have led to misleading conclusions. **Three seeds is the minimum** for credible tabular synthesis claims.
+
+---
+
+## 17.6 Business Impact Analysis
+
+This section translates thesis metrics into operational financial consequences.
+
+### Polish Bankruptcy (4.8% → 47.8% minority)
+A corporate credit analyst at a bank with a 1,000-company loan portfolio tries to identify default risk. Without synthetic augmentation: **minority F1 ≈ 0.285**. After RE-TabSyn augmentation: **minority F1 ≈ 0.305** (+7% relative). If the improved model catches 2–3 additional defaults averaging $500K exposure each, the improvement is worth **$1–1.5M in prevented losses per year**. For a $10B portfolio, the scaling is direct.
+
+### Bank Marketing (11.3% → 50.2% minority)
+A marketing team targeting customers likely to purchase a term deposit — the most campaign-valuable segment. RE-TabSyn balanced training improves identification of the 11.3% positive-response minority, enabling better targeting and lower campaign cost per acquisition.
+
+### German Credit (30.0% → 44.8% minority)
+A small dataset (1,000 records) scenario. RE-TabSyn's higher variance on small datasets is visible here (± 10.4% on minority control), confirming the need for ensemble approaches on very small training sets.
+
+---
+
+## 17.7 Financial Domain Peculiarities (Chapter 5.6 of Thesis)
+
+Financial datasets present distinct challenges that affect both result interpretation and future design:
+
+### Extreme Imbalance is the Hardest and Most Important Case
+Polish Bankruptcy (4.8%) represents the operationally critical scenario: bankruptcy events are rare by design. Models without balance correction achieve less than 29% minority F1, systematically missing these events. RE-TabSyn's 10× boost directly addresses the operational requirement.
+
+### High Dimensionality is Manageable but Adds Variance
+Polish Bankruptcy has 64 numerical features (financial ratios: current ratio, debt-to-equity, profit margin, return on assets, etc.). The pairwise correlation matrix has $\binom{64}{2} = 2{,}016$ entries, each of which must be approximately correct for the synthetic data to be useful. RE-TabSyn's VAE+Transformer architecture handles this adequately, preserving dominant correlation structures.
+
+### Dataset Size Drives Control Precision
+Credit Approval (690 records) shows the highest variance (KS ± 0.063, minority control ± 2.5%). With fewer than 700 training examples, the learned distributions are less stable across random initializations. Additional regularization or data augmentation may be necessary before applying RE-TabSyn to very small datasets.
+
+### Anonymized Features Require Pure Statistical Learning
+Datasets such as Credit Approval and Lending Club contain anonymized feature names ("A1", "A2", etc.) with no semantic meaning. For RE-TabSyn, this is not a problem: the model learns purely statistical relationships. However, it makes result interpretation harder without domain knowledge.
+
+### Business Rule Compliance is Implicit
+Financial data has implicit constraints (loan amounts ≤ property values, age ≥ 18 for products, employment length ≤ age) that RE-TabSyn does not explicitly enforce. The VAE's learned latent space implicitly captures these through the training data manifold. For production deployment, a **post-generation constraint validation step is recommended**.
+
+---
+
+## 17.8 Comprehensive Future Scope Roadmap (Chapter 7 of Thesis)
+
+### Priority Roadmap Table
+
+| Direction | Horizon | Expected Impact | Key Dependency |
+|:----------|:--------|:----------------|:---------------|
+| DDIM fast sampling | Near-term (1–3 months) | 10–20× generation speedup | No retraining; sampling loop change only |
+| DP-SGD integration (Phase 2 only) | Near-term (2–4 months) | Formal (ε, δ)-DP guarantee | Opacus library integration |
+| Multi-class CFG | Medium-term (3–6 months) | Broader financial use cases | Architecture change to class embedding |
+| Formal MIA evaluation (TAMIS) | Medium-term (3–6 months) | Rigorous privacy claim for top venues | Shadow model training |
+| Transformer VAE encoder | Medium-term (4–8 months) | Improved fidelity (expected KS ≈ 0.13) | Higher training cost; tokenization |
+| Scaled DiT (8–12 layers) | Medium-term (4–8 months) | Better complex dependency capture | More GPU memory |
+| Federated RE-TabSyn | Long-term (6–12 months) | Cross-institutional AML/fraud models | Federated averaging infrastructure |
+| Relational multi-table synthesis | Long-term (9–18 months) | Full database-level synthesis | Graph-structured encoder design |
+| Fairness-aware multi-attribute conditioning | Long-term (9–18 months) | Fair lending compliance tool | Multi-dimensional CFG guidance |
+| Domain generalization (healthcare, cyber) | Long-term (12–24 months) | Broader applicability claim | Domain-specific benchmark datasets |
+
+### 17.8.1 Architectural Improvements
+
+#### Separate Noise Schedules for Numerical and Categorical Latent Features
+In the current architecture, a uniform 64-dimensional Gaussian latent space uses the same linear noise schedule for all dimensions. Different dimensions may encode different types of information at different scales. A natural extension is to learn **separate noise schedules** for groups of latent dimensions corresponding to numerical vs. categorical features. Expected benefit: reduced categorical reconstruction error.
+
+#### Scaled-up Diffusion Transformer
+The current DiT uses 4 Transformer layers with a hidden dimension of 256 — a lightweight architecture for small-to-medium datasets (up to 45,222 samples, 64 features). Scaling to **8–12 DiT layers with hidden dimension 512 or 1024** would improve complex inter-feature dependency capture. Prior DiT scaling work showed smooth, consistent quality improvements. Practical constraint: a 12-layer, 512-dim DiT requires ≈9× more parameters than the current model.
+
+#### Fast Sampling with DDIM
+The current DDPM reverse process runs 1,000 steps × 2 forward passes (CFG) = **2,000 DiT evaluations per sample batch**. DDIM achieves comparable quality in **50–100 steps** (10–20× speedup), by taking larger deterministic steps along the denoising trajectory. DDIM integration requires no retraining — only the sampling loop changes. It could be an optional generation parameter allowing speed-quality trade-off.
+
+### 17.8.2 Enhanced Privacy and Security
+
+#### Formal Differential Privacy via DP-SGD
+Preliminary prototyping with the **Opacus library** demonstrated feasibility at ε = 2.73, δ = 10⁻⁵. DP-SGD clips per-sample gradients and adds Gaussian noise before parameter updates, providing mathematically provable bounds on information leakage.
+
+**Recommended implementation path:** Apply DP-SGD only during **Phase 2 (diffusion model training)**, not Phase 1 (VAE training). The VAE outputs latent representations, not raw data; the diffusion model carries the DP guarantee. This mixed approach may provide better quality-privacy trade-offs.
+
+Expected quality degradation:
+- **Large datasets** (Adult: 45,222, Bank Marketing: 41,188): manageable degradation
+- **Small datasets** (German Credit: 1,000, Credit Approval: 690): quality may degrade considerably
+
+#### Federated RE-TabSyn
+A single bank may have 50,000 fraud cases per year; a federated consortium of 10 banks would collectively have 500,000. **Federated RE-TabSyn** would allow cross-institutional collaborative training without raw data transfer — each institution trains locally on its own data, and only model gradients (or VAE latent representations) are shared. This directly addresses competitive confidentiality concerns and regulatory restrictions on data sharing.
+
+#### Formal Membership Inference Attack (MIA) Evaluation
+Current privacy validation relies on DCR analysis. For top-tier venue publication, formal **MIA evaluation using the TAMIS framework** (shadow model training + attack classifiers) is necessary to establish rigorous privacy claims beyond empirical distance-based metrics.
+
+### 17.8.3 Extended Synthesis Capabilities
+
+#### Multi-Class and Multi-Attribute Conditioning
+Extending CFG to **multi-class settings** (e.g., AAA/BBB/CCC/D credit ratings, multi-level AML severity) requires:
+- A different conditioning architecture (multi-dimensional class embeddings)
+- More sophisticated guidance mechanisms (potentially separate guidance vectors per class)
+- Evaluation protocols adapted to multi-class imbalance
+
+This would dramatically broaden RE-TabSyn's applicability to real-world financial classification tasks.
+
+#### Relational Multi-Table Synthesis
+Real financial data is relational: a customer table links to an account table, which links to a transaction table. **Relational synthesis** requires preserving referential integrity across tables — a considerably harder problem. Graph-structured encoder design (where table relationships are modeled as edges) is the natural architectural direction.
+
+#### Temporal Tabular Data
+Financial transactions have temporal ordering (sequential credit card swipes, time-series account activity). **Temporal RE-TabSyn** would extend the framework to sequential tabular data by adding recurrent or causal attention layers to the Transformer backbone, enabling generation of realistic transaction sequences.
+
+#### Fairness-Aware Generation
+**Fairness-aware multi-attribute conditioning** would allow generation of synthetic data that simultaneously balances multiple sensitive attributes (minority class ratio + gender + racial demographic). This is directly applicable to Fair Lending compliance tools — generating training data that is both class-balanced and demographically representative.
+
+### 17.8.4 Evaluation and Deployment
+
+#### Domain Generalization Testing
+Testing RE-TabSyn beyond finance — in **healthcare** (EHR rare disease prediction), **cybersecurity** (intrusion detection), and **manufacturing** (defect prediction) — would establish whether the framework is domain-agnostic or requires domain-specific tuning.
+
+#### Causal Fidelity Metrics
+Current evaluation (KS, DCR, TSTR) measures distributional and downstream utility. **Causal fidelity** — whether synthetic data preserves causal relationships between features — is untested. Metrics based on causal graph structure (DAGs with NO TEARS framework) would strengthen evaluation.
+
+#### Production Deployment Infrastructure
+For production use, RE-TabSyn needs:
+- An API endpoint for on-demand synthetic data generation
+- A constraint validation post-processing step (financial business rules)
+- Monitoring for generated data distribution drift
+- A versioning system for generative models trained on successive data snapshots
+
+### 17.8.5 Long-Term Research Vision
+
+#### The Broader Paradigm Shift
+RE-TabSyn establishes that **guided generation techniques developed for continuous data (images, audio) can be adapted to heterogeneous structured data through a principled latent space intermediary**. This methodological insight is generalizable. Future work could apply the same principle to bring other guidance mechanisms (classifier guidance, text conditioning, attribute-specific control) into the tabular domain — potentially enabling a new generation of controllable structured data synthesis tools.
+
+The goal is a world where financial institutions can generate high-quality, privacy-safe, controllable synthetic data on demand — not as an academic exercise, but as a core component of their data pipelines. RE-TabSyn is a first step toward that vision.
+
+---
+
+## 17.9 Software and Hardware Stack (Final Experimental Environment)
+
+### Hardware
+Full benchmark experiments were run on the author's local machine (specifications as available at submission time).
+
+### Software Stack (Exact Versions)
+
+| Category | Tool | Version | Purpose |
+|:---------|:-----|:--------|:--------|
+| Programming Language | Python | 3.13.5 | Core implementation |
+| Deep Learning Framework | PyTorch | 2.9.1 | Model training and inference |
+| Baseline Library | SDV (Synthetic Data Vault) | Latest | CTGAN and TVAE baselines |
+| ML Evaluation | XGBoost | 3.1.2 | TSTR evaluation protocol |
+| ML Evaluation | scikit-learn | 1.7.2 | Metrics and preprocessing |
+| Visualization | Matplotlib + Seaborn | Latest | t-SNE, PCA, metric plots |
+| Data Processing | Pandas | 2.3.3 | Dataset loading and preprocessing |
+| Data Processing | NumPy | 2.3.5 | Numerical operations |
+| Version Control | Git | — | Code versioning |
+| Document Preparation | LaTeX | — | Report and paper typesetting |
+
+---
+
+## 17.10 Literature Review Scope (Final Census)
+
+A total of **151 peer-reviewed research papers** were reviewed and categorized across **10 thematic areas**:
+
+| Category | Count | Notable Papers |
+|:---------|:-----:|:---------------|
+| A. Diffusion-Based Models | 21 | TabSyn, TabDDPM, TabDiff, FinDiff, RelDDPM, CoDi |
+| B. Privacy-Focused Models | 21 | DP-SGD (Abadi), DP-CTGAN, PrivSyn, PATE-GAN |
+| C. GAN-Based Models | 19 | CTGAN, TVAE, CTAB-GAN+, TabFairGAN |
+| D. Transformer/LLM Models | 8 | REaLTabFormer, TabLLM, GReaT |
+| E. Evaluation & Benchmarking | 21 | SynthEval, SDMetrics, TSTR protocols |
+| F. Privacy Attacks & Defense | 17 | MIA studies, TAMIS framework |
+| G. Domain Applications | 18 | EHR-Safe, FINSYN, AML models |
+| H. Theoretical Foundations | 16 | VAE (Kingma), Copulas, Optimal Transport |
+| I. Recent Advances | 8 | Foundation models for tabular data |
+| J. Uncategorized | 2 | FedAvg (McMahan) |
+| **Total** | **151** | — |
+
+### Key Bibliography Entries Added During Audit
+- **UCI Repository** (Dua & Graff, 2019) — Dataset source citation
+- **Score SDE** (Song et al., 2021) — Theoretical foundation for diffusion
+- **MIA Paper** (Stadler et al., 2022) — Privacy evaluation methodology
+- **XGBoost** (Chen & Guestrin, 2016) — TSTR classifier
+- **t-SNE** (van der Maaten & Hinton, 2008) — Visualization
+- **Adam Optimizer** (Kingma & Ba, 2015) — Training
+
+Total bibliography entries: **24** (grown from original 21).
+
+---
+
+## 17.11 Baseline Selection Rationale (Chapter 3.7 of Thesis)
+
+The four baselines were chosen to represent distinct failure modes and to establish a clear contribution claim:
+
+| Baseline | Representative Of | Why Included |
+|:---------|:-----------------|:-------------|
+| **CTGAN** | GAN-based synthesis | Best-known tabular GAN; mode collapse on minorities ⚠️ |
+| **TVAE** | VAE-based synthesis | Stable GAN alternative; no class control ❌ |
+| **TabDDPM** | Direct diffusion failure | Demonstrates why latent space is necessary (KS = 0.770 ❌) |
+| **TabSyn** | State-of-the-art fidelity | Best fidelity baseline; the closest prior work; no class control ❌ |
+
+**Together the four baselines establish:** (1) GANs fail on rare events, (2) direct diffusion fails on mixed types, (3) even the best existing method (TabSyn) cannot control minority ratio. RE-TabSyn is the only method that solves all three problems simultaneously.
+
+---
+
+## 17.12 Three Theoretical Rationales (Chapter 2.4 of Thesis)
+
+### Rationale for Latent Diffusion
+Direct diffusion on one-hot encoded tabular data creates an incoherent training objective: adding Gaussian noise to a vector like `[0,0,1,0,0]` produces `[0.03,−0.12,0.91,0.07,−0.02]`, which does not correspond to any valid category. The model must learn to denoise vectors that never appear in real data, creating sparse, discontinuous gradients. The VAE solves this by providing a **smooth, continuous latent space** where all intermediate noisy states are valid points. TabDDPM's KS = 0.770 empirically confirms this failure; RE-TabSyn's KS = 0.171 demonstrates the fix.
+
+### Rationale for Classifier-Free Guidance
+Standard class-conditional generation (conditioning on a class label without CFG) can only mirror the training class distribution — it cannot amplify minority classes beyond their natural prevalence because the loss function provides no incentive to do so. CFG solves this by **extrapolating** beyond the conditional distribution: the guidance formula `ε̃ = ε_uncond + w × (ε_cond − ε_uncond)` moves the generation trajectory further in the direction of the minority class than standard conditioning would, effectively creating a synthetic distribution that is "more minority than the training data," while still remaining plausible because the shift is anchored by the learned conditional distribution.
+
+### The Fidelity-Control Trade-off
+The KS gap between RE-TabSyn (0.171) and TabSyn (0.109) is **mathematically inevitable**. To generate near-50% minority samples from a dataset with 5% minority prevalence, the generation distribution must be shifted away from the real data distribution. Any shift — however well-designed — increases KS. The question is not whether to accept the trade-off but whether the downstream benefit (minority F1 gain) justifies the fidelity cost. The thesis finds: **yes**, because minority F1 is the operationally relevant metric in fraud detection, credit risk, and AML applications.
+
+---
+
+## 17.13 Design Decisions Summary (Chapter 2.5 of Thesis)
+
+| Decision | Chosen Approach | Rejected Alternative | Reason |
+|:---------|:----------------|:---------------------|:-------|
+| Latent space | VAE (continuous) | Direct one-hot encoding | TabDDPM failure demonstrates direct approach fails |
+| Backbone | DiT (Transformer) | MLP | Self-attention captures inter-column dependencies |
+| Class conditioning | CFG (joint training) | Classifier guidance | No separate classifier needed; inference-time control |
+| Noise schedule | Linear β schedule | Cosine schedule | Sufficient for latent space; cosine mainly benefits image pixels |
+| KL weight | β = 0.1 | Standard β = 1.0 | Standard β caused posterior collapse on 3/6 datasets |
+| Guidance scale default | w = 2.0 | w = 1.0 or w = 3.0 | Conservative balance between control (≈50% minority) and fidelity |
+| Label dropout rate | 10% | 20% | 10% dropout sufficient for CFG; 20% degraded conditional quality |
+| Evaluation classifier (TSTR) | XGBoost | Random Forest, Logistic Regression | Standard in tabular ML; handles mixed types natively |
+| Privacy metric | DCR to training set | DCR to test set | Training set DCR correctly measures memorization risk |
+
+---
+
+## 17.14 Preprocessing Pipeline (Chapter 4.3 of Thesis)
+
+### Missing Value Handling
+
+| Feature Type | Strategy | Reason |
+|:-------------|:---------|:-------|
+| Numerical | **Median imputation** | Financial distributions are skewed; mean would over-inflate imputed values |
+| Categorical | **Mode imputation** | Most frequent category is the safest default |
+
+### Feature Encoding and Scaling
+
+| Feature Type | Encoding | Reason |
+|:-------------|:---------|:-------|
+| Categorical | **Label encoding** → VAE learns embedding | One-hot encoding caused TabDDPM failure; label encoding avoids high-dimensional sparse vectors |
+| Numerical | **Quantile normalization** | Outlier transactions would dominate min-max scaling |
+
+### Train/Test Split
+- **80/20 stratified split** to preserve class ratios in both splits
+- VAE and diffusion models trained on the training 80%
+- Evaluation (KS, DCR, TSTR) computed on the held-out test 20%
+
+### Benchmark Datasets (Chapter 4.3.3)
+
+| Dataset | Samples | Features | Minority % | Task |
+|:--------|:--------|:---------|:-----------|:-----|
+| Polish Bankruptcy | 5,000 | 64 numerical | **4.8%** | Bankruptcy prediction |
+| Bank Marketing | 41,188 | 10 num + 10 cat | 11.3% | Term deposit subscription |
+| Lending Club | 10,000 | 8 num + 4 cat | 20.0% | Loan default prediction |
+| Adult Income | 45,222 | 2 num + 6 cat | 24.8% | High-income classification |
+| German Credit | 1,000 | 7 num + 13 cat | 30.0% | Credit risk |
+| Credit Approval | 690 | 6 num + 9 cat | **44.5%** | Credit approval |
+
+---
+
+## 17.15 Conference Publication Details (Annexure)
+
+| Field | Detail |
+|:------|:-------|
+| Paper Title | Controllable Rare Event Synthetic Data Generation for Financial Tabular Data via Classifier Free Guidance |
+| Author | Yaksi Shroff |
+| Conference | I2IT International Conference |
+| Status | **Accepted** |
+| Presentation Type | **Oral Presentation** |
+| Guide | Dr. Vishvajit Bakrola |
+
+### Key Research Highlights (as listed in Annexure)
+1. **First application of CFG** to tabular data synthesis, confirmed through systematic review of 151 research papers across 10 categories
+2. **Controllable minority generation**: Boosted minority class representation from as low as 4.8% to approximately 50% using a single guidance scale parameter
+3. **Superior downstream performance**: Classifiers trained on RE-TabSyn balanced synthetic data achieved **+3.1% higher minority F1-score** than those trained on real imbalanced data
+4. **Comprehensive evaluation**: Six financial datasets, four baseline models, three random seeds, and three evaluation pillars (fidelity, utility, privacy)
+
+---
+
+*Section added: April 2, 2026*
+*Source: Final submitted thesis (April 2026) — Reports/thesis.pdf*
+*Thesis submitted to Uka Tarsadia University, Bardoli*
+*Conference acceptance: I2IT International Conference (Oral Presentation)*
+
+<!-- END OF thesis_final.md -->
+
+---
+

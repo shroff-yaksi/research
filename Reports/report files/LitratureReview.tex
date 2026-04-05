@@ -1,18 +1,34 @@
 \chapter{Literature Review}
 
-This literature review surveys peer-reviewed publications spanning synthetic data generation, tabular data modeling, generative adversarial networks, variational autoencoders, diffusion models, and privacy-preserving mechanisms. A systematic analysis of 151 research papers across 10 categories was conducted to identify the state of the art, evaluate existing limitations, and pinpoint the research gap addressed by our proposed approach. Table~\ref{tab:lit_categories} summarizes the scope of this review.
+This literature review surveys peer-reviewed publications spanning synthetic data generation, tabular data modeling, generative adversarial networks, variational autoencoders, diffusion models, and privacy-preserving mechanisms. A systematic analysis of 151 research papers across 10 categories was conducted to identify the state of the art, evaluate existing limitations, and pinpoint the research gap addressed by our proposed approach. The review spans generative modeling, privacy, evaluation, and financial applications because synthetic tabular data sits at the intersection of all four — understanding RE-TabSyn's position requires knowing what came before, where those approaches fell short, and what gap remains. Table~\ref{tab:lit_categories} summarizes the scope of this review.
 
-This review spans generative modeling, privacy, evaluation, and financial applications because synthetic tabular data sits at the intersection of all four. Understanding RE-TabSyn's position requires knowing what came before, where those approaches fell short, and what gap remains.
+\renewcommand{\arraystretch}{1.2}
 
-\begin{table}[!ht]
-\centering
-\caption{Summary of Literature Review Scope: 151 Papers Across 10 Categories}
-\label{tab:lit_categories}
-\small
-\begin{tabularx}{\textwidth}{|l|c|X|}
-\hline
+\begin{xltabular}{\textwidth}{|X|c|X|}
+\caption{Literature review: 151 papers, 10 categories}
+\label{tab:lit_categories} \\
+
+\noalign{\hrule height\arrayrulewidth}
 \textbf{Category} & \textbf{Count} & \textbf{Key Papers} \\
 \hline
+\noalign{\vskip 4pt}
+\hline
+\endfirsthead
+
+\noalign{\hrule height\arrayrulewidth}
+\textbf{Category} & \textbf{Count} & \textbf{Key Papers} \\
+\hline
+\noalign{\vskip 4pt}
+\hline
+\endhead
+
+\hline
+\multicolumn{3}{r}{\small\itshape Continued on next page} \\
+\endfoot
+
+\hline
+\endlastfoot
+
 A. Diffusion-Based Models & 21 & TabSyn, TabDDPM, CoDi, FinDiff, TabDiff \\
 \hline
 B. Privacy-Focused Models & 21 & DP-SGD, DP-CTGAN, PrivSyn, PATE-GAN \\
@@ -33,10 +49,10 @@ I. Recent Advances & 8 & Foundation Models, Neural ODEs \\
 \hline
 J. Uncategorized & 2 & FedAvg, CLIP \\
 \hline
-\textbf{Total} & \textbf{151} & \\
+Total & 151 & \\
 \hline
-\end{tabularx}
-\end{table}
+
+\end{xltabular}
 
 \section{Foundational Works in Generative Models}
 
@@ -54,11 +70,11 @@ The Nash equilibrium mentioned above is a concept from game theory. It is the po
 
 However, GANs suffer from three well-documented pathologies:
 \begin{enumerate}
-    \item \textbf{Training Instability:} The minimax objective creates oscillatory dynamics where the generator and discriminator may fail to converge, requiring careful hyperparameter tuning. Small changes in learning rate or batch size can cause the entire training run to collapse.
+    \item Training instability: The minimax objective creates oscillatory dynamics where the generator and discriminator may fail to converge, requiring careful hyperparameter tuning. Small changes in learning rate or batch size can cause the entire training run to collapse.
 
-    \item \textbf{Mode Collapse:} The generator may forget underrepresented modes of the data distribution, a direct failure for rare event generation. A GAN on a dataset with 5\% fraud can collapse to generating only the majority pattern, ignoring fraud entirely.
+    \item Mode collapse: The generator may forget underrepresented modes of the data distribution, a direct failure for rare event generation. A GAN on a dataset with 5\% fraud can collapse to generating only the majority pattern, ignoring fraud entirely.
 
-    \item \textbf{Convergence Diagnostics:} GAN training lacks a single meaningful loss metric. The training loss oscillates, and there is no obvious signal that the model has converged.
+    \item Convergence diagnostics: GAN training lacks a single meaningful loss metric. The training loss oscillates, and there is no obvious signal that the model has converged.
 \end{enumerate}
 
 Subsequent works addressed these issues: Wasserstein GAN \cite{arjovsky2017wgan} introduced the Earth Mover's distance as a more stable training objective, providing a gradient signal that is meaningful even when the generator and discriminator are far apart in distribution. WGAN training was further improved with a gradient penalty term enforcing a Lipschitz constraint on the discriminator, avoiding the weight-clipping instabilities of the original WGAN \cite{gulrajani2017wgangp}. Several training techniques were proposed \cite{salimans2016improved}: feature matching (training the generator to match intermediate representations in the discriminator rather than its final output), minibatch discrimination (allowing the discriminator to look at multiple samples simultaneously to detect mode collapse), and historical averaging (penalizing the model for deviating too much from the average of its past parameters). CausalGAN \cite{kocaoglu2018causalgan} introduced causal reasoning into adversarial training, allowing generation conditioned on causal interventions rather than mere correlations. Despite these advances, mode collapse on minority classes remains the primary limitation for imbalanced data generation, and it is one of the main reasons this research turns to diffusion models instead.
@@ -87,11 +103,11 @@ DDPMs surpassed GANs in image generation on both fidelity (measured by FID score
 
 Diffusion models offer three advantages relevant to this work:
 \begin{enumerate}
-    \item \textbf{Stable Training:} The mean squared error denoising objective provides consistent gradient signals without adversarial instabilities.
+    \item Stable training: The mean squared error denoising objective provides consistent gradient signals without adversarial instabilities.
 
-    \item \textbf{Mode Coverage:} The denoising objective must cover all modes of the data distribution, including rare classes, to keep denoising error low. Unlike GANs, diffusion models do not suffer from mode collapse.
+    \item Mode coverage: The denoising objective must cover all modes of the data distribution, including rare classes, to keep denoising error low. Unlike GANs, diffusion models do not suffer from mode collapse.
 
-    \item \textbf{Flexible Conditioning:} Conditioning information can be incorporated at each denoising step, enabling control over generated outputs -- the property RE-TabSyn exploits through CFG.
+    \item Flexible conditioning: Conditioning information can be incorporated at each denoising step, enabling control over generated outputs -- the property RE-TabSyn exploits through CFG.
 \end{enumerate}
 
 A unified theoretical framework connecting DDPMs with score-based models through stochastic differential equations, i.e., SDEs, established that both approaches learn the score function $\nabla_\mathbf{x} \log p(\mathbf{x})$ of the data distribution \cite{song2021score}. The score function points in the direction of increasing data density. Learning it means learning where data is likely to come from, which is exactly what you need for generation. The foundational thermodynamic perspective appears in \cite{sohldickstein2015deep}, and \cite{dhariwal2021diffbeatgan} demonstrated convincingly that diffusion models surpass GANs on image synthesis benchmarks, putting to rest any remaining doubts about their generational quality.
@@ -100,15 +116,33 @@ Latent Diffusion Models, i.e., LDMs \cite{rombach2022ldm}, demonstrated that per
 
 Table~\ref{tab:gen_model_comparison} summarises the properties of the three families and their practical consequences for tabular synthesis.
 
-\begin{table}[!ht]
-\centering
-\caption{Comparison of Generative Model Families for Tabular Synthesis}
-\label{tab:gen_model_comparison}
-\small
-\begin{tabularx}{\textwidth}{|l|C|C|C|}
-\hline
+\renewcommand{\arraystretch}{1.2}
+
+\begin{xltabular}{\textwidth}{|c|X|X|X|}
+\caption{Generative model families comparison}
+\label{tab:gen_model_comparison} \\
+
+\noalign{\hrule height\arrayrulewidth}
 \textbf{Property} & \textbf{GANs: CTGAN} & \textbf{VAEs: TVAE} & \textbf{Diffusion: TabSyn, RE-TabSyn} \\
 \hline
+\noalign{\vskip 4pt}
+\hline
+\endfirsthead
+
+\noalign{\hrule height\arrayrulewidth}
+\textbf{Property} & \textbf{GANs: CTGAN} & \textbf{VAEs: TVAE} & \textbf{Diffusion: TabSyn, RE-TabSyn} \\
+\hline
+\noalign{\vskip 4pt}
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{\small\itshape Continued on next page} \\
+\endfoot
+
+\hline
+\endlastfoot
+
 Training stability & Low (adversarial) & High (ELBO) & High (MSE denoising) \\
 \hline
 Mode coverage & Poor (mode collapse) & Moderate & Excellent \\
@@ -129,16 +163,14 @@ Minority class performance & Poor (mode collapse) & Moderate & Strong (RE-TabSyn
 \hline
 Formal DP compatibility & Difficult (mode collapse worsens) & Moderate & Moderate to good \\
 \hline
-\end{tabularx}
-\end{table}
 
-The table makes clear why the diffusion paradigm is the right foundation for RE-TabSyn. GANs have excellent sample quality when they work, but the mode collapse problem specifically targeting minority classes is fatal for the financial imbalanced data problem. VAEs are stable but produce blurry reconstructions and have no class conditioning. Diffusion models combine high sample quality, good mode coverage, and a natural conditioning mechanism via CFG that enables RE-TabSyn's core contribution.
+\end{xltabular}
+
+Diffusion models are the right foundation for RE-TabSyn. GANs have excellent sample quality when they work, but mode collapse targeting minority classes is fatal for the financial imbalanced data problem. VAEs are stable but produce blurry reconstructions and have no class conditioning. Diffusion models combine high sample quality, good mode coverage, and a natural conditioning mechanism via CFG — the combination that enables RE-TabSyn's core contribution.
 
 \section{Synthetic Tabular Data Generation}
 
-A growing body of work has specifically targeted the challenge of synthesizing realistic tabular data. Tabular data presents challenges that do not exist for images or text. A single row in a financial table might have 30 columns: some are continuous numbers (income, transaction amount), some are categories (loan type, employment status), some have missing values, and all of them are related to each other in complex ways (high income tends to correlate with low default rates, married people with dependents tend to have specific spending patterns, and so on). None of the image-generation techniques transfer directly to this setting.
-
-This section traces the major tabular synthesis methods in chronological order, showing how each generation of models addressed the limitations of its predecessors, and where each one ultimately fell short.
+A growing body of work has specifically targeted the challenge of synthesizing realistic tabular data. Tabular data presents challenges that do not exist for images or text. A single row in a financial table might have 30 columns: some are continuous numbers (income, transaction amount), some are categories (loan type, employment status), some have missing values, and all of them are related to each other in complex ways (high income tends to correlate with low default rates, married people with dependents tend to have specific spending patterns, and so on). None of the image-generation techniques transfer directly to this setting. The following subsections trace the major tabular synthesis methods in chronological order, showing how each generation of models addressed the limitations of its predecessors.
 
 \subsection{CTGAN and TVAE}
 
@@ -262,68 +294,39 @@ Privacy preservation measures resistance to re-identification attacks. Distance 
 
 This three-pillar framework -- fidelity, utility, and privacy -- is the evaluation standard adopted in this research. The fourth dimension added here is minority class control, which no existing framework had previously needed to address because no existing method could control minority ratios. Chapter~4 describes how all four dimensions are measured in practice.
 
-\section{Baseline Selection Criteria}
-
-Any comparative study requires a deliberate choice of baselines. Including too few makes the comparison insufficient; including too many obscures the narrative. RE-TabSyn is compared against four baselines: CTGAN, TVAE, TabDDPM, and TabSyn. Each was chosen for a specific reason, and together they span the space of relevant prior work.
-
-\subsection{CTGAN as GAN representative}
-
-CTGAN \cite{xu2019ctgan} is the standard for tabular data synthesis. It has been cited over 2,000 times, is the default model in the Synthetic Data Vault, i.e., SDV, library that financial institutions use in practice, and has been reproduced independently across hundreds of publications. Any claimed improvement in tabular synthesis must beat CTGAN, or the comparison is incomplete. Including it anchors the fidelity axis of the comparison: CTGAN achieves KS $\approx$ 0.153, which is a known reference point.
-
-CTGAN represents the GAN family. If RE-TabSyn outperforms it, the result validates the diffusion-over-GAN design choice for this task.
-
-\subsection{TVAE as VAE representative}
-
-TVAE was introduced in the same paper as CTGAN \cite{xu2019ctgan}. It uses a VAE with the same preprocessing pipeline as CTGAN but replaces the adversarial objective with a variational one. Including TVAE serves two specific purposes:
-
-First, it isolates the effect of the generative model family (VAE versus GAN) from the effect of preprocessing. Since CTGAN and TVAE share the same preprocessing, any performance difference between them reflects the difference between adversarial and variational training. This ablation is useful for understanding the relative contribution of each component.
-
-Second, RE-TabSyn's first component is also a VAE. Comparing against TVAE tests whether RE-TabSyn's VAE-plus-diffusion design is strictly better than a VAE alone. The answer is yes -- TVAE achieves weaker fidelity and no class control -- but the comparison needs to be made explicitly.
-
-\subsection{TabDDPM as diffusion failure case}
-
-TabDDPM \cite{kotelnikov2023tabddpm} is included as a negative baseline. Its inclusion is not to show a close competitor but to demonstrate a failure mode that RE-TabSyn's architecture specifically addresses.
-
-TabDDPM was the first paper to seriously apply diffusion models to tabular data. It was published at ICML 2023, a top-tier venue, and attracted considerable attention. If it had not been included in the comparison, a reader might reasonably ask: ``If diffusion works so well for images and text, why not just apply it directly to tables?'' TabDDPM answers that question empirically: direct application fails (KS = 0.770), and the reason is the one-hot categorical encoding mismatch that the VAE latent space solves.
-
-Without TabDDPM, RE-TabSyn's architectural choice of latent-space diffusion would appear to be one option among many. With TabDDPM included, the comparison shows it to be a necessary design decision.
-
-\subsection{TabSyn as state-of-the-art reference}
-
-TabSyn \cite{zhang2024tabsyn} is the highest-fidelity baseline, published at ICLR 2024. It is the method that RE-TabSyn builds directly upon. Including it is both an obligation and a deliberate positioning choice.
-
-It is an obligation because any paper that proposes an extension of TabSyn must show its performance relative to the method it extends. Omitting TabSyn would be a major weakness in the comparison.
-
-It is a positioning choice because TabSyn's performance (KS = 0.109, AUC utility ratio = 97.7\%) defines the ``fidelity ceiling'': the best possible distributional fidelity achievable with a VAE-plus-diffusion approach without any class conditioning overhead. RE-TabSyn accepts a modest fidelity cost (KS = 0.171) to gain class control. The TabSyn comparison makes the size of that cost visible and allows the reader to judge whether it is acceptable for their use case.
-
-\subsection{What the four baselines together establish}
-
-The four baselines are not redundant -- they each answer a different question:
-
-\begin{enumerate}
-    \item \textbf{CTGAN}: Is RE-TabSyn better than the current industry-standard GAN?
-    \item \textbf{TVAE}: Is the VAE-plus-diffusion design better than a VAE alone?
-    \item \textbf{TabDDPM}: Is latent-space diffusion better than direct diffusion?
-    \item \textbf{TabSyn}: What is the fidelity cost of adding class control?
-\end{enumerate}
-
-Together they triangulate RE-TabSyn's position in the design space: it is better than CTGAN as the GAN representative, better than standalone TVAE, better than TabDDPM for direct diffusion, and adds class control that TabSyn, the current best-fidelity method, lacks.
-
-TVAE's standalone results are not reported in every table in Chapter~5 because its performance is consistently dominated by both TabSyn and RE-TabSyn, and including it in every plot would add visual noise without adding information. Where TVAE results are relevant to a specific comparison (such as isolating the VAE family's performance), they are discussed explicitly.
-
 \section{Identified Research Gaps}
 
 The analysis of 151 publications presented in this chapter reveals three gaps that motivate RE-TabSyn.
 
-\begin{table}[!ht]
-\centering
-\caption{Research Gap Analysis: Capabilities of Existing Methods vs.\ RE-TabSyn}
-\label{tab:gap_analysis}
-\small
-\begin{tabularx}{\textwidth}{|l|C|C|C|C|C|}
-\hline
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+
+\begin{xltabular}{\textwidth}{|X|c|c|c|c|c|}
+\caption{Research gap: existing methods vs.\ RE-TabSyn}
+\label{tab:gap_analysis} \\
+
+\noalign{\hrule height\arrayrulewidth}
 \textbf{Capability} & \textbf{CTGAN} & \textbf{TVAE} & \textbf{TabDDPM} & \textbf{TabSyn} & \textbf{RE-TabSyn} \\
 \hline
+\noalign{\vskip 4pt}
+\hline
+\endfirsthead
+
+\noalign{\hrule height\arrayrulewidth}
+\textbf{Capability} & \textbf{CTGAN} & \textbf{TVAE} & \textbf{TabDDPM} & \textbf{TabSyn} & \textbf{RE-TabSyn} \\
+\hline\hline
+\noalign{\vskip 4pt}
+
+\endhead
+
+\hline
+\multicolumn{6}{r}{\small\itshape Continued on next page} \\
+\endfoot
+
+\hline
+\endlastfoot
+
 Mixed-type Support & Yes & Yes & Partial & Yes & Yes \\
 \hline
 High Fidelity (KS $<$ 0.20) & Yes & Yes & No & Yes & Yes \\
@@ -332,30 +335,24 @@ Stable Training & No & Yes & Yes & Yes & Yes \\
 \hline
 Mode Coverage & No & Partial & Yes & Yes & Yes \\
 \hline
-Class Control & No & No & No & No & \textbf{Yes} \\
+Class Control & No & No & No & No & Yes \\
 \hline
-Post-hoc Ratio Adjustment & No & No & No & No & \textbf{Yes} \\
+Post-hoc Ratio Adjustment & No & No & No & No & Yes \\
 \hline
 Privacy Preservation & Weak & Weak & Moderate & Strong & Strong \\
 \hline
-\end{tabularx}
-\end{table}
+
+\end{xltabular}
+\endgroup
 
 \begin{enumerate}
-    \item \textbf{Gap 1: Absence of Controllable Minority Class Generation.} No existing method enables practitioners to specify desired minority ratios during generation. All methods replicate (or degrade) the training class distribution without any mechanism for adjustment. This means synthetic data cannot address class imbalance, which is the primary reason financial institutions would want to use it. A fraud detection team that generates synthetic data with TabSyn still ends up with the same 0.5\% fraud prevalence as their real data. They would need to generate 200 times as much data to get the same number of fraud cases as legitimate ones, which creates its own statistical problems.
+    \item Gap 1: No controllable minority class generation. Across all 151 papers surveyed, no method enables practitioners to specify minority ratios at generation time. All existing methods replicate or degrade the training class distribution.
 
-    \item \textbf{Gap 2: CFG Application to Tabular Domain.} Classifier-Free Guidance has proven effective in image synthesis and became the default conditioning mechanism for leading text-to-image models. Its ability to control class distribution at inference time, without requiring retraining or auxiliary classifiers, makes it well-suited to the minority ratio control problem. Its potential for structured tabular data class control remained entirely unexplored. Our systematic search across all 151 papers found zero instances of CFG applied to tabular synthesis. The adaptation is non-trivial: image CFG operates on continuous pixel values, while tabular data has mixed types, different scales, and complex inter-column dependencies that require careful architectural design.
+    \item Gap 2: CFG not applied to the tabular domain. The systematic review found zero instances of CFG applied to tabular synthesis. The adaptation requires solving the categorical encoding problem first, since image CFG operates on continuous pixel values while tabular data has mixed types and inter-column dependencies that need the VAE latent space as an intermediary.
 
-    \item \textbf{Gap 3: Unified Fidelity-Privacy-Control Framework.} Existing works optimize for either fidelity (TabSyn), privacy (DP-CTGAN), or rare event handling (SMOTE-based methods). No single framework addresses all three dimensions simultaneously, leaving practitioners with an uncomfortable choice between competing objectives. TabSyn gives excellent fidelity but no privacy guarantees and no class control. DP-CTGAN gives formal privacy but poor fidelity because noise injection destroys distributional structure. SMOTE gives class balance but generates samples that may not be realistic. RE-TabSyn aims to occupy the intersection of fidelity, privacy, and control that previously had no occupant.
+    \item Gap 3: No unified fidelity-privacy-control framework. Methods optimize for one objective at a time: TabSyn for fidelity, DP-CTGAN for formal privacy, SMOTE-based methods for class balance. No single prior method addresses all three simultaneously.
 \end{enumerate}
 
-RE-TabSyn directly addresses all three gaps by:
-\begin{enumerate}
-    \item Adopting latent space diffusion for mixed-type handling, borrowing TabSyn's core architectural insight.
-    \item Introducing Classifier-Free Guidance to tabular synthesis for the first time, enabling controllable minority ratios through a single guidance scale parameter.
-    \item Maintaining competitive fidelity and strong empirical privacy alongside controllability, providing a unified framework for the first time.
-\end{enumerate}
-
-The cost of these gains is a modest reduction in peak fidelity (KS = 0.171 versus TabSyn's 0.109), representing the trade-off between tight distributional matching and class-conditional control. Chapter~5 argues that this trade-off is acceptable, and in imbalanced settings favorable: the utility gain from balanced training data outweighs the small fidelity loss.
+RE-TabSyn addresses all three gaps: it adopts latent space diffusion for mixed-type handling (borrowing TabSyn's core architectural insight), introduces Classifier-Free Guidance to tabular synthesis for the first time, and maintains competitive fidelity alongside controllability. The cost is a modest reduction in peak fidelity (KS = 0.171 versus TabSyn's 0.109), representing the trade-off between tight distributional matching and class-conditional control. Chapter~5 argues that this trade-off is acceptable, and in imbalanced settings favorable: the utility gain from balanced training data outweighs the small fidelity loss.
 
 The theoretical foundations underpinning this work draw from VAE theory \cite{kingma2014vae}, copula methods \cite{nelsen2006copulas}, causal structure learning \cite{zheng2024causal}, pre-trained DP-VAEs \cite{jiang2023dp2vae}, federated synthesis \cite{rajotte2022fedsyn}, graph neural networks for tabular data \cite{zhu2023gnn}, optimal transport \cite{villani2009optimal, hallin2021ksample}, contrastive predictive coding \cite{oord2018representation}, statistical data privacy \cite{slavkovic2023statistical}, Renyi DP \cite{balle2020renyi}, privacy-preserving decision frameworks \cite{haney2024decision}, optimal privacy control \cite{xu2024optimal}, meta-learning for synthetic data \cite{triantafillou2022metalearning}, the chi-square test \cite{pearson1900criterion}, and imbalanced learning \cite{he2009imbalanced, chawla2002smote}. Recent advances include adversarial detector training \cite{liu2023adversarial}, deep generative model surveys \cite{jordon2022deepgen}, foundation models for tabular data \cite{van2024foundation, bommasani2022opportunities}, neural ODEs \cite{garcia2024neural}, relational structure learning \cite{liu2023goggle}, active learning from synthetic data \cite{haussmann2020imital}, quantum-classical hybrid models \cite{coyle2024quantum}, federated learning \cite{mcmahan2017fedavg}, and hierarchical text-conditional generation \cite{ramesh2022clip}. The evaluation and implementation rely on XGBoost \cite{chen2016xgboost}, t-SNE visualization \cite{maaten2008tsne}, the Transformer architecture \cite{vaswani2017attention}, Diffusion Transformers \cite{peebles2023dit}, layer normalization \cite{ba2016layernorm}, and dropout regularization \cite{srivastava2014dropout}.

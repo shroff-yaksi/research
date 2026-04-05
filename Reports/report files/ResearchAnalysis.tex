@@ -4,7 +4,7 @@ This chapter presents the formal mathematical foundations of the proposed RE-Tab
 
 \section{Problem Formulation}
 
-Let $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^{N}$ denote a tabular dataset where $\mathbf{x}_i \in \mathcal{X}$ represents a feature vector and $y_i \in \{0, 1\}$ denotes the class label. In plain terms: we have a table of $N$ rows. Each row contains a set of features (income, loan amount, employment status, and so on) and a binary label (1 for the rare event, like fraud or default; 0 for the normal case).
+Let $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^{N}$ denote a tabular dataset where $\mathbf{x}_i \in \mathcal{X}$ represents a feature vector and $y_i \in \{0, 1\}$ denotes the class label.
 
 Each feature vector comprises numerical and categorical attributes:
 \begin{equation}
@@ -12,28 +12,24 @@ Each feature vector comprises numerical and categorical attributes:
 \end{equation}
 where $\mathcal{C}_j$ is the categorical domain for attribute $j$ with cardinality $|\mathcal{C}_j|$.
 
-This captures tabular heterogeneity: $\mathbf{x}^{(num)}$ is real-valued (age, income) while $\mathbf{x}^{(cat)}$ is categorical (e.g.\ \{employed, self-employed, unemployed\}). This mixed-type structure is what makes tabular synthesis harder than image generation, where every pixel is a single number.
+The class imbalance is quantified by the minority ratio $\rho = N_1 / N$, where $N_1 = |\{i : y_i = 1\}|$ is the minority class count. In our benchmark datasets, $\rho$ ranges from 0.048 to 0.445.
 
-The class imbalance is quantified by the minority ratio $\rho = N_1 / N$, where $N_1 = |\{i : y_i = 1\}|$ is the minority class count. In our benchmark datasets, $\rho$ ranges from 0.048 (Polish Bankruptcy, where less than 5 in 100 companies are bankrupt) to 0.445 (Credit Approval, where nearly half the applicants are approved -- a relatively balanced case). This range is deliberate: it allows us to test the method under both extreme and moderate imbalance conditions.
-
-The core learning objective is: learn a generative model $G_\theta$ that synthesizes samples $\tilde{\mathbf{x}} \sim p_\theta(\mathbf{x})$ indistinguishable from $\mathbf{x} \sim p_{data}(\mathbf{x})$, with the additional capability to control the class distribution $p_\theta(y)$ at generation time. This is a stricter objective than standard generative modeling: the target is samples whose class composition can be specified by the user after training, not merely realistic samples.
-
-The following desiderata guide the framework design:
+The core learning objective is: learn a generative model $G_\theta$ that synthesizes samples $\tilde{\mathbf{x}} \sim p_\theta(\mathbf{x})$ indistinguishable from $\mathbf{x} \sim p_{data}(\mathbf{x})$, with the additional capability to control the class distribution $p_\theta(y)$ at generation time. This is a stricter objective than standard generative modeling: the target is samples whose class composition can be specified by the user after training, not merely realistic samples. Four criteria guide the framework design:
 \begin{enumerate}
-    \item \textbf{Fidelity:} $p_\theta(\mathbf{x}) \approx p_{data}(\mathbf{x})$ (distributional similarity), measured by the Kolmogorov-Smirnov, i.e., KS, statistic, where lower values indicate better fidelity. In practice, this means that each column of the synthetic data should have roughly the same distribution as the corresponding column in the real data, and the correlations between columns should be preserved.
+    \item Fidelity: $p_\theta(\mathbf{x}) \approx p_{data}(\mathbf{x})$ (distributional similarity), measured by the Kolmogorov-Smirnov, i.e., KS, statistic, where lower values indicate better fidelity.
 
-    \item \textbf{Utility:} Classifiers trained on synthetic data perform comparably to those trained on real data, measured via the Train-on-Synthetic Test-on-Real, i.e., TSTR, protocol using AUC-ROC and F1-score. A synthetic dataset has high utility if a fraud detector trained on it generalizes well to real transactions.
+    \item Utility: Classifiers trained on synthetic data perform comparably to those trained on real data, measured via the Train-on-Synthetic Test-on-Real, i.e., TSTR, protocol using AUC-ROC and F1-score.
 
-    \item \textbf{Privacy:} Synthetic samples do not memorize training instances, measured by Distance to Closest Record, i.e., DCR, where higher values indicate stronger privacy. The concern here is that a model which has seen all 5,000 training records might sometimes generate synthetic records that are near-identical to real ones, effectively leaking private information.
+    \item Privacy: Synthetic samples do not memorize training instances, measured by Distance to Closest Record, i.e., DCR, where higher values indicate stronger privacy.
 
-    \item \textbf{Controllability:} User-specified class ratio $\pi = P(y=1)$ achievable without model retraining, measured by the deviation between target and achieved minority ratios. A practitioner should be able to say ``generate me a balanced dataset with 50\% minority'' and the model should comply without needing to retrain on new data.
+    \item Controllability: User-specified class ratio $\pi = P(y=1)$ achievable without model retraining, measured by the deviation between target and achieved minority ratios.
 \end{enumerate}
 
 No previous method satisfies all four desiderata simultaneously. TabSyn satisfies the first three but not the fourth. CTGAN partially satisfies fidelity and utility but fails on privacy (weak DCR) and completely fails on controllability. RE-TabSyn is designed to satisfy all four, accepting a modest fidelity cost relative to TabSyn as the price of gaining controllability.
 
 \section{Baseline Methods: Theoretical Foundations}
 
-This section provides the mathematical foundations of the four baseline methods against which RE-TabSyn is evaluated. Each method's limitations motivate specific design choices in the proposed approach.
+This section provides the mathematical foundations of the four baseline methods against which RE-TabSyn is evaluated; each method's limitations motivate specific design choices in the proposed approach.
 
 \subsection{Generative adversarial networks (GANs)}
 
@@ -42,15 +38,13 @@ GANs \cite{goodfellow2014gan} formulate generative modeling as a two-player mini
 \min_G \max_D \mathcal{L}_{GAN}(G, D) = \mathbb{E}_{\mathbf{x} \sim p_{data}}[\log D(\mathbf{x})] + \mathbb{E}_{\mathbf{z} \sim p_z}[\log(1 - D(G(\mathbf{z})))]
 \end{equation}
 
-What this equation says: the discriminator $D$ tries to maximize the probability of correctly labeling real samples (the first term) and correctly labeling generated samples as fake (the second term). The generator $G$ tries to minimize the discriminator's ability to distinguish its outputs from real data. At the Nash equilibrium, $G$ produces samples from $p_{data}$ and $D$ outputs $\frac{1}{2}$ for all inputs, meaning it can no longer distinguish real from fake.
-
-In practice, however, training dynamics are notoriously unstable. The discriminator may become too strong (causing vanishing gradients for $G$) or too weak (providing no learning signal). There is a fundamental tension: if the discriminator is perfect, the generator gets no useful gradient information because $\log(1 - D(G(\mathbf{z})))$ is nearly constant; if the discriminator is too weak, the generator is not being pushed to improve. Various techniques have been proposed to stabilize training, including Wasserstein distance \cite{arjovsky2017wgan}, spectral normalization, and progressive growing.
+Training dynamics are notoriously unstable: a discriminator that is too strong causes vanishing gradients for $G$, while one that is too weak provides no learning signal. Techniques such as Wasserstein distance \cite{arjovsky2017wgan} and spectral normalization help, but do not fully resolve the problem.
 
 CTGAN \cite{xu2019ctgan} extends vanilla GANs for tabular data through two innovations:
 \begin{enumerate}
-    \item \textbf{Mode-Specific Normalization:} Each numerical column is modeled as a mixture of Gaussians via variational Gaussian mixture models, i.e., VGMMs. This step identifies the multiple peaks in a column's distribution (income might have peaks around \$30K, \$60K, \$100K) and transforms each value relative to its nearest peak. This is more expressive than min-max or z-score normalization, which assume a single unimodal distribution.
+    \item Mode-specific normalization: numerical columns are modeled as mixtures of Gaussians via VGMMs, allowing the transform to adapt to multimodal distributions rather than assuming unimodal structure.
 
-    \item \textbf{Conditional Generator with Training-by-Sampling:} A conditional vector specifies which categorical value to generate, and training oversamples rare categories. This ensures balanced category distributions during training, though it does not extend to balancing the target class variable $y$. CTGAN can balance rare occupation types, but cannot balance the fraud/non-fraud ratio without breaking the training-by-sampling logic.
+    \item Conditional generator with training-by-sampling: a conditional vector specifies which categorical value to generate, and training oversamples rare categories.
 \end{enumerate}
 
 Despite these innovations, CTGAN suffers from mode collapse on minority classes: the generator may ``forget'' rare modes because the gradient signal from minority samples is overwhelmed by the majority class signal. CTGAN also provides no mechanism for post-hoc ratio adjustment; the generated data mirrors the training distribution. In experiments on the Polish Bankruptcy dataset (4.8\% minority), CTGAN achieves a minority F1-score of just 0.112, barely above random guessing, confirming that mode collapse on extreme minority classes is a practical failure, not merely a theoretical concern.
@@ -59,18 +53,14 @@ Despite these innovations, CTGAN suffers from mode collapse on minority classes:
 
 VAEs \cite{kingma2014vae} model data through latent variables $\mathbf{z}$ using variational inference. The core idea: instead of directly modeling the complicated high-dimensional data distribution $p(\mathbf{x})$, introduce a simpler latent variable $\mathbf{z}$ and model the joint distribution $p(\mathbf{x}, \mathbf{z})$. Generation then proceeds by first sampling $\mathbf{z} \sim p(\mathbf{z})$ from the simple prior (a standard Gaussian) and then decoding $\mathbf{x} \sim p_\theta(\mathbf{x}|\mathbf{z})$.
 
-The generative model defines a joint distribution $p_\theta(\mathbf{x}, \mathbf{z}) = p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z})$, where $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ is a standard Gaussian prior. Since the true posterior $p_\theta(\mathbf{z}|\mathbf{x})$ is intractable (computing it exactly would require summing over all possible values of $\mathbf{z}$, which is computationally infeasible), an approximate posterior $q_\phi(\mathbf{z}|\mathbf{x})$ is introduced. This is the encoder: a neural network that takes a data point and outputs the parameters of a Gaussian approximation to its posterior. The Evidence Lower Bound, i.e., ELBO, provides a tractable training objective:
+The generative model defines a joint distribution $p_\theta(\mathbf{x}, \mathbf{z}) = p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z})$, where $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ is a standard Gaussian prior. Since the true posterior is intractable, an approximate posterior $q_\phi(\mathbf{z}|\mathbf{x})$ is introduced. The Evidence Lower Bound, i.e., ELBO, provides a tractable training objective:
 \begin{equation}
 \log p_\theta(\mathbf{x}) \geq \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]}_{\text{Reconstruction Term}} - \underbrace{D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \parallel p(\mathbf{z}))}_{\text{Regularization Term}}
 \end{equation}
 
-The left side, $\log p_\theta(\mathbf{x})$, is the log probability of the data under our model. We want to maximize this, but it is intractable to compute directly. The right side (the ELBO) is a lower bound that we can compute and maximize instead. The ELBO is the sum of two interpretable terms:
+The reconstruction term encourages the encoder to produce informative latent codes. The KL term regularizes the posterior toward the Gaussian prior.
 
-The \textbf{reconstruction term} measures how well the decoder can reconstruct $\mathbf{x}$ given the latent code $\mathbf{z}$ sampled from the approximate posterior. Maximizing this term encourages the encoder to produce latent codes that contain enough information to reconstruct the input faithfully.
-
-The \textbf{KL divergence term} measures how much the approximate posterior $q_\phi(\mathbf{z}|\mathbf{x})$ deviates from the prior $p(\mathbf{z})$. Minimizing this term (the minus sign makes it a subtraction) encourages the encoder to produce latent codes that follow the standard Gaussian distribution, making it possible to sample new codes from the prior and decode them into realistic data points.
-
-The reparameterization trick $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$, where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$, enables end-to-end gradient-based optimization. Without this trick, sampling $\mathbf{z}$ from $q_\phi(\mathbf{z}|\mathbf{x})$ would be a non-differentiable operation, blocking gradient flow. The trick reformulates the sampling as a deterministic transformation of the encoder's outputs ($\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$) and a separate, externally sampled noise variable $\boldsymbol{\epsilon}$. Gradients can then flow through $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$ normally.
+The reparameterization trick $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$, where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$, enables end-to-end gradient-based optimization.
 
 TVAE applies VAE principles to tabular data with mixed-type reconstruction losses (MSE for numerical features, cross-entropy for categorical features) but has three limitations. First, the Gaussian likelihood assumption produces blurry reconstructions that average over modes rather than capturing them sharply, potentially generating unrealistic in-between samples. Second, in high-dimensional settings the KL term can dominate training, causing posterior collapse where the decoder learns to reconstruct without using the latent code. Third, TVAE has no class conditioning mechanism, preventing controlled generation.
 
@@ -85,27 +75,21 @@ The forward process is a Markov chain that adds Gaussian noise over $T$ timestep
 q(\mathbf{z}_t | \mathbf{z}_{t-1}) = \mathcal{N}(\mathbf{z}_t; \sqrt{1-\beta_t}\,\mathbf{z}_{t-1}, \beta_t \mathbf{I})
 \end{equation}
 
-This says: at each step $t$, the previous latent vector $\mathbf{z}_{t-1}$ is slightly scaled down (by $\sqrt{1 - \beta_t}$, a value close to 1) and a small amount of Gaussian noise (with variance $\beta_t$) is added. After many steps, the data has been completely buried in noise.
-
 A useful property enables direct sampling of any timestep $t$ without iterating through all previous steps:
 \begin{equation}
 q(\mathbf{z}_t | \mathbf{z}_0) = \mathcal{N}(\mathbf{z}_t; \sqrt{\bar{\alpha}_t}\,\mathbf{z}_0, (1-\bar{\alpha}_t)\mathbf{I})
 \end{equation}
 where $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{s=1}^{t} \alpha_s$.
 
-This ``closed-form'' forward sampling is important for training efficiency. Instead of iterating through $t$ noising steps to get $\mathbf{z}_t$, we can compute it directly from $\mathbf{z}_0$ using the cumulative product $\bar{\alpha}_t$. At $t = 0$, $\bar{\alpha}_0 = 1$ and we have the original data. At $t = T$, $\bar{\alpha}_T \approx 0$ and we have pure noise.
-
 The reverse process learns to denoise by predicting the noise $\epsilon_\theta(\mathbf{z}_t, t)$ added at each step, trained with a simple MSE objective:
 \begin{equation}
 \mathcal{L}_{simple} = \mathbb{E}_{t, \mathbf{z}_0, \boldsymbol{\epsilon}} \left[ \|\boldsymbol{\epsilon} - \epsilon_\theta(\mathbf{z}_t, t)\|^2 \right]
 \end{equation}
 
-This says: sample a random timestep $t$, take a data point $\mathbf{z}_0$, add the noise $\boldsymbol{\epsilon}$ corresponding to that timestep to get $\mathbf{z}_t$, and then train the network $\epsilon_\theta$ to predict what noise was added. The mean squared error between the true noise and the predicted noise is the training loss. After enough training, $\epsilon_\theta$ can accurately denoise any $\mathbf{z}_t$ at any timestep, enabling the reverse process.
-
-\begin{figure}[!ht]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/diffusion_chain.png}
-\caption{Forward (noising) and reverse (denoising) diffusion process in latent space.}
+\caption{Forward and reverse diffusion process.}
 \label{fig:diffusion_chain}
 \end{figure}
 
@@ -117,18 +101,18 @@ TabSyn \cite{zhang2024tabsyn} addresses TabDDPM's limitations by performing diff
 
 RE-TabSyn (Rare-Event Enhanced Tabular Synthesis) combines three interlocking components to achieve both fidelity and controllable minority generation. The complete system architecture is illustrated in Figure~\ref{fig:system_architecture}.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/system_architecture.png}
-\caption{RE-TabSyn system architecture: five modules from raw CSV input to evaluation output.}
+\caption{RE-TabSyn five-module system architecture.}
 \label{fig:system_architecture}
 \end{figure}
 
 The three core components are:
 \begin{enumerate}
-    \item \textbf{Variational Autoencoder, i.e., VAE} --- mixed-type encoding into continuous latent space
-    \item \textbf{Latent Diffusion Model, i.e., LDM} --- generation in the smooth continuous latent space
-    \item \textbf{Classifier-Free Guidance, i.e., CFG} --- controllable class ratios at inference time
+    \item Variational Autoencoder (VAE) --- mixed-type encoding into continuous latent space
+    \item Latent Diffusion Model (LDM) --- generation in the smooth continuous latent space
+    \item Classifier-Free Guidance (CFG) --- controllable class ratios at inference time
 \end{enumerate}
 
 The three components are not independently useful; they work because of how they interact. The VAE solves the encoding problem so that the diffusion model operates in a well-behaved continuous space. The diffusion model learns a powerful generative model of that space. And the CFG mechanism uses the diffusion model's conditioning architecture to steer generation toward the desired class. Remove any one component and the system breaks: without the VAE, diffusion fails on categorical features; without the diffusion model, there is no way to apply CFG; without CFG, class control is impossible.
@@ -137,10 +121,10 @@ The three components are not independently useful; they work because of how they
 
 The VAE is the foundation of RE-TabSyn, solving the critical problem of encoding heterogeneous tabular data into a smooth, continuous latent space where diffusion can operate effectively. The architecture is illustrated in Figure~\ref{fig:vae_architecture}.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{img/vae_architecture.png}
-\caption{Tabular VAE: encoder (256, 128) projects to 64-dim latent $(\mu, \log\sigma^2)$; decoder reconstructs numerical and categorical features via separate output heads.}
+\caption{Tabular VAE encoder-decoder architecture.}
 \label{fig:vae_architecture}
 \end{figure}
 
@@ -149,14 +133,12 @@ The encoder maps mixed-type input $\mathbf{x} \in \mathbb{R}^{d}$ to latent para
 \boldsymbol{\mu}, \log \boldsymbol{\sigma}^2 = \text{Encoder}_\phi(\mathbf{x}) \quad \text{where} \quad \boldsymbol{\mu}, \log \boldsymbol{\sigma}^2 \in \mathbb{R}^{64}
 \end{equation}
 
-The hidden dimensions 256 and 128 are chosen to provide sufficient representational capacity for the encoding task while avoiding overfitting on smaller datasets. The dimensionality decreases progressively (from the input dimension down to 256, then 128, then 64), creating a bottleneck that forces the model to learn compact, informative representations. The 64-dimensional latent space is a design choice that balances expressiveness (enough dimensions to capture the variation in a 64-feature dataset like Polish Bankruptcy) against compactness (small enough that diffusion in the latent space is computationally efficient).
-
 The latent variable is sampled via the reparameterization trick:
 \begin{equation}
 \mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}, \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})
 \end{equation}
 
-Here, $\boldsymbol{\sigma} = \exp(\frac{1}{2} \log \boldsymbol{\sigma}^2)$ (computed element-wise), and $\odot$ denotes element-wise multiplication. The noise $\boldsymbol{\epsilon}$ is sampled independently and injected into the computation, allowing gradients to flow through $\boldsymbol{\mu}$ and $\log \boldsymbol{\sigma}^2$ while preserving the stochastic nature of the latent code. The log-variance parameterization is used instead of variance directly because it is numerically more stable (it can take any real value, unlike variance which must be positive) and because neural networks learn it more easily.
+Here, $\boldsymbol{\sigma} = \exp(\frac{1}{2} \log \boldsymbol{\sigma}^2)$ (computed element-wise), and $\odot$ denotes element-wise multiplication.
 
 The decoder reconstructs from the latent code, utilizing separate loss functions for different feature types:
 \begin{equation}
@@ -164,42 +146,34 @@ The decoder reconstructs from the latent code, utilizing separate loss functions
 \end{equation}
 where $\beta = 0.1$ balances reconstruction quality and latent space regularization.
 
-This mixed-type loss is a deliberate design choice. For numerical features, mean squared error, i.e., MSE, is appropriate because these are real-valued quantities where the difference between prediction and target has a natural meaning. For categorical features, cross-entropy is appropriate because these are discrete class labels where we want the decoder to output a probability distribution over possible categories; the argmax of this distribution gives the predicted category. Using MSE for categorical features would imply that the numerical difference between category labels has semantic meaning, which it does not.
-
-The weight $\beta = 0.1$ is lower than the standard $\beta = 1$ used in vanilla VAEs. This $\beta$-VAE formulation \cite{kingma2014vae} prevents posterior collapse: a smaller KL weight means the model is less aggressively regularized toward the prior, making it more likely to use the latent space meaningfully. However, it also means the latent space geometry is slightly less Gaussian, which is why careful noise schedule calibration in the diffusion model matters. In practice, $\beta = 0.1$ was found to achieve a good balance between reconstruction quality and latent regularity across all six datasets.
+MSE is used for numerical features and cross-entropy for categorical features, since MSE is inappropriate for discrete class labels. $\beta = 0.1$ prevents posterior collapse while maintaining sufficient latent space regularity.
 
 \subsection{Component 2: Latent diffusion model}
 
 Given the encoded latent representation $\mathbf{z}_0 = \text{Encoder}_\phi(\mathbf{x})$, the forward diffusion process adds noise according to a linear schedule with $T = 1000$ timesteps, $\beta_1 = 10^{-4}$, and $\beta_T = 0.02$.
-
-The linear noise schedule means $\beta_t$ increases linearly from $10^{-4}$ at the first step to $0.02$ at the last step. This is the schedule originally proposed by Ho et al.\ \cite{ho2020ddpm} and has been found to work well across a wide range of generative tasks. The early timesteps add very little noise (allowing the model to focus on fine structural details), while the later timesteps add larger amounts of noise (training the model to generate the broad structural patterns). The total of 1000 timesteps provides a smooth enough trajectory between data and pure noise that each individual denoising step is a small, learnable perturbation.
 
 We employ a Diffusion Transformer (DiT) \cite{peebles2023dit} architecture for the noise prediction network, chosen for its ability to capture inter-feature dependencies through self-attention:
 \begin{equation}
 \epsilon_\theta(\mathbf{z}_t, t, y) = \text{DiT}(\mathbf{z}_t, \text{TimeEmb}(t), \text{ClassEmb}(y))
 \end{equation}
 
-This equation says: given the noisy latent vector $\mathbf{z}_t$ at timestep $t$ with class label $y$, predict the noise $\epsilon$ that was added to produce $\mathbf{z}_t$. The DiT processes three inputs: the noisy latent itself, an embedding of the timestep, and an embedding of the class label. All three are fused together to produce the noise prediction.
-
-The DiT architecture was chosen over a simpler MLP backbone for a specific reason: tabular features are not independent. In a credit risk dataset, income and loan amount are correlated; employment status and income are correlated; the combination of all features together determines risk far better than any single feature. Self-attention allows the model to explicitly model these inter-feature relationships during the denoising process, capturing complex joint distributions that a purely feed-forward network would miss.
-
 The DiT architecture consists of:
 \begin{enumerate}
-    \item \textbf{4 Transformer layers} with self-attention and feed-forward blocks. Four layers provides enough depth for multi-hop feature interactions (feature A affects feature B which affects the predicted noise for feature C) without overfitting on smaller datasets.
+    \item 4 Transformer layers with self-attention and feed-forward blocks.
 
-    \item \textbf{Hidden dimension of 256} with 4 attention heads (64 dimensions per head). The 256-dimensional hidden space matches the VAE encoder's first hidden layer, providing capacity commensurate with the encoding quality. Each attention head operates on a 64-dimensional subspace, following the standard practice of allocating 64 dimensions per head from Vaswani et al.\ \cite{vaswani2017attention}.
+    \item Hidden dimension of 256 with 4 attention heads (64 dimensions per head).
 
-    \item \textbf{Sinusoidal time embeddings} projected through an MLP to match the hidden dimension. Sinusoidal embeddings were chosen because they provide a smooth, continuous representation of time that generalizes well across all 1000 timesteps. The MLP projection allows the model to learn a task-specific transformation of these embeddings.
+    \item Sinusoidal time embeddings projected through an MLP to match the hidden dimension.
 
-    \item \textbf{Learned class embeddings} for the binary label (class 0, class 1, and null token $\emptyset$). Unlike the time embeddings (which are fixed), the class embeddings are learned parameters. The null token $\emptyset$ is necessary for CFG training: when a class label is dropped during training, the model receives this token instead, learning to generate samples without class conditioning.
+    \item Learned class embeddings for the binary label (class 0, class 1, and null token $\emptyset$).
 
-    \item \textbf{Adaptive Layer Normalization (AdaLN)} \cite{ba2016layernorm} that conditions each transformer block on the sum of time and class embeddings, modulating the scale and shift of layer normalization parameters. AdaLN is preferred over concatenation or addition because it allows conditioning information to directly control normalization statistics, providing more expressive conditioning without cross-attention overhead.
+    \item Adaptive Layer Normalization (AdaLN) \cite{ba2016layernorm} conditioning each transformer block on the sum of time and class embeddings.
 \end{enumerate}
 
-\begin{figure}[!ht]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.5\textwidth]{img/dit_block.png}
-\caption{Single DiT block: AdaLN conditioning on time and class, multi-head self-attention, and residual MLP (256--1024--256).}
+\includegraphics[width=0.45\textwidth]{img/dit_block.png}
+\caption{Single DiT block with AdaLN conditioning.}
 \label{fig:dit_block}
 \end{figure}
 
@@ -208,61 +182,41 @@ The training objective minimizes the expected squared error between the true noi
 \mathcal{L}_{diff} = \mathbb{E}_{t \sim \mathcal{U}(1,T),\, \mathbf{z}_0,\, \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})} \left[ \|\boldsymbol{\epsilon} - \epsilon_\theta(\sqrt{\bar{\alpha}_t}\,\mathbf{z}_0 + \sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon},\, t,\, y)\|^2 \right]
 \end{equation}
 
-In words: uniformly sample a timestep $t$ between 1 and 1000, take a real latent vector $\mathbf{z}_0$ (the VAE encoding of a training example), sample random Gaussian noise $\boldsymbol{\epsilon}$, mix them according to the noise schedule to get $\mathbf{z}_t$, predict the noise using the DiT, and compute the mean squared error between the prediction and the true noise. The expectation over all three random variables ($t$, $\mathbf{z}_0$, $\boldsymbol{\epsilon}$) means training covers the full range of timesteps, data points, and noise realizations.
-
 \subsection{Component 3: Classifier-free guidance}
 
 Classifier-Free Guidance \cite{ho2022cfg} enables controllable generation in RE-TabSyn. The mechanism is illustrated in Figure~\ref{fig:cfg_mechanism}.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.65\textwidth]{img/cfg_mechanism.png}
-\caption{CFG inference: two DiT passes (conditional on $y$ and unconditional on $\emptyset$) blended with guidance scale $w=2.0$.}
+\includegraphics[width=0.7\textwidth]{img/cfg_mechanism.png}
+\caption{CFG inference: two DiT passes blended.}
 \label{fig:cfg_mechanism}
 \end{figure}
 
-During training, class labels are randomly replaced with a null token $\emptyset$ with probability $p_{uncond} = 0.10$. This 10\% dropout rate was chosen based on the original CFG paper by Ho and Salimans \cite{ho2022cfg}, which found that values between 10\% and 20\% work well across tasks. Too low a dropout rate means the model rarely sees the unconditional case during training and learns a poor unconditional distribution, which degrades CFG quality. Too high a dropout rate means the model rarely sees the conditional case and loses class-conditioning ability. The 10\% choice is conservative, prioritizing strong conditional learning with sufficient but not excessive unconditional exposure.
+During training, class labels are randomly replaced with a null token $\emptyset$ with probability $p_{uncond} = 0.10$, following the recommendation \cite{ho2022cfg}.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.45\textwidth]{img/cfg_label_dropout.png}
-\caption{CFG label dropout: 10\% of training labels are replaced with null token $\emptyset$, teaching the model both conditional and unconditional generation.}
+\includegraphics[width=0.4\textwidth]{img/cfg_label_dropout.png}
+\caption{CFG label dropout (10\%) during training.}
 \label{fig:cfg_label_dropout}
 \end{figure}
 
-This training procedure means the model simultaneously learns the \textbf{conditional distribution} $\epsilon_\theta(\mathbf{z}_t, t, y)$ — the noise pattern associated with class $y$ at timestep $t$ — and the \textbf{unconditional distribution} $\epsilon_\theta(\mathbf{z}_t, t, \emptyset)$, the baseline noise pattern without any class information.
-
-The intuition: the conditional noise prediction points in the direction of features associated with class $y$. The unconditional prediction points in the direction of generic features regardless of class. The difference between them is the ``class signal'': it tells you which direction in the latent space is specifically associated with class $y$. CFG amplifies this difference.
+This training procedure means the model simultaneously learns the conditional distribution $\epsilon_\theta(\mathbf{z}_t, t, y)$ and the unconditional distribution $\epsilon_\theta(\mathbf{z}_t, t, \emptyset)$.
 
 At inference time, two forward passes are made for each denoising step. The noise predictions are interpolated (or extrapolated when $w > 1$):
 \begin{equation}
 \tilde{\epsilon}_\theta(\mathbf{z}_t, t, y) = \epsilon_\theta(\mathbf{z}_t, t, \emptyset) + w \cdot \left(\epsilon_\theta(\mathbf{z}_t, t, y) - \epsilon_\theta(\mathbf{z}_t, t, \emptyset)\right)
 \end{equation}
-where $w \geq 0$ is the guidance scale. The behavior at different guidance scales is:
-\begin{enumerate}
-    \item $w = 0$: Pure unconditional generation — the class label is ignored entirely. Equivalent to not using CFG.
-    \item $w = 1$: Standard conditional generation with no amplification. The model uses the conditional prediction directly.
-    \item $w = 2$ (default): Amplified conditional generation, doubling the class-specific signal. The model is pushed twice as far toward the minority class, producing near-balanced generation.
-    \item $w > 2$: Increasingly aggressive conditioning, pushing minority ratios above 50\% but degrading sample quality as the model is pushed into poorly-covered regions of the latent space.
-\end{enumerate}
-
-The choice of $w = 2.0$ as the default is supported by the experimental results: at this value, RE-TabSyn achieves minority ratios within 1.7\% of the 50\% target on average, while maintaining a KS statistic of 0.171, well within acceptable fidelity bounds.
+where $w \geq 0$ is the guidance scale. At $w = 0$, generation is unconditional. At $w = 1$, it is standard conditional generation. The default $w = 2.0$ amplifies the class signal, producing near-50\% minority ratios (avg 1.1\% deviation from target) while maintaining KS = 0.163.
 
 \section{Theoretical Analysis}
 
-This section provides the theoretical justification for the design choices described above, explaining why the architecture works and what the expected trade-offs are.
-
-\subsection{Rationale for latent diffusion}
-
-The choice of latent diffusion is not merely a computational convenience; it is a theoretical necessity for mixed-type tabular data. To see why, consider what happens when you apply diffusion directly to categorical features.
-
-A categorical feature with $K$ classes is typically represented as a one-hot vector $\mathbf{e}_k \in \{0, 1\}^K$: all zeros except a single 1 at position $k$. The one-hot encoding of ``self-employed'' might be $[0, 1, 0]$ in a three-category employment field. Adding Gaussian noise $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$ to $\mathbf{e}_k$ produces a vector like $[0.08, 0.93, -0.03]$, which has no valid categorical interpretation. Recovering a discrete category from this noisy vector requires an argmax operation, and argmax is non-differentiable. This means gradients cannot flow through the categorical features during the reverse diffusion process, making learning very difficult.
-
-VAE encoding sidesteps this problem entirely. The encoder maps the mixed-type input into a continuous latent space $\mathbb{R}^{d_z}$ with three useful properties. First, nearby latent points decode to semantically similar rows, giving the space a meaningful geometry. Second, KL regularization ensures the geometry is smooth, with no sharp discontinuities that would make denoising harder to learn. Third, standard Gaussian diffusion operates in its natural domain: every noisy latent vector $\mathbf{z}_t$ is a valid real-valued point, and the denoising network can meaningfully predict its source.
+The two subsections below analyze why CFG works as a guidance mechanism for class control, and what the distributional cost of that control is in formal terms.
 
 \subsection{Rationale for classifier-free guidance}
 
-The rationale for CFG lies in its modification of the effective score function. Recall from Section~3.1.3 that diffusion models learn the score function $\nabla_\mathbf{z} \log p(\mathbf{z})$, which points in the direction of increasing data density. For class-conditional generation, we want the score function to point toward regions of high density for the minority class specifically, rather than for the data as a whole.
+The rationale for CFG lies in its modification of the effective score function. Diffusion models learn the score function $\nabla_\mathbf{z} \log p(\mathbf{z})$, which points toward increasing data density. For class-conditional generation, the score should point toward regions of high density for the minority class specifically.
 
 For a minority class $y = 1$, the guided score function becomes:
 \begin{equation}
@@ -276,38 +230,56 @@ This effectively samples from a reweighted (``sharpened'') distribution:
 \tilde{p}(\mathbf{z} | y=1) \propto p(\mathbf{z})^{1-w} \cdot p(\mathbf{z}|y=1)^w
 \end{equation}
 
-When $w > 1$, this distribution concentrates probability mass in regions where $p(\mathbf{z}|y=1)$ is high relative to $p(\mathbf{z})$, precisely the regions corresponding to minority class features. A latent point where fraud is ten times more likely than average gets a ten-fold upweighting when $w = 2$. The guidance scale $w$ thus provides a smooth, continuous control over how strongly the generation is biased toward the minority class, without requiring any retraining or architectural changes.
+When $w > 1$, probability mass concentrates in regions where $p(\mathbf{z}|y=1)$ is high relative to $p(\mathbf{z})$ --- the regions corresponding to minority class features. The guidance scale $w$ provides continuous, inference-time control over class bias without retraining.
 
 \subsection{The fidelity-control trade-off}
 
-Increasing $w$ improves minority class representation but introduces a distributional shift. The guided distribution $\tilde{p}$ deviates from the true conditional $p(\mathbf{z}|y=1)$ by a factor that increases with $w$. Intuitively: the guided generation is being pushed into regions of the latent space that are specifically associated with the minority class, but it is also being pushed away from the average data distribution. The further you push, the more the generated samples deviate from the overall real data distribution.
+Increasing $w$ boosts minority representation but introduces a distributional shift: the guided distribution $\tilde{p}$ deviates further from the true data distribution as $w$ increases.
 
-This manifests as a modest increase in KS statistics from 0.109 (TabSyn, no guidance) to 0.171 (RE-TabSyn, $w = 2.0$) in our experiments, an increase of 0.062 in distributional distance. This is the trade-off between controllability and pure distributional fidelity.
+This manifests as a modest increase in KS statistics from 0.109 (TabSyn, no guidance) to 0.163 (RE-TabSyn, $w = 2.0$) in our experiments, an increase of 0.054 in distributional distance. This is the trade-off between controllability and pure distributional fidelity.
 
 Whether this trade-off is acceptable depends entirely on the application. For a practitioner trying to train a better fraud detection model, the relevant question is not ``is the KS statistic as low as possible?'' but ``does training on this synthetic data produce a better fraud detector than training on the original imbalanced data?'' The answer, as shown in Chapter~5, is yes: RE-TabSyn's balanced synthetic data produces a minority F1-score of 0.472, compared to 0.458 when training on the real imbalanced data. The small fidelity cost buys a measurable improvement in the task that matters.
 
 As illustrated in Figure~\ref{fig:tradeoff}, RE-TabSyn maintains competitive fidelity while gaining class control. None of the baseline methods offer both properties simultaneously.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.65\textwidth]{img/tradeoff.png}
-\caption{Fidelity-control trade-off: RE-TabSyn (KS=0.171) sits between CTGAN and TabSyn (KS=0.109) on fidelity while being the only method with minority class control.}
+\includegraphics[width=0.5\textwidth]{img/tradeoff.png}
+\caption{Fidelity-control trade-off for RE-TabSyn.}
 \label{fig:tradeoff}
 \end{figure}
 
 \section{Design Decisions Summary}
 
-Table~\ref{tab:design_decisions} consolidates the architectural decisions in RE-TabSyn and the specific problem each one addresses.
+Table~\ref{tab:design_decisions} consolidates the architectural decisions in RE-TabSyn and the problem each one addresses. Twelve choices were made across the VAE, diffusion backbone, guidance mechanism, and training procedure. Each was driven by a concrete failure observed in preliminary experiments or in the baseline methods --- the table shows both what was chosen and what was rejected.
 
-\begin{table}[!ht]
-\centering
-\caption{RE-TabSyn Architectural Design Decisions and Their Rationale}
-\label{tab:design_decisions}
-\small
-\begin{tabularx}{\textwidth}{|p{3cm}|p{4cm}|X|}
-\hline
+\renewcommand{\arraystretch}{1.2}
+
+\begin{xltabular}{\textwidth}{|X|X|X|}
+\caption{Architectural design decisions and rationale}
+\label{tab:design_decisions} \\
+
+\noalign{\hrule height\arrayrulewidth}
 \textbf{Design Choice} & \textbf{Problem It Solves} & \textbf{Alternative Considered and Why Rejected} \\
 \hline
+\noalign{\vskip 4pt}
+\hline
+\endfirsthead
+
+\noalign{\hrule height\arrayrulewidth}
+\textbf{Design Choice} & \textbf{Problem It Solves} & \textbf{Alternative Considered and Why Rejected} \\
+\hline
+\noalign{\vskip 4pt}
+\hline
+\endhead
+
+\hline
+\multicolumn{3}{r}{\small\itshape Continued on next page} \\
+\endfoot
+
+\hline
+\endlastfoot
+
 VAE latent space & One-hot encoding is incompatible with continuous diffusion noise & Direct one-hot diffusion (TabDDPM): fails because noise on sparse binary vectors creates non-categorical intermediates \\
 \hline
 64-dimensional latent & Match largest dataset (Polish Bankruptcy, 64 features) & Smaller (32-d) reduces capacity; larger (128-d) adds training instability on small datasets \\
@@ -332,7 +304,7 @@ Two-phase training & Decouples representation learning from generative modeling 
 \hline
 Frozen VAE in Phase 2 & Prevents latent space drift during diffusion training & Unfrozen VAE: latent space changes invalidate already-trained diffusion parameters \\
 \hline
-\end{tabularx}
-\end{table}
+
+\end{xltabular}
 
 A consolidated reference for all mathematical symbols used in this chapter is provided in the Mathematical Notation section, immediately after the List of Abbreviations.

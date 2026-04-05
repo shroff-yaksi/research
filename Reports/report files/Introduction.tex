@@ -6,9 +6,7 @@ This chapter builds the case for why synthetic tabular data generation matters, 
 
 Synthetic data refers to artificially generated information that statistically mimics real-world datasets without directly copying individual records. According to Gartner, by 2030, synthetic data will completely overshadow real data in AI model training, reflecting the shift underway in how organizations source and utilize data \cite{figueira2022survey}.
 
-To put this in concrete terms: when a bank wants to test a new fraud detection algorithm, it cannot simply hand over the real transaction records of millions of customers to a team of data scientists. The records contain sensitive personal and financial information subject to strict privacy laws. Synthetic data solves this problem by generating new transaction records that have the same statistical properties as the real ones (similar distributions of amounts, merchant categories, geographic patterns) without corresponding to any real person. The data scientists can do their work; no customer's information is exposed.
-
-Three converging forces now drive adoption.
+To put this in concrete terms: when a bank wants to test a new fraud detection algorithm, it cannot simply hand over the real transaction records of millions of customers to a team of data scientists. The records contain sensitive personal and financial information subject to strict privacy laws. Synthetic data solves this problem by generating new transaction records that have the same statistical properties as the real ones (similar distributions of amounts, merchant categories, geographic patterns) without corresponding to any real person. The data scientists can do their work; no customer's information is exposed. Three converging forces now drive adoption.
 
 First, privacy regulations such as the General Data Protection Regulation \cite{gdpr2016regulation}, the California Consumer Privacy Act, the Health Insurance Portability and Accountability Act, and sector-specific mandates impose strict constraints on personal data usage. GDPR mandates fines up to 4\% of annual global turnover for non-compliance. Because synthetic records are not derived from any single individual, they fall outside the scope of many personal data regulations, allowing analytical work to proceed without legal exposure.
 
@@ -16,7 +14,7 @@ Second, data scarcity remains a persistent challenge. Many domains suffer from i
 
 Third, the demand for collaborative analytics continues to grow. Organizations increasingly seek to share insights across institutional boundaries -- between banks, hospitals, or research institutions -- without exposing sensitive information. This is not merely a technical aspiration; regulatory incentives actively push in this direction. The European Union's Open Finance framework and various national financial regulatory bodies explicitly encourage data-sharing frameworks that improve systemic risk monitoring. Synthetic data enables collaborative model development without raw data transfer, circumventing the legal, technical, and competitive barriers that prevent traditional data sharing. Multiple banks can train a joint fraud detection model using synthetic representations of each institution's customer data without any real customer records leaving their respective systems.
 
-Recent advances in deep generative models, namely Generative Adversarial Networks \cite{goodfellow2014gan}, Variational Autoencoders \cite{kingma2014vae}, and diffusion models \cite{ho2020ddpm}, have improved synthetic data quality, achieving near-indistinguishable fidelity on image and text domains. The application to structured tabular data, particularly in high-stakes domains like finance, remains comparatively underexplored and presents challenges that motivate this work.
+Recent advances in deep generative models, namely Generative Adversarial Networks \cite{goodfellow2014gan}, Variational Autoencoders \cite{kingma2014vae}, and diffusion models \cite{ho2020ddpm}, have improved synthetic data quality, achieving near-indistinguishable fidelity on image and text domains, yet the application to structured tabular data in high-stakes domains like finance remains comparatively underexplored.
 
 \section{Motivation: Financial Sector Applications}
 
@@ -38,31 +36,47 @@ This is the core motivation for RE-TabSyn: to generate \textit{controllably bala
 
 RE-TabSyn became possible in 2024 because four enabling technologies converged. Remove any one and the research is not feasible.
 
-\textbf{2014 -- VAEs and GANs (Kingma \& Welling; Goodfellow et al.).} The first serious deep generative models capable of learning complex data distributions. Neither could control its output class distribution. However, VAEs introduced the critical insight of a learned continuous latent space, which becomes RE-TabSyn's encoding foundation.
+\begin{enumerate}
+    \item 2014 --- VAEs and GANs (Kingma \& Welling; Goodfellow et al.). The first serious deep generative models capable of learning complex data distributions. Neither could control its output class distribution. However, VAEs introduced the critical insight of a learned continuous latent space, which becomes RE-TabSyn's encoding foundation.
 
-\textbf{2020 -- Denoising Diffusion Probabilistic Models (Ho et al.).} DDPMs offered something GANs and VAEs could not: stable training that covers all modes of the data distribution without collapse. This is essential for minority class generation. However, the original DDPM had no mechanism for controlling which class it generated.
+    \item 2020 --- Denoising Diffusion Probabilistic Models (Ho et al.). DDPMs offered something GANs and VAEs could not: stable training that covers all modes of the data distribution without collapse. This is essential for minority class generation. However, the original DDPM had no mechanism for controlling which class it generated.
 
-\textbf{2022 -- Classifier-Free Guidance (Ho \& Salimans).} CFG provided the control mechanism that was missing from DDPMs: a way to steer generation toward a specified class using only a guidance scale, with no auxiliary classifier, no retraining, and no architectural changes. It made text-to-image models like Stable Diffusion and DALL-E 2 commercially viable. Its application to tabular data had not been attempted.
+    \item 2022 --- Classifier-Free Guidance \cite{ho2022cfg}. CFG provided the control mechanism that was missing from DDPMs: a way to steer generation toward a specified class using only a guidance scale, with no auxiliary classifier, no retraining, and no architectural changes. It made text-to-image models like Stable Diffusion and DALL-E 2 commercially viable. Its application to tabular data had not been attempted.
 
-\textbf{2024 -- TabSyn (Zhang et al., ICLR 2024).} TabSyn demonstrated that combining a VAE latent space with a Transformer-based diffusion model solved the categorical encoding problem that had plagued all prior tabular diffusion attempts. TabSyn achieved the best tabular fidelity yet reported (average KS = 0.109). It still had no class control, but it provided the exact architectural foundation onto which CFG could be grafted.
+    \item 2024 --- TabSyn \cite{zhang2024tabsyn}. TabSyn demonstrated that combining a VAE latent space with a Transformer-based diffusion model solved the categorical encoding problem that had plagued all prior tabular diffusion attempts. TabSyn achieved the best tabular fidelity yet reported (average KS = 0.109). It still had no class control, but it provided the exact architectural foundation onto which CFG could be grafted.
+\end{enumerate}
 
-The research opportunity opened in early 2024: a method existed that was excellent at tabular fidelity (TabSyn), a guidance mechanism existed that was proven for class control, i.e., CFG, and a survey (Nidhi et al.\ 2024) explicitly confirmed that no one had combined them. RE-TabSyn connects these three pieces.
+The research opportunity opened in early 2024: a method existed that was excellent at tabular fidelity (TabSyn), a guidance mechanism existed that was proven for class control, i.e., CFG, and a 2024 survey \cite{nidhi2024rare} explicitly confirmed that no one had combined them. RE-TabSyn connects these three pieces. The same problem — class imbalance — appears in healthcare, cybersecurity, manufacturing, and legal records, but finance is the right domain to start with.
 
-The same problem -- class imbalance -- appears in healthcare, cybersecurity, manufacturing, and legal records. Why finance rather than any of these others?
+Regulatory coverage is global and legally binding: GDPR, GLBA, PCI-DSS, and ECOA are not theoretical concerns but daily operational constraints that every financial institution faces. Healthcare has HIPAA, but it applies only in the United States and has different enforcement characteristics. The business value of minority detection is also directly measurable in finance: a 1\% improvement in fraud detection at a bank processing \$10 billion annually could recover tens of millions in losses, a clarity of stakes that cybersecurity and manufacturing rarely offer. Public benchmark datasets with known characteristics, documented imbalance ratios, and established academic baselines allow direct comparison with prior work -- something healthcare datasets under IRB restrictions typically cannot provide, and that cybersecurity datasets age out of quickly as attack patterns evolve. Financial datasets also naturally span the full range of imbalance severity within a single domain, from moderate (Credit Approval at 44.5\% minority) to extreme (Polish Bankruptcy at 4.8\%), which allows thorough validation without mixing domains. Finally, the mix of numerical features (income, transaction amounts) and categorical features (employment type, loan grade) with interpretable semantics means synthetic data quality can be checked against domain knowledge in ways that anonymised logs do not permit. Table~\ref{tab:domain_comparison} formalises this comparison.
 
-Finance has a specific combination of properties that make it the right domain to start with. Regulatory coverage is global and legally binding: GDPR, GLBA, PCI-DSS, and ECOA are not theoretical concerns but daily operational constraints that every financial institution faces. Healthcare has HIPAA, but it applies only in the United States and has different enforcement characteristics. The business value of minority detection is also directly measurable in finance: a 1\% improvement in fraud detection at a bank processing \$10 billion annually could recover tens of millions in losses, a clarity of stakes that cybersecurity and manufacturing rarely offer. Public benchmark datasets with known characteristics, documented imbalance ratios, and established academic baselines allow direct comparison with prior work -- something healthcare datasets under IRB restrictions typically cannot provide, and that cybersecurity datasets age out of quickly as attack patterns evolve. Financial datasets also naturally span the full range of imbalance severity within a single domain, from moderate (Credit Approval at 44.5\% minority) to extreme (Polish Bankruptcy at 4.8\%), which allows thorough validation without mixing domains. Finally, the mix of numerical features (income, transaction amounts) and categorical features (employment type, loan grade) with interpretable semantics means synthetic data quality can be checked against domain knowledge in ways that anonymised logs do not permit.
+\renewcommand{\arraystretch}{1.2}
 
-Table~\ref{tab:domain_comparison} formalises this comparison.
+\begin{xltabular}{\textwidth}{|p{3cm}|X|X|X|X|X|}
+\caption{Finance vs.\ alternative domains comparison}
+\label{tab:domain_comparison} \\
 
-\begin{table}[!ht]
-\centering
-\caption{Why Finance is the Primary Domain: Comparison with Alternative Domains}
-\label{tab:domain_comparison}
-\small
-\begin{tabularx}{\textwidth}{|X|>{\centering\arraybackslash}p{1.8cm}|>{\centering\arraybackslash}p{1.8cm}|>{\centering\arraybackslash}p{1.9cm}|>{\centering\arraybackslash}p{2.0cm}|>{\centering\arraybackslash}p{1.6cm}|}
-\hline
+\noalign{\hrule height\arrayrulewidth}
 \textbf{Property} & \textbf{Finance} & \textbf{Health-care} & \textbf{Cyber-security} & \textbf{Manufac-turing} & \textbf{Legal/ HR} \\
 \hline
+\noalign{\vskip 4pt}
+\hline
+\endfirsthead
+
+\noalign{\hrule height\arrayrulewidth}
+\textbf{Property} & \textbf{Finance} & \textbf{Health-care} & \textbf{Cyber-security} & \textbf{Manufac-turing} & \textbf{Legal/ HR} \\
+\hline
+\noalign{\vskip 4pt}
+\hline
+\endhead
+
+\hline
+\multicolumn{6}{r}{\small\itshape Continued on next page} \\
+\endfoot
+
+\hline
+\endlastfoot
+
 Strong data privacy regulations & \checkmark\checkmark & \checkmark & Partial & Minimal & \checkmark \\
 \hline
 Quantifiable value of minority detection & \checkmark\checkmark & \checkmark & \checkmark & Partial & Partial \\
@@ -71,16 +85,16 @@ Public benchmark datasets available & \checkmark\checkmark & Limited & Limited &
 \hline
 Range of imbalance severities covered & \checkmark\checkmark & \checkmark & \checkmark & Limited & Partial \\
 \hline
-Mixed numerical+categorical features & \checkmark\checkmark & \checkmark & Partial & \checkmark & \checkmark \\
+Mixed numerical + categorical features & \checkmark\checkmark & \checkmark & Partial & \checkmark & \checkmark \\
 \hline
 Interpretable features for validation & \checkmark\checkmark & Partial & Partial & \checkmark & Partial \\
 \hline
 International regulatory applicability & \checkmark\checkmark & Partial & Partial & Partial & Partial \\
 \hline
-\textbf{Overall suitability for first study} & \textbf{Highest} & High & Moderate & Moderate & Low \\
+Overall suitability for first study & Highest & High & Moderate & Moderate & Low \\
 \hline
-\end{tabularx}
-\end{table}
+
+\end{xltabular}
 
 Finance scores highest on every relevant criterion. This is not a coincidence: the financial sector has invested heavily in data standards and open benchmarks because its regulatory requirements demand reproducible model validation. RE-TabSyn exploits this infrastructure by grounding its claims in well-understood datasets rather than bespoke, hard-to-reproduce data collections.
 
@@ -96,10 +110,10 @@ Tabular data combines heterogeneous feature types that create synthesis challeng
 
 This heterogeneity distinguishes tabular synthesis from image or text generation, where data types are homogeneous (pixels are all in $[0, 255]$; tokens are all drawn from a fixed vocabulary). As illustrated in Figure~\ref{fig:dataset_overview}, the datasets used in this study span a wide range of imbalance ratios and feature compositions, collectively testing RE-TabSyn across the full breadth of this heterogeneity.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{img/dataset_overview.png}
-\caption{Six benchmark datasets by class imbalance severity: near-balanced (44.5\%) to extreme (4.8\%).}
+\caption{Benchmark datasets by imbalance severity.}
 \label{fig:dataset_overview}
 \end{figure}
 
@@ -125,15 +139,34 @@ Diffusion-based methods present a different set of limitations. TabDDPM \cite{ko
 
 Table~\ref{tab:approaches_comparison} compares the four most common approaches to the class imbalance problem, assessed across the criteria that matter most in a regulated financial environment.
 
-\begin{table}[!ht]
-\centering
-\caption{Comparison of Class Imbalance Solutions for Financial Machine Learning}
-\label{tab:approaches_comparison}
-\small
-\begin{tabularx}{\textwidth}{|X|C|C|C|C|C|}
-\hline
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{xltabular}{\textwidth}{|X|X|X|X|X|X|}
+\caption{Class imbalance solutions comparison}
+\label{tab:approaches_comparison} \\
+
+\noalign{\hrule height\arrayrulewidth}
 \textbf{Criterion} & \textbf{Random Oversamp.} & \textbf{SMOTE} & \textbf{CTGAN} & \textbf{TabSyn} & \textbf{RE-TabSyn} \\
 \hline
+\noalign{\vskip 4pt}
+\hline
+\endfirsthead
+
+\noalign{\hrule height\arrayrulewidth}
+\textbf{Criterion} & \textbf{Random Oversamp.} & \textbf{SMOTE} & \textbf{CTGAN} & \textbf{TabSyn} & \textbf{RE-TabSyn} \\
+\hline
+\noalign{\vskip 4pt}
+\hline
+\endhead
+
+\hline
+\multicolumn{6}{r}{\small\itshape Continued on next page} \\
+\endfoot
+
+\hline
+\endlastfoot
+
 Generates realistic new samples & No (copies) & Partial (interpolates) & Yes & Yes & Yes \\
 \hline
 Handles mixed feature types & Yes & Yes & Yes (mode norm.) & Yes & Yes \\
@@ -148,12 +181,12 @@ Formal privacy guarantees & N/A & N/A & No & No & Planned \\
 \hline
 Production deployable & Yes & Yes & Partial & Partial & Partial \\
 \hline
-Requires retraining for new ratio & N/A & Yes & Yes & Yes & \textbf{No} \\
+Requires retraining for new ratio & N/A & Yes & Yes & Yes & No \\
 \hline
 Minority F1 benefit (our benchmark) & Baseline & Small & Negative (Polish BK) & Small & +3.1\% \\
 \hline
-\end{tabularx}
-\end{table}
+
+\end{xltabular}
 
 The bottom row is the key result of this entire research. RE-TabSyn is the only method that improves minority F1-score consistently across all six datasets in the benchmark. CTGAN actually hurts performance on Polish Bankruptcy, the most severely imbalanced dataset. SMOTE provides small improvements but cannot generate genuinely new samples or preserve complex inter-feature correlations. TabSyn achieves the best fidelity but replicates the original imbalance -- it is a solution to the privacy problem, not the imbalance problem.
 
@@ -167,22 +200,19 @@ The gap has a practical implication that is easy to state: a bank that uses TabS
 
 \section{Contributions}
 
-This research makes five concrete, verifiable contributions:
+Five concrete, verifiable contributions emerge from this work:
 
-\textbf{1. First Application of Classifier-Free Guidance to Tabular Data.}
-RE-TabSyn, i.e., Rare-Event Enhanced Tabular Synthesis, is the first application of Classifier-Free Guidance, i.e., CFG, to tabular data synthesis. CFG, previously confined to image generation \cite{ho2022cfg}, enables controllable generation without auxiliary classifiers by jointly training conditional and unconditional models through a simple label dropout mechanism ($p_{uncond} = 0.10$). The adaptation to tabular data required both an architectural solution (the VAE latent space to handle mixed types) and an empirical validation across diverse financial datasets. This contribution opens a research direction at the intersection of guided generation and structured data.
+\begin{enumerate}
+    \item First application of Classifier-Free Guidance to tabular data. RE-TabSyn (Rare-Event Enhanced Tabular Synthesis) is the first application of CFG to tabular data synthesis. CFG, previously confined to image generation \cite{ho2022cfg}, enables controllable generation without auxiliary classifiers by jointly training conditional and unconditional models through a simple label dropout mechanism ($p_{uncond} = 0.10$). The adaptation to tabular data required both an architectural solution (the VAE latent space to handle mixed types) and an empirical validation across diverse financial datasets.
 
-\textbf{2. Controllable Minority Class Generation.}
-RE-TabSyn allows practitioners to specify target minority ratios via a single guidance scale parameter $w$ at inference time, with no model retraining required. In our experiments, minority representation is boosted from original training ratios of 4.8--44.5\% to generated ratios of 44.8--50.2\%, with an average deviation from the 50\% target of just 1.7\%. Polish Bankruptcy is boosted from 4.8\% to 47.8\% minority, a nearly tenfold increase in rare event representation.
+    \item Controllable minority class generation. RE-TabSyn lets practitioners specify target minority ratios via a single guidance scale parameter $w$ at inference time, with no model retraining required. Minority representation is boosted from original training ratios of 4.8--44.5\% to generated ratios of 44.8--50.2\%, with an average deviation from the 50\% target of just 1.1\%. Polish Bankruptcy goes from 4.8\% to 50.0\% minority, a tenfold increase.
 
-\textbf{3. Improved Minority Class Detection.}
-Classifiers trained on RE-TabSyn synthetic data achieve a mean minority F1-score of 0.472, surpassing the real imbalanced data baseline of 0.458 by 3.1\%. A classifier trained exclusively on synthetic data detects minority events \textit{more effectively} than one trained on the real imbalanced data. The improvement is consistent across all six datasets and is largest for the most severely imbalanced tasks.
+    \item Improved minority class detection. Classifiers trained on RE-TabSyn synthetic data achieve a mean minority F1-score of 0.472, surpassing the real imbalanced data baseline of 0.458 by 3.1\%. A classifier trained exclusively on synthetic data detects minority events \textit{more effectively} than one trained on the real imbalanced data. The improvement holds across all six datasets and is largest for the most severely imbalanced tasks.
 
-\textbf{4. Financial Benchmark.}
-RE-TabSyn is evaluated on six financial datasets spanning credit risk (German Credit, Credit Approval), income prediction (Adult Income), marketing response (Bank Marketing), loan performance (Lending Club), and corporate bankruptcy (Polish Bankruptcy), with minority ratios ranging from 4.8\% to 44.5\%. A systematic comparison against four baselines (CTGAN, TVAE, TabDDPM, TabSyn) is provided across fidelity, utility, and privacy metrics, with statistical significance established across three random seeds (42, 123, 456). This benchmark provides a reusable evaluation framework for future tabular synthesis research in financial applications.
+    \item Financial benchmark. RE-TabSyn is evaluated on six financial datasets spanning credit risk (German Credit, Credit Approval), income prediction (Adult Income), marketing response (Bank Marketing), loan performance (Lending Club), and corporate bankruptcy (Polish Bankruptcy), with minority ratios from 4.8\% to 44.5\%. A systematic comparison against four baselines (CTGAN, TVAE, TabDDPM, TabSyn) is provided across fidelity, utility, and privacy metrics, with statistical significance established across three random seeds (42, 123, 456).
 
-\textbf{5. Conference Publication.}
-The core findings of this research have been accepted for presentation at the \textbf{I2IT International Conference}. The paper titled ``\textit{Controllable Rare Event Synthetic Data Generation for Financial Tabular Data via Classifier Free Guidance}'' was accepted after peer review, providing independent confirmation of the contribution.
+    \item Conference publication. The core findings have been accepted for presentation at the I2IT International Conference. The paper ``\textit{Controllable Rare Event Synthetic Data Generation for Financial Tabular Data via Classifier Free Guidance}'' passed peer review, providing independent confirmation of the contribution.
+\end{enumerate}
 
 \section{Scope and Significance}
 
@@ -202,21 +232,19 @@ From a research perspective, this work extends controllable image generation tec
 
 The societal dimension extends further. Better fraud detection protects consumers; fairer credit models reduce false rejections of qualified borrowers; improved AML systems protect the financial system from criminal exploitation. Financial institutions benefit through reduced fraud losses and more defensible regulatory compliance. Regulators gain access to synthetic benchmarks that make stress testing and fairness auditing feasible without institutions surrendering sensitive demographic records.
 
-\section{Reader's Guide}
+\section{Organisation of the Report}
 
 This thesis is written for a mixed audience: technical reviewers who will want to verify the mathematical details, and non-technical readers (including potential industry partners, regulatory professionals, and academic evaluators without machine learning backgrounds) who want to understand what was done and why it matters. This section provides a roadmap for non-technical readers.
 
-\textbf{The core problem in one sentence:} Financial fraud is rare, so machine learning models trained on real data rarely see enough fraud examples to learn to detect it well. RE-TabSyn generates artificial financial records with as much fraud as needed, so models can learn from a more balanced training set.
+The core problem in one sentence: Financial fraud is rare, so machine learning models trained on real data rarely see enough fraud examples to learn to detect it well. RE-TabSyn generates artificial financial records with as much fraud as needed, so models can learn from a more balanced training set.
 
-\textbf{The core technical contribution in one sentence:} A method borrowed from AI image generation (Classifier-Free Guidance) was adapted to work with financial tables for the first time, allowing users to control how many rare events appear in the generated data.
+The core technical contribution in one sentence: A method borrowed from AI image generation (Classifier-Free Guidance) was adapted to work with financial tables for the first time, allowing users to control how many rare events appear in the generated data.
 
-\textbf{The key result in one sentence:} A fraud detector trained on RE-TabSyn's artificial balanced data catches more fraud than a detector trained on the original real imbalanced data.
+The key result in one sentence: A fraud detector trained on RE-TabSyn's artificial balanced data catches more fraud than a detector trained on the original real imbalanced data.
 
-\textbf{Reading guide by background:}
+By background: business and regulatory professionals should read this chapter in full, then jump to Chapter~5 (Research Outcomes) for results and Chapter~6 (Conclusion) for implications; Chapter~7 outlines deployment pathways for financial institutions. Academic evaluators will find the technical contributions in Chapters~2 and~5, with Chapter~3 establishing the gap this work fills. Machine learning engineers looking to replicate the work should focus on Chapter~4 for hyperparameters, training protocols, and code-level decisions, with Chapter~2 providing the mathematical foundations. For a quick summary, Chapter~6 covers all key findings, limitations, and implications.
 
-Business and regulatory professionals should read this chapter in full, then jump to Chapter~5 (Research Outcomes) for results and Chapter~6 (Conclusion) for implications; Chapter~7 outlines deployment pathways for financial institutions. Academic evaluators will find the technical contributions in Chapters~2 and~5, with Chapter~3 establishing the gap this work fills. Machine learning engineers looking to replicate the work should focus on Chapter~4 for hyperparameters, training protocols, and code-level decisions, with Chapter~2 providing the mathematical foundations. For a quick summary, Chapter~6 covers all key findings, limitations, and implications.
-
-\textbf{Jargon glossary for non-technical readers:}
+Key terms for non-technical readers:
 
 \begin{enumerate}
     \item \textit{Synthetic data:} Artificially generated data that statistically matches real data without being derived from real individuals.
@@ -230,15 +258,3 @@ Business and regulatory professionals should read this chapter in full, then jum
     \item \textit{CFG, i.e., Classifier-Free Guidance:} A technique for controlling what a generative model produces, originally developed for AI image generation and applied to financial tables here for the first time.
 \end{enumerate}
 
-\section{Organization of the Report}
-
-\begin{samepage}
-\begin{enumerate}
-    \item \textbf{Chapter 2: Research Analysis and Methodology} --- Formal problem formulation, mathematical foundations of baseline methods, and the detailed RE-TabSyn architecture with theoretical analysis.
-    \item \textbf{Chapter 3: Literature Review} --- Survey of 151 peer-reviewed publications across generative models, tabular synthesis, privacy mechanisms, and evaluation frameworks, concluding with the gap analysis that positions this work.
-    \item \textbf{Chapter 4: Implementation and Experimental Setup} --- Complete end-to-end pipeline: data preprocessing, model configurations, training procedures, generation protocol, and evaluation methodology.
-    \item \textbf{Chapter 5: Research Outcomes} --- Results across fidelity, utility, privacy, and minority control metrics for all six datasets and four baselines.
-    \item \textbf{Chapter 6: Conclusion} --- Summary of key findings, limitations, and concluding remarks on the contribution to the field.
-    \item \textbf{Chapter 7: Future Scope} --- Research directions including architectural improvements, differential privacy integration, extended synthesis capabilities, and deployment pathways.
-\end{enumerate}
-\end{samepage}

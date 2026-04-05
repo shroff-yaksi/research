@@ -12,9 +12,9 @@
 \newcommand{\studentNametwo}{Yaksi Ketan Shroff}
 \newcommand{\studentNamethree}{Yaksi Ketan Shroff}
 %\newcommand{\studentNamefour}{Student Full Name}
-\newcommand{\guideName}{Dr. Vishvajit Bakrola}
-\newcommand{\headName}{Prof. Vishvendu Bhatt}
-\newcommand{\directorName}{Dr. Vishvajit Bakrola}
+\newcommand{\guideName}{Dr.Vishvajit Bakrola}
+\newcommand{\headName}{Prof.Vishvendu Bhatt}
+\newcommand{\directorName}{Dr.Vishvajit Bakrola}
 \newcommand{\enrollmentNumberone}{202203103510201}
 \newcommand{\enrollmentNumbertwo}{202203103510201}
 \newcommand{\enrollmentNumberthree}{202203103510201}
@@ -103,7 +103,25 @@ opacity=0.2
 \usepackage{pdflscape}
 \usepackage{multirow}
 \usepackage{booktabs}
+\usepackage{xltabular}
 \renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{10pt}
+\setlength{\arrayrulewidth}{0.8pt}
+\setlength{\textfloatsep}{10pt plus 2pt minus 4pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{0pt}
+
+% Larger displayed equations
+\makeatletter
+\let\RE@orig@equation=\equation
+\let\RE@orig@endequation=\endequation
+\renewenvironment{equation}{\begingroup\large\RE@orig@equation}{\RE@orig@endequation\endgroup}
+\let\RE@orig@displaymath=\displaymath
+\let\RE@orig@enddisplaymath=\enddisplaymath
+\renewenvironment{displaymath}{\begingroup\large\RE@orig@displaymath}{\RE@orig@enddisplaymath\endgroup}
+\makeatother
 
 %\usepackage{indentfirst }
 %\usepackage{subcaption}
@@ -185,8 +203,9 @@ opacity=0.2
 \pagestyle{headings}
 % ----------------- thesis chapters -----------
 \include{Introduction}
-\include{ResearchAnalysis}
 \include{LitratureReview}
+\include{ResearchAnalysis}
+\include{ExperimentalDesign}
 \include{ImplementationTesting}
 \include{ResearchOutcomes}
 \include{ConclusionAndFutureWork}

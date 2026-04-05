@@ -2,15 +2,33 @@
 
 Building on the successful implementation and conference publication of RE-TabSyn, several promising directions for future research emerge. Table~\ref{tab:future_roadmap} provides a prioritised roadmap that distinguishes near-term improvements (achievable as direct extensions of this work) from longer-term research directions that require substantial new contributions.
 
-\begin{table}[!ht]
-\centering
-\caption{Prioritised Future Research Roadmap for RE-TabSyn}
-\label{tab:future_roadmap}
-\small
-\begin{tabularx}{\textwidth}{|X|p{3.2cm}|p{3.5cm}|X|}
-\hline
+\renewcommand{\arraystretch}{1.2}
+
+\begin{xltabular}{\textwidth}{|X|X|X|X|}
+\caption{Future research roadmap for RE-TabSyn}
+\label{tab:future_roadmap} \\
+
+\noalign{\hrule height\arrayrulewidth}
 \textbf{Direction} & \textbf{Horizon} & \textbf{Expected Impact} & \textbf{Key Dependency} \\
 \hline
+\noalign{\vskip 4pt}
+\hline
+\endfirsthead
+
+\noalign{\hrule height\arrayrulewidth}
+\textbf{Direction} & \textbf{Horizon} & \textbf{Expected Impact} & \textbf{Key Dependency} \\
+\hline
+\noalign{\vskip 4pt}
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{\small\itshape Continued on next page} \\
+\endfoot
+
+\hline
+\endlastfoot
+
 DDIM fast sampling & Near-term (1--3 months) & 10--20$\times$ generation speedup & No retraining; sampling loop change only \\
 \hline
 DP-SGD integration (Phase 2 only) & Near-term (2--4 months) & Formal $(\epsilon, \delta)$-DP guarantee & Opacus library integration; quality trade-off \\
@@ -31,8 +49,8 @@ Fairness-aware multi-attribute conditioning & Long-term (9--18 months) & Fair le
 \hline
 Domain generalization (healthcare, cyber) & Long-term (12--24 months) & Broader applicability claim & Access to domain-specific benchmark datasets \\
 \hline
-\end{tabularx}
-\end{table}
+
+\end{xltabular}
 
 \section{Architectural Improvements}
 
@@ -156,7 +174,7 @@ The ultimate measure of RE-TabSyn's value is whether financial practitioners fin
 
 \section{Long-Term Research Vision}
 
-This section articulates why the research direction opened by this work is worth continuing and what the field stands to gain.
+The following subsections place RE-TabSyn within a broader research trajectory: the paradigm shift it represents, the compounding value of each planned extension, and the competitive landscape that makes timing a factor.
 
 \subsection{The broader paradigm shift}
 
@@ -164,40 +182,34 @@ RE-TabSyn's most important contribution is not the specific model it trains or t
 
 Before 2022, text-to-image generation was limited to retrieving or slightly modifying existing images. After CFG was introduced, models like Stable Diffusion and DALL-E 2 could generate almost any image from a text description. The paradigm shift was complete within two years. The tabular domain is at the beginning of an analogous shift: from synthesis methods that merely generate realistic data to synthesis methods that generate the data you specify.
 
-This shift has implications far beyond fraud detection. Consider four representative cases:
+This shift has implications far beyond fraud detection. In each case below, the same underlying capability is needed: the ability to generate realistic records from a specified class or condition, even when that condition is rare or absent from historical data.
 \begin{enumerate}
-    \item \textbf{Drug trial augmentation:} Clinical trials are expensive and have small sample sizes. A CFG-adapted tabular model could generate synthetic patient records for rare adverse drug reactions, enabling statistical analysis that the real trial data is too small to support.
-    \item \textbf{Bias testing in hiring:} AI systems used in recruitment must be tested for demographic bias. Generating synthetic applicant records with controlled demographic distributions allows auditors to probe model behaviour systematically without accessing real candidates' data.
-    \item \textbf{Stress testing in insurance:} Insurers must demonstrate model robustness under rare catastrophic scenarios. RE-TabSyn could generate synthetic records of rare catastrophic events (major natural disasters, pandemic claims spikes) at any desired frequency for backtesting.
-    \item \textbf{Regulatory stress scenarios:} Central banks run stress tests using hypothetical adverse economic scenarios. RE-TabSyn-style controllable synthesis could generate realistic loan portfolios under stress conditions that may not exist in historical data.
+    \item Drug trial augmentation: Clinical trials are expensive and have small sample sizes. A CFG-adapted tabular model could generate synthetic patient records for rare adverse drug reactions, enabling statistical analysis that the real trial data is too small to support.
+    \item Bias testing in hiring: AI systems used in recruitment must be tested for demographic bias. Generating synthetic applicant records with controlled demographic distributions allows auditors to probe model behaviour systematically without accessing real candidates' data.
+    \item Stress testing in insurance: Insurers must demonstrate model robustness under rare catastrophic scenarios. RE-TabSyn could generate synthetic records of rare catastrophic events (major natural disasters, pandemic claims spikes) at any desired frequency for backtesting.
+    \item Regulatory stress scenarios: Central banks run stress tests using hypothetical adverse economic scenarios. RE-TabSyn-style controllable synthesis could generate realistic loan portfolios under stress conditions that may not exist in historical data.
 \end{enumerate}
-
-In every case, the same underlying capability is needed: the ability to generate realistic records from a specified class or condition, even when that condition is rare or absent from historical data.
 
 \subsection{Research investment and impact}
 
-Each extension compounds the value of the previous ones.
-
+Each extension compounds the value of the previous ones, and none alone transforms the value proposition:
 \begin{enumerate}
-    \item \textbf{DDIM fast sampling} reduces generation time by 10--20$\times$, making RE-TabSyn usable in real-time data augmentation pipelines.
-    \item \textbf{DP-SGD integration} brings the fast-generation model into compliance with formal privacy requirements of regulated financial environments.
-    \item \textbf{Multi-class CFG} extends the model to handle credit ratings (AAA through D) rather than just binary fraud/no-fraud targets.
-    \item \textbf{Federated training} enables deployment across a banking consortium without any raw data leaving individual institutions.
+    \item DDIM fast sampling reduces generation time by 10--20$\times$, making RE-TabSyn usable in real-time data augmentation pipelines.
+    \item DP-SGD integration brings the fast-generation model into compliance with formal privacy requirements of regulated financial environments.
+    \item Multi-class CFG extends the model to handle credit ratings (AAA through D) rather than just binary fraud/no-fraud targets.
+    \item Federated training enables deployment across a banking consortium without any raw data leaving individual institutions.
 \end{enumerate}
 
-None of these extensions alone transforms the value proposition. Together, they produce a tool that a compliance officer at a major bank could plausibly deploy: fast enough for production, private enough for regulation, expressive enough for complex financial products, and federated enough for consortium use. The path from research prototype to production tool is clear, and each step on that path is a natural extension of what this thesis demonstrates.
+Together, they produce a tool that a compliance officer at a major bank could plausibly deploy: fast enough for production, private enough for regulation, expressive enough for complex financial products, and federated enough for consortium use. The path from research prototype to production tool is clear, and each step on that path is a natural extension of what this thesis demonstrates.
 
 \subsection{The competitive research landscape}
 
-The synthetic tabular data field is moving quickly. TabSyn was published in January 2024. By the time this thesis was completed, at least three follow-on papers had appeared that built on TabSyn's architecture. The window for establishing CFG-for-tables as a recognised paradigm is open now.
-
+The synthetic tabular data field is moving quickly. TabSyn was published in January 2024. By the time this thesis was completed, at least three follow-on papers had appeared that built on TabSyn's architecture. The window for establishing CFG-for-tables as a recognised paradigm is open now, and the conference acceptance at I2IT is a first step toward progressively higher-impact venues:
 \begin{enumerate}
     \item A follow-on journal paper extending RE-TabSyn with formal differential privacy would be competitive at venues such as the Journal of Machine Learning Research, i.e., JMLR, IEEE Transactions on Neural Networks, or NeurIPS workshops on synthetic data.
     \item A federated extension would be relevant to the ACM Conference on Fairness, Accountability, and Transparency, i.e., FAccT, and to IEEE Security \& Privacy.
     \item A healthcare domain application would be competitive at AMIA, the primary medical informatics conference.
 \end{enumerate}
-
-The conference acceptance at I2IT is a first step. The research trajectory points toward progressively higher-impact venues as each planned extension is completed.
 
 \subsection{The case for sustained research attention}
 

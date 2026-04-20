@@ -56,21 +56,21 @@ Domain generalization (healthcare, cyber) & Long-term (12--24 months) & Broader 
 
 The current RE-TabSyn architecture uses an MLP-based VAE encoder, a fixed 4-layer DiT, a linear noise schedule, and a 1,000-step DDPM sampler. Each of these components has a natural upgrade path that would improve either fidelity or generation speed without requiring changes to the overall framework.
 
-The current VAE encoder is a Multi-Layer Perceptron, i.e., MLP: a straightforward sequence of linear layers and activations. MLPs treat each feature independently at each layer, without explicitly modeling relationships between features. For tabular data, where feature relationships are central (income and credit score are correlated; employment status affects plausible income ranges), this is a meaningful limitation.
+The current VAE encoder is a Multi-Layer Perceptron, i.e., MLP, which is a straightforward sequence of linear layers and activations. MLPs treat each feature independently at each layer, without explicitly modeling relationships between features. For tabular data, where feature relationships are central (income and credit score are correlated; employment status affects plausible income ranges), this is a meaningful limitation.
 
-A natural upgrade is to replace the MLP encoder with a Transformer-based architecture that processes each feature as a ``token'' and uses self-attention to capture inter-feature relationships during encoding. This is the approach taken by REaLTabFormer \cite{solatorio2023realtabformer} and SAINT \cite{somepalli2021saint} for tabular prediction, and it could be adapted for the VAE encoding task. The expected benefit: better latent representations that capture the joint structure of features, including their pairwise dependencies rather than treating each feature independently. This would reduce the fidelity gap between RE-TabSyn (KS = 0.171) and TabSyn (KS = 0.109), since the latent representations would be more faithful to the inter-feature correlations.
+A natural upgrade is to replace the MLP encoder with a Transformer-based architecture that processes each feature as a ``token'' and uses self-attention to capture inter-feature relationships during encoding. This is the approach taken by REaLTabFormer \cite{solatorio2023realtabformer} and SAINT \cite{somepalli2021saint} for tabular prediction, and it could be adapted for the VAE encoding task. The expected benefit would be better latent representations that capture the joint structure of features, including their pairwise dependencies rather than treating each feature independently. This would reduce the fidelity gap between RE-TabSyn (KS = 0.171) and TabSyn (KS = 0.109), since the latent representations would be more faithful to the inter-feature correlations.
 
-The engineering challenge is that Transformer encoders require tokenization: each column must be mapped to a fixed-dimensional embedding before self-attention can be applied. For numerical features, this requires learned numerical embeddings (similar to how numeric tokens are handled in REaLTabFormer); for categorical features, standard embedding tables suffice.
+The engineering challenge is that Transformer encoders require tokenization, where each column must be mapped to a fixed-dimensional embedding before self-attention can be applied. For numerical features, this requires learned numerical embeddings (similar to how numeric tokens are handled in REaLTabFormer); for categorical features, standard embedding tables suffice.
 
 \subsection{Separate noise schedules for numerical and categorical latent features}
 
-In the current architecture, the VAE latent space is a uniform 64-dimensional Gaussian space, and the same linear noise schedule is applied to all 64 dimensions. In practice, different dimensions of the latent space may encode different types of information at different scales: some dimensions may capture fine-grained numerical variation, while others capture categorical mode structure. A uniform noise schedule treats all dimensions identically, which may not be optimal.
+In the current architecture, the VAE latent space is a uniform 64-dimensional Gaussian space, and the same linear noise schedule is applied to all 64 dimensions. In practice, different dimensions of the latent space may encode different types of information at different scales, where some dimensions may capture fine-grained numerical variation, while others capture categorical mode structure. A uniform noise schedule treats all dimensions identically, which may not be optimal.
 
 A natural extension is to learn separate noise schedules for groups of latent dimensions corresponding to numerical and categorical features respectively. This could be implemented by training the VAE with a structured latent space where the first $d_1$ dimensions primarily encode numerical features and the remaining $d_2$ dimensions primarily encode categorical features (enforced through targeted reconstruction losses), and then learning separate $\beta_t$ schedules for each group. The expected benefit is reduced reconstruction error for categorical features, which are currently the harder case for the decoder.
 
 \subsection{Scaled-up Diffusion Transformer}
 
-The current DiT uses 4 Transformer layers with a hidden dimension of 256. This is a lightweight architecture designed for the small-to-medium datasets in the benchmark (up to 45,222 samples, up to 64 features). For larger datasets -- the full Lending Club dataset with millions of records, for instance, or credit card transaction logs with tens of features per record -- more capacity may be needed.
+The current DiT uses 4 Transformer layers with a hidden dimension of 256. This is a lightweight architecture designed for the small-to-medium datasets in the benchmark (up to 45,222 samples, up to 64 features). For larger datasets, such as the full Lending Club dataset with millions of records, for instance, or credit card transaction logs with tens of features per record, more capacity may be needed.
 
 Scaling from 4 to 8--12 DiT layers with larger hidden dimensions (512 or 1024) would increase the model's ability to capture complex inter-feature dependencies. Prior work on image diffusion (DiT \cite{peebles2023dit}) showed that scaling DiT layers provides smooth, consistent quality improvements. The same scaling behavior is expected for tabular data. The practical constraint is memory and training time: a 12-layer DiT with hidden dimension 512 requires roughly 9$\times$ more parameters than the current 4-layer, 256-dimension model, which may exceed available hardware for very large datasets.
 
@@ -80,11 +80,11 @@ The current generation procedure runs the full 1,000-step DDPM reverse process. 
 
 Denoising Diffusion Implicit Models, i.e., DDIM, \cite{ho2020ddpm} provide a deterministic sampling procedure that achieves comparable generation quality in as few as 50--100 steps rather than 1,000, by taking larger steps along the denoising trajectory. Integrating DDIM would reduce generation time by 10--20$\times$ with minimal quality loss. For a production system that needs to generate synthetic datasets on demand, this speedup would be the difference between a query taking minutes and one taking seconds.
 
-DDIM integration is technically straightforward: the trained diffusion model requires no retraining; only the sampling loop changes. It could be implemented as an optional generation parameter, allowing users to trade off speed against quality.
+DDIM integration is technically straightforward, as the trained diffusion model requires no retraining; only the sampling loop changes. It could be implemented as an optional generation parameter, allowing users to trade off speed against quality.
 
 \section{Enhanced Privacy and Security}
 
-RE-TabSyn currently provides empirical privacy assurances through DCR analysis. Three directions would strengthen these guarantees: formal differential privacy through DP-SGD, federated training to eliminate raw data sharing entirely, and rigorous membership inference evaluation against the standard TAMIS framework.
+RE-TabSyn currently provides empirical privacy assurances through DCR analysis. Three directions would strengthen these guarantees, including formal differential privacy through DP-SGD, federated training to eliminate raw data sharing entirely, and rigorous membership inference evaluation against the standard TAMIS framework.
 
 \subsection{Formal differential privacy through DP-SGD integration}
 
@@ -94,19 +94,19 @@ Preliminary prototyping with the Opacus library \cite{yousefpour2021opacus} demo
 
 The implementation challenge is that DP-SGD degrades generation quality by adding noise to gradients. The magnitude of this degradation depends on the clipping norm, the noise multiplier, and the dataset size. Larger datasets can absorb more noise without severe quality loss (because each gradient update is based on more examples, so the signal-to-noise ratio is higher). For the small benchmark datasets like German Credit (1,000 records) and Credit Approval (690 records), DP-SGD integration may degrade quality considerably. For large datasets like Adult Income (45,222 records) and Bank Marketing (41,188 records), the degradation should be manageable.
 
-A recommended implementation path: apply DP-SGD only during Phase 2 (diffusion model training), not Phase 1 (VAE training). The VAE is trained on the full data without DP guarantees, but it only outputs latent representations, not the raw data. The diffusion model, which generates new samples, would carry the DP guarantee. This mixed approach may provide better quality-privacy tradeoffs than applying DP-SGD to both phases.
+A recommended implementation path would be to apply DP-SGD only during Phase 2 (diffusion model training), not Phase 1 (VAE training). The VAE is trained on the full data without DP guarantees, but it only outputs latent representations, not the raw data. The diffusion model, which generates new samples, would carry the DP guarantee. This mixed approach may provide better quality-privacy tradeoffs than applying DP-SGD to both phases.
 
 \subsection{Federated RE-TabSyn}
 
-A recurring challenge in financial machine learning is that no single institution has enough minority class examples to train a highly effective detection model. A single bank may have 50,000 fraud cases per year; a federated consortium of 10 banks would collectively have 500,000, enabling a measurably better shared model. However, fraud data is highly sensitive and subject to competitive confidentiality concerns: banks will not share their fraud records even with other banks.
+A recurring challenge in financial machine learning is that no single institution has enough minority class examples to train a highly effective detection model. A single bank may have 50,000 fraud cases per year; a federated consortium of 10 banks would collectively have 500,000, enabling a measurably better shared model. However, fraud data is highly sensitive and subject to competitive confidentiality concerns, and banks will not share their fraud records even with other banks.
 
-Federated learning provides a solution: each institution trains a local model on its own data, and only gradient updates (not raw data) are shared and aggregated. RE-TabSyn's architecture is well-suited for federalization. The VAE could be trained independently at each institution (since each institution's latent space may differ in non-critical ways), while the DiT is trained collaboratively through federated averaging \cite{mcmahan2017fedavg}. The CFG mechanism operates entirely at inference time and does not require federated coordination.
+Federated learning provides a solution, where each institution trains a local model on its own data, and only gradient updates (not raw data) are shared and aggregated. RE-TabSyn's architecture is well-suited for federalization. The VAE could be trained independently at each institution (since each institution's latent space may differ in non-critical ways), while the DiT is trained collaboratively through federated averaging \cite{mcmahan2017fedavg}. The CFG mechanism operates entirely at inference time and does not require federated coordination.
 
 This direction is particularly relevant for anti-money laundering applications, where money laundering patterns often span multiple institutions (a transaction at Bank A initiates a chain that touches Banks B, C, and D) but no single institution can see the full pattern. A federated RE-TabSyn could learn cross-institutional patterns without any raw data ever leaving individual institutions.
 
 \subsection{Formal membership inference attack evaluation}
 
-The current privacy evaluation uses DCR as a proxy for memorization risk. DCR is an empirical measure: it tells you whether synthetic samples are close to real training samples, but it does not directly answer whether an adversary can determine whether a specific record was in the training data.
+The current privacy evaluation uses DCR as a proxy for memorization risk. DCR is an empirical measure that tells you whether synthetic samples are close to real training samples, but it does not directly answer whether an adversary can determine whether a specific record was in the training data.
 
 A more rigorous privacy evaluation would use shadow model techniques for Membership Inference Attacks, i.e., MIA. In a shadow model MIA, an adversary trains multiple ``shadow'' generative models on data that is either from the training set or not, observing the model's behavior in each case. The adversary then trains a classifier to distinguish between the two cases, and its success rate measures the model's vulnerability to membership inference. A model that achieves 50\% MIA success rate is perfectly private (because 50\% is random guessing); higher success rates indicate privacy leakage.
 
@@ -118,21 +118,21 @@ The current framework handles binary classification targets on single flat table
 
 \subsection{Multi-class and multi-attribute conditioning}
 
-The current CFG mechanism conditions on a binary class label (0 or 1). Many real-world financial applications have more than two classes: credit ratings have multiple grades (from AAA to D); fraud has multiple types (card-present, card-not-present, identity theft, account takeover); transactions have dozens of merchant category codes.
+The current CFG mechanism conditions on a binary class label (0 or 1). Many real-world financial applications have more than two classes, as credit ratings have multiple grades (from AAA to D); fraud has multiple types (card-present, card-not-present, identity theft, account takeover); transactions have dozens of merchant category codes.
 
 Extending CFG to multi-class settings requires changes to the class embedding architecture (from a 3-token embedding for 0/1/null to a larger vocabulary) and to the guidance mechanism (a vector-valued guidance rather than a scalar scale). The theory extends naturally, since CFG for multi-class settings was explored in the original image generation literature, but the tabular domain adds complexity because the conditioning space may include ordinal relationships (risk rating grades have a natural ordering) that should ideally be reflected in the conditioning mechanism.
 
-A more ambitious extension is joint multi-attribute conditioning: simultaneously controlling the class label and other distributional properties such as demographic attributes, time periods, or geographic regions. A bank could specify ``generate synthetic transactions that are balanced between fraud and non-fraud, evenly distributed across merchant categories, and representative of a specific customer demographic.'' This would require a multi-dimensional conditioning space and a corresponding multi-dimensional guidance mechanism.
+A more ambitious extension is joint multi-attribute conditioning, simultaneously controlling the class label and other distributional properties such as demographic attributes, time periods, or geographic regions. A bank could specify ``generate synthetic transactions that are balanced between fraud and non-fraud, evenly distributed across merchant categories, and representative of a specific customer demographic.'' This would require a multi-dimensional conditioning space and a corresponding multi-dimensional guidance mechanism.
 
 \subsection{Relational multi-table synthesis}
 
-Real financial data is not a single flat table. It is a relational database: a customer table, an account table, a transaction table, a product table, all linked through primary and foreign keys. Generating realistic synthetic data across multiple linked tables while preserving referential integrity and cross-table statistical relationships is a considerably harder problem than single-table synthesis.
+Real financial data is not a single flat table. It is a relational database with a customer table, an account table, a transaction table, a product table, all linked through primary and foreign keys. Generating realistic synthetic data across multiple linked tables while preserving referential integrity and cross-table statistical relationships is a considerably harder problem than single-table synthesis.
 
 Extending RE-TabSyn to relational settings could build on insights from RelDDPM \cite{liu2024relddpm}, which addressed multi-table diffusion without the class control mechanism. The VAE would need to encode individual rows together with table relationships, possibly through a graph-structured encoder that treats table rows as nodes and foreign key relationships as edges. The CFG mechanism would then condition on a target rare event defined at the customer level (e.g., ``this customer will default'') and propagate that conditioning through the transaction-level generation.
 
 \subsection{Temporal tabular data}
 
-Financial transaction logs, market data, and account history are temporal: each record has a timestamp, and the sequence of records for a given customer carries as much information as the individual records themselves. A transaction at 3 AM in an unusual location following a large international transfer is more suspicious than each of those facts considered in isolation.
+Financial transaction logs, market data, and account history are temporal, where each record has a timestamp, and the sequence of records for a given customer carries as much information as the individual records themselves. A transaction at 3 AM in an unusual location following a large international transfer is more suspicious than each of those facts considered in isolation.
 
 Adapting RE-TabSyn for temporal tabular data would require adding a sequential structure to the VAE encoding (possibly through an LSTM or Transformer operating on sequences of rows rather than individual rows) and modifying the diffusion process to generate sequences with realistic temporal dynamics. This is a direction where connections to the time-series generation literature \cite{takahashi2019gansfinance, sattarov2024leveraging} would be valuable.
 
@@ -144,27 +144,27 @@ Extending RE-TabSyn to simultaneously control both the minority class ratio and 
 
 \section{Evaluation and Deployment}
 
-Validating RE-TabSyn's readiness for production requires expanding the evaluation beyond the six financial benchmark datasets and beyond purely statistical metrics. This section covers four directions: domain generalization, causal fidelity, production infrastructure, and practitioner validation.
+Validating RE-TabSyn's readiness for production requires expanding the evaluation beyond the six financial benchmark datasets and beyond purely statistical metrics. This section covers four directions, namely domain generalization, causal fidelity, production infrastructure, and practitioner validation.
 
 \subsection{Domain generalization testing}
 
 The current evaluation covers six financial datasets. Financial data has specific characteristics (heavy-tailed distributions, strong regulatory structure, specific types of feature interactions) that may not generalize to other domains. Testing RE-TabSyn on healthcare (patient records, disease outcomes), cybersecurity (network intrusion detection), and manufacturing (quality control defect detection) datasets would validate whether the method generalizes beyond its current domain.
 
-Healthcare is a particularly relevant next domain: patient records have the same privacy constraints as financial records, rare events (adverse drug reactions, rare diseases) are just as important and just as underrepresented, and the heterogeneous feature types (numerical lab values, categorical diagnoses, binary flags) match the tabular structure RE-TabSyn was designed for.
+Healthcare is a particularly relevant next domain, as patient records have the same privacy constraints as financial records, rare events (adverse drug reactions, rare diseases) are just as important and just as underrepresented, and the heterogeneous feature types (numerical lab values, categorical diagnoses, binary flags) match the tabular structure RE-TabSyn was designed for.
 
 \subsection{Causal fidelity metrics}
 
-The current evaluation framework measures statistical fidelity (do the distributions match?) and ML utility (can a model trained on synthetic data classify real data?), but not causal fidelity (does the synthetic data preserve causal relationships?). In financial data, causal structure matters: income causes creditworthiness, not the other way around. A synthetic dataset that reverses this relationship would train models with incorrect causal assumptions, potentially leading to poor decisions in unfamiliar scenarios.
+The current evaluation framework measures statistical fidelity (do the distributions match?) and ML utility (can a model trained on synthetic data classify real data?), but not causal fidelity (does the synthetic data preserve causal relationships?). In financial data, causal structure matters, as income causes creditworthiness, not the other way around. A synthetic dataset that reverses this relationship would train models with incorrect causal assumptions, potentially leading to poor decisions in unfamiliar scenarios.
 
 Developing causal fidelity metrics that test whether synthetic data preserves causal relationships, and not merely statistical correlations, is an open research problem. One approach is to fit a causal model (using structural equation modeling or a causal discovery algorithm \cite{zheng2024causal}) to the real data and then check whether the same causal structure is recovered from the synthetic data. This would add a fourth pillar to the evaluation framework.
 
 \subsection{Production deployment infrastructure}
 
-RE-TabSyn's current implementation is a research codebase. Making it production-ready requires several engineering investments:
+RE-TabSyn's current implementation is a research codebase. Making it production-ready requires several engineering investments.
 
 A REST API for on-demand synthetic data generation would allow downstream teams to request synthetic datasets with specified parameters (dataset name, number of samples, target minority ratio, random seed) without running Python code directly. This API could be integrated with existing MLOps pipelines that automate model training workflows.
 
-A constraint enforcement layer would post-process generated synthetic data to ensure it satisfies hard business rules: valid age ranges, consistent relationship between loan amount and collateral value, non-negative financial ratios. A declarative rule specification format (similar to SQL constraints or JSON Schema) would allow domain experts to specify constraints without writing code.
+A constraint enforcement layer would post-process generated synthetic data to ensure it satisfies hard business rules, including valid age ranges, consistent relationship between loan amount and collateral value, non-negative financial ratios. A declarative rule specification format (similar to SQL constraints or JSON Schema) would allow domain experts to specify constraints without writing code.
 
 A monitoring system for distribution drift would compare the statistics of newly generated synthetic batches against the original training data distribution, flagging cases where the generated data has drifted noticeably. This is important in production settings where the generative model may be used long after training, and subtle changes in its behavior could go undetected without monitoring.
 
@@ -174,25 +174,25 @@ The ultimate measure of RE-TabSyn's value is whether financial practitioners fin
 
 \section{Long-Term Research Vision}
 
-The following subsections place RE-TabSyn within a broader research trajectory: the paradigm shift it represents, the compounding value of each planned extension, and the competitive landscape that makes timing a factor.
+The following subsections place RE-TabSyn within a broader research trajectory, including the paradigm shift it represents, the compounding value of each planned extension, and the competitive landscape that makes timing a factor.
 
 \subsection{The broader paradigm shift}
 
 RE-TabSyn's most important contribution is not the specific model it trains or the specific numbers it achieves. It is the proof of concept that guidance mechanisms from continuous generative models can be transplanted into the structured tabular domain via a learned latent space intermediary. This is a methodological bridge, and bridges tend to open up more traffic once built.
 
-Before 2022, text-to-image generation was limited to retrieving or slightly modifying existing images. After CFG was introduced, models like Stable Diffusion and DALL-E 2 could generate almost any image from a text description. The paradigm shift was complete within two years. The tabular domain is at the beginning of an analogous shift: from synthesis methods that merely generate realistic data to synthesis methods that generate the data you specify.
+Before 2022, text-to-image generation was limited to retrieving or slightly modifying existing images. After CFG was introduced, models like Stable Diffusion and DALL-E 2 could generate almost any image from a text description. The paradigm shift was complete within two years. The tabular domain is at the beginning of an analogous shift, moving from synthesis methods that merely generate realistic data to synthesis methods that generate the data you specify.
 
-This shift has implications far beyond fraud detection. In each case below, the same underlying capability is needed: the ability to generate realistic records from a specified class or condition, even when that condition is rare or absent from historical data.
+This shift has implications far beyond fraud detection. In each case below, the same underlying capability is needed, namely the ability to generate realistic records from a specified class or condition, even when that condition is rare or absent from historical data.
 \begin{enumerate}
-    \item Drug trial augmentation: Clinical trials are expensive and have small sample sizes. A CFG-adapted tabular model could generate synthetic patient records for rare adverse drug reactions, enabling statistical analysis that the real trial data is too small to support.
-    \item Bias testing in hiring: AI systems used in recruitment must be tested for demographic bias. Generating synthetic applicant records with controlled demographic distributions allows auditors to probe model behaviour systematically without accessing real candidates' data.
-    \item Stress testing in insurance: Insurers must demonstrate model robustness under rare catastrophic scenarios. RE-TabSyn could generate synthetic records of rare catastrophic events (major natural disasters, pandemic claims spikes) at any desired frequency for backtesting.
-    \item Regulatory stress scenarios: Central banks run stress tests using hypothetical adverse economic scenarios. RE-TabSyn-style controllable synthesis could generate realistic loan portfolios under stress conditions that may not exist in historical data.
+    \item Drug trial augmentation. Clinical trials are expensive and have small sample sizes. A CFG-adapted tabular model could generate synthetic patient records for rare adverse drug reactions, enabling statistical analysis that the real trial data is too small to support.
+    \item Bias testing in hiring. AI systems used in recruitment must be tested for demographic bias. Generating synthetic applicant records with controlled demographic distributions allows auditors to probe model behaviour systematically without accessing real candidates' data.
+    \item Stress testing in insurance. Insurers must demonstrate model robustness under rare catastrophic scenarios. RE-TabSyn could generate synthetic records of rare catastrophic events (major natural disasters, pandemic claims spikes) at any desired frequency for backtesting.
+    \item Regulatory stress scenarios. Central banks run stress tests using hypothetical adverse economic scenarios. RE-TabSyn-style controllable synthesis could generate realistic loan portfolios under stress conditions that may not exist in historical data.
 \end{enumerate}
 
 \subsection{Research investment and impact}
 
-Each extension compounds the value of the previous ones, and none alone transforms the value proposition:
+Each extension compounds the value of the previous ones, and none alone transforms the value proposition.
 \begin{enumerate}
     \item DDIM fast sampling reduces generation time by 10--20$\times$, making RE-TabSyn usable in real-time data augmentation pipelines.
     \item DP-SGD integration brings the fast-generation model into compliance with formal privacy requirements of regulated financial environments.
@@ -200,11 +200,11 @@ Each extension compounds the value of the previous ones, and none alone transfor
     \item Federated training enables deployment across a banking consortium without any raw data leaving individual institutions.
 \end{enumerate}
 
-Together, they produce a tool that a compliance officer at a major bank could plausibly deploy: fast enough for production, private enough for regulation, expressive enough for complex financial products, and federated enough for consortium use. The path from research prototype to production tool is clear, and each step on that path is a natural extension of what this thesis demonstrates.
+Together, they produce a tool that a compliance officer at a major bank could plausibly deploy, as it would be fast enough for production, private enough for regulation, expressive enough for complex financial products, and federated enough for consortium use. The path from research prototype to production tool is clear, and each step on that path is a natural extension of what this thesis demonstrates.
 
 \subsection{The competitive research landscape}
 
-The synthetic tabular data field is moving quickly. TabSyn was published in January 2024. By the time this thesis was completed, at least three follow-on papers had appeared that built on TabSyn's architecture. The window for establishing CFG-for-tables as a recognised paradigm is open now, and the conference acceptance at I2IT is a first step toward progressively higher-impact venues:
+The synthetic tabular data field is moving quickly. TabSyn was published in January 2024. By the time this thesis was completed, at least three follow-on papers had appeared that built on TabSyn's architecture. The window for establishing CFG-for-tables as a recognised paradigm is open now, and the conference acceptance at I2IT is a first step toward progressively higher-impact venues.
 \begin{enumerate}
     \item A follow-on journal paper extending RE-TabSyn with formal differential privacy would be competitive at venues such as the Journal of Machine Learning Research, i.e., JMLR, IEEE Transactions on Neural Networks, or NeurIPS workshops on synthetic data.
     \item A federated extension would be relevant to the ACM Conference on Fairness, Accountability, and Transparency, i.e., FAccT, and to IEEE Security \& Privacy.
@@ -215,6 +215,6 @@ The synthetic tabular data field is moving quickly. TabSyn was published in Janu
 
 Fraud costs consumers and institutions tens of billions of dollars every year. Loan defaults cause families to lose homes. Corporate bankruptcies eliminate jobs. Anti-money laundering failures allow criminal networks to operate. These are not abstract harms; they are concrete, measurable outcomes that affect real people.
 
-Machine learning models that detect these events earlier and more accurately reduce these harms. However, those models can only be as good as the data they are trained on. When the data is imbalanced -- when fraud is 0.5\% of transactions, when bankruptcies are 5\% of companies -- the models are handicapped before they start. RE-TabSyn addresses this handicap directly.
+Machine learning models that detect these events earlier and more accurately reduce these harms. However, those models can only be as good as the data they are trained on. When the data is imbalanced, when fraud is 0.5\% of transactions and bankruptcies are 5\% of companies, the models are handicapped before they start. RE-TabSyn addresses this handicap directly.
 
 The long-term vision is a world where every financial institution, regardless of size or data volume, can train effective minority-event detection models by generating the balanced synthetic training data they need. A community bank with 1,000 loan records should have access to the same quality of credit risk model as a global bank with 10 million records. Synthetic data, controlled and private, is how that access gets democratised. RE-TabSyn is an early step in that direction.

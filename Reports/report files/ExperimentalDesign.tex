@@ -1,7 +1,7 @@
 \chapter{Experimental Design}
 \label{ch:experimental_design}
 
-RE-TabSyn is evaluated on six financial benchmark datasets against four baselines across three evaluation pillars: statistical fidelity, machine learning utility, and empirical privacy. All experiments run three random seeds (42, 123, 456); results are reported as mean $\pm$ standard deviation.
+RE-TabSyn is evaluated on six financial benchmark datasets against four baselines across three evaluation pillars, namely statistical fidelity, machine learning utility, and empirical privacy. All experiments run three random seeds (42, 123, 456); results are reported as mean $\pm$ standard deviation.
 
 \section{Benchmark Datasets}
 
@@ -103,7 +103,7 @@ Credit Approval \cite{uci_creditapproval}: 690 anonymised credit applications fr
 
 Lending Club \cite{kaggle_lendingclub}: Application attributes and repayment outcomes for a stratified 10,000-record subsample of LendingClub Corporation loans. The label is loan default (minority, 20\%).
 
-Polish Bankruptcy \cite{uci_polishbankruptcy}: Financial ratio data for Polish companies from the EMIS database, covering 2000--2012. Contains 64 purely numerical financial ratios with a 4.8\% bankruptcy rate --- the most extreme imbalance and the highest dimensionality in the benchmark.
+Polish Bankruptcy \cite{uci_polishbankruptcy}: Financial ratio data for Polish companies from the EMIS database, covering 2000--2012. Contains 64 purely numerical financial ratios with a 4.8\% bankruptcy rate, the most extreme imbalance and the highest dimensionality in the benchmark.
 
 \section{Model Configurations}
 
@@ -196,23 +196,23 @@ Table~\ref{tab:hyperparams} lists all RE-TabSyn hyperparameters.
 
 \subsection{RE-TabSyn architecture}
 
-VAE Encoder: MLP with hidden dimensions [256, 128] and ReLU activations. Output: mean vector $\mu \in \mathbb{R}^{64}$ and log-variance vector $\log \sigma^2 \in \mathbb{R}^{64}$.
+VAE Encoder is an MLP with hidden dimensions [256, 128] and ReLU activations. Output is the mean vector $\mu \in \mathbb{R}^{64}$ and log-variance vector $\log \sigma^2 \in \mathbb{R}^{64}$.
 
-VAE Decoder: Mirror architecture [128, 256] with separate output heads --- a linear projection for numerical features and a per-column softmax projection for categorical features.
+VAE Decoder uses a mirror architecture [128, 256] with separate output heads, including a linear projection for numerical features and a per-column softmax projection for categorical features.
 
-Diffusion Backbone (DiT): Diffusion Transformer with 4 layers, hidden dimension 256, 4 attention heads. Noise schedule: $T = 1000$ timesteps, linear $\beta$ from $\beta_1 = 10^{-4}$ to $\beta_T = 0.02$.
+Diffusion Backbone (DiT) is a Diffusion Transformer with 4 layers, hidden dimension 256, 4 attention heads. The noise schedule uses $T = 1000$ timesteps, linear $\beta$ from $\beta_1 = 10^{-4}$ to $\beta_T = 0.02$.
 
-Guidance: Label dropout $p_{uncond} = 0.10$ during training; guidance scale $w = 2.0$ during inference.
+Guidance uses label dropout $p_{uncond} = 0.10$ during training; guidance scale $w = 2.0$ during inference.
 
-Embeddings: Sinusoidal time embeddings projected to 256 dimensions via a two-layer MLP. Learned class embeddings for 3 tokens (class 0, class 1, null $\emptyset$).
+Embeddings use sinusoidal time embeddings projected to 256 dimensions via a two-layer MLP. Learned class embeddings for 3 tokens (class 0, class 1, null $\emptyset$).
 
 \subsection{Baseline configurations}
 
-All baselines use their official codebases:
+All baselines use their official codebases.
 
 CTGAN \cite{xu2019ctgan}: Mode-specific normalization, PAC discriminator (pack size 10), embedding dimension 128, generator and discriminator hidden dimensions [256, 256], batch size 500, 100 epochs. Implemented via the SDV library.
 
-TVAE: Same tabular preprocessing as CTGAN, embedding dimension 128, encoder and decoder hidden dimensions [128, 128], 100 epochs. Implemented via SDV.
+TVAE uses the same tabular preprocessing as CTGAN, embedding dimension 128, encoder and decoder hidden dimensions [128, 128], 100 epochs. Implemented via SDV.
 
 TabDDPM \cite{kotelnikov2023tabddpm}: Gaussian diffusion for numerical features, multinomial diffusion for categorical features, MLP backbone [256, 256, 256], 1,000 diffusion steps, 100 epochs.
 
@@ -283,7 +283,7 @@ Training proceeds in two sequential phases that decouple representation learning
 \label{fig:two_phase_training}
 \end{figure}
 
-\textbf{Phase 1 --- VAE Training (Epochs 1--100):}
+Phase 1, VAE Training (Epochs 1--100)
 
 \begin{enumerate}
     \item Data is preprocessed and split 80/20 into training and test sets. The test set is held out entirely during training.
@@ -304,14 +304,14 @@ Training proceeds in two sequential phases that decouple representation learning
 \label{fig:vae_training_loop}
 \end{figure}
 
-\textbf{Phase 2 --- Diffusion Training (Epochs 1--100):}
+Phase 2, Diffusion Training (Epochs 1--100)
 
 \begin{enumerate}
     \item VAE weights are frozen. This ensures the latent space geometry does not shift during Phase 2, which would invalidate the already-learned diffusion parameters.
 
     \item All training data is encoded to 64-dimensional latents once using the frozen encoder. The resulting vectors are cached to avoid re-encoding at every training step.
 
-    \item Each training step: sample timestep $t \sim \mathcal{U}(1, 1000)$ and noise $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$; apply label dropout ($p = 0.10$); compute $\mathbf{z}_t$; predict noise with DiT; backpropagate MSE loss.
+    \item Each training step involves sampling a timestep $t \sim \mathcal{U}(1, 1000)$ and noise $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$; apply label dropout ($p = 0.10$); compute $\mathbf{z}_t$; predict noise with DiT; backpropagate MSE loss.
 
     \item Same Adam optimizer and batch size as Phase 1.
 
@@ -342,17 +342,17 @@ Kolmogorov-Smirnov (KS) Statistic \cite{massey1951ks}: For each numerical column
 \[
 D_{KS} = \sup_x |F_{real}(x) - F_{synth}(x)|
 \]
-Values range from 0 (identical distributions) to 1 (completely different). The average KS across all numerical columns is reported. The KS test is non-parametric: it detects differences anywhere in the distribution, not just in the mean or variance.
+Values range from 0 (identical distributions) to 1 (completely different). The average KS across all numerical columns is reported. The KS test is non-parametric, as it detects differences anywhere in the distribution, not just in the mean or variance.
 
-Correlation Preservation: Mean absolute difference between the pairwise Pearson correlation matrices of real and synthetic data:
+Correlation Preservation measures the mean absolute difference between the pairwise Pearson correlation matrices of real and synthetic data.
 \[
 \text{Corr Error} = \frac{1}{d^2} \sum_{i,j} |r_{ij}^{real} - r_{ij}^{synth}|
 \]
-This captures joint distribution quality that the KS statistic misses: two datasets could have identical marginal distributions while having entirely wrong correlation structures.
+This captures joint distribution quality that the KS statistic misses, as two datasets could have identical marginal distributions while having entirely wrong correlation structures.
 
 \subsection{Pillar 2: Machine learning utility}
 
-Low KS does not guarantee a model trained on synthetic data will perform well on real data. The TSTR protocol tests this directly: train on synthetic, test on real, measure the gap.
+Low KS does not guarantee a model trained on synthetic data will perform well on real data. The TSTR protocol tests this directly by training on synthetic, test on real, measure the gap.
 
 \begin{figure}[H]
 \centering
@@ -363,7 +363,7 @@ Low KS does not guarantee a model trained on synthetic data will perform well on
 
 TSTR AUC-ROC: An XGBoost \cite{chen2016xgboost} classifier is trained exclusively on synthetic data and evaluated on the real held-out test set. XGBoost hyperparameters are fixed across all experiments (learning rate 0.1, 100 estimators, max depth 6) so performance differences reflect synthetic data quality, not classifier tuning.
 
-Minority F1-Score: The F1-score for the minority class under the TSTR protocol:
+Minority F1-Score is the F1-score for the minority class under the TSTR protocol.
 
 \[
 F1_{minority} = \frac{2 \cdot \text{Precision}_{minority} \cdot \text{Recall}_{minority}}{\text{Precision}_{minority} + \text{Recall}_{minority}}
@@ -382,7 +382,7 @@ DCR measures the distance from each synthetic sample to its nearest real trainin
 \label{fig:dcr_flowchart}
 \end{figure}
 
-Distance to Closest Record (DCR): For each synthetic sample $\tilde{\mathbf{x}}_i$, the Euclidean distance to the nearest real training sample:
+Distance to Closest Record (DCR) measures, for each synthetic sample $\tilde{\mathbf{x}}_i$, the Euclidean distance to the nearest real training sample.
 \[
 \text{DCR}(\tilde{\mathbf{x}}_i) = \min_{j} \|\tilde{\mathbf{x}}_i - \mathbf{x}_j\|_2
 \]

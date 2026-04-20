@@ -1,49 +1,48 @@
-\chapter*{MATHEMATICAL NOTATION}
+\newpage
+\begin{center}
+{\LARGE\bf LIST OF MATHEMATICAL NOTATIONS}
+\end{center}
+\addcontentsline{toc}{chapter}{LIST OF MATHEMATICAL NOTATIONS}
+\vspace{0.5cm}
 
-The following symbols are used throughout this thesis. Readers following the formal derivations in Chapter~2 may use this as a quick reference.
-
-\vspace{0.5em}
-\begin{tabbing}
-\textbf{Symbol} \hspace{2.5cm} \= \textbf{Meaning} \\[0.4em]
-$\mathcal{D}$ \> Training dataset: all rows and their class labels \\
-$\mathbf{x}$ \> A single data row (feature vector) \\
-$y \in \{0, 1\}$ \> Class label (1 = minority event, 0 = majority) \\
-$N$ \> Total number of rows in the dataset \\
-$N_1$ \> Count of minority class rows \\
-$\rho = N_1/N$ \> Minority ratio: fraction of minority rows \\
-$\pi = P(y=1)$ \> Target minority ratio specified at generation time \\
-$\mathcal{X}$ \> Feature space \\
-$d_{num}$, $d_{cat}$ \> Number of numerical and categorical features \\
-$\mathcal{C}_j$ \> Categorical domain for feature $j$ \\
-$G_\theta$ \> Generative model parameterised by $\theta$ \\
-$G$, $D$ \> Generator and discriminator networks in a GAN \\
-$\mathcal{L}_{GAN}$ \> GAN minimax objective \\
-$p_{data}(\mathbf{x})$ \> True data distribution \\
-$p_\theta(\mathbf{x})$ \> Model's learned distribution \\
-$q_\phi(\mathbf{z}|\mathbf{x})$ \> VAE encoder distribution parameterised by $\phi$ \\
-$p_\theta(\mathbf{x}|\mathbf{z})$ \> VAE decoder distribution parameterised by $\theta$ \\
-$\phi$ \> Encoder network parameters \\
-$\mathbf{z}$ \> Latent vector produced by the VAE encoder \\
-$d_z = 64$ \> Dimensionality of the latent space \\
-$\boldsymbol{\mu}$, $\boldsymbol{\sigma}^2$ \> Mean and variance output by the VAE encoder \\
-$\boldsymbol{\epsilon}$ \> Random Gaussian noise (reparameterisation or diffusion) \\
-$\beta_{\text{VAE}}$ \> KL weight in the VAE loss (set to 0.1) \\
-$t$ \> Diffusion timestep \\
-$\mathbf{z}_t$ \> Noisy latent vector at timestep $t$ \\
-$T = 1000$ \> Total number of diffusion timesteps \\
-$\beta_t$ \> Noise variance added at timestep $t$ (linearly increasing) \\
-$\alpha_t = 1 - \beta_t$ \> Signal retention at timestep $t$ \\
-$\bar{\alpha}_t$ \> Cumulative signal retention factor at timestep $t$ \\
-$\epsilon_\theta$ \> DiT noise prediction network parameterised by $\theta$ \\
-$w$ \> CFG guidance scale (default 2.0) \\
-$p_{uncond}$ \> Label dropout probability during CFG training (0.10) \\
-$\emptyset$ \> Null token used when class label is dropped \\
-$\tilde{\epsilon}$ \> Guided noise prediction (CFG output) \\
-$\mathcal{L}_{VAE}$ \> Total VAE training loss \\
-$\mathcal{L}_{recon}$ \> Reconstruction loss component of VAE \\
-$D_{KL}$ \> Kullback-Leibler divergence \\
-$\text{KS}$ \> Kolmogorov-Smirnov statistic (distributional fidelity) \\
-$\text{F1}_{min}$ \> F1-score for the minority class (primary utility metric) \\
-$\text{AUC}$ \> Area Under the ROC Curve (overall utility metric) \\
-$\text{DCR}$ \> Distance to Closest Record (empirical privacy metric) \\
-\end{tabbing}
+\noindent $\mathcal{D}$ \dotfill Training dataset, including all rows and their class labels \\[4pt]
+\noindent $\mathbf{x}$ \dotfill A single data row (feature vector) \\[4pt]
+\noindent $y \in \{0, 1\}$ \dotfill Class label (1 = minority event, 0 = majority) \\[4pt]
+\noindent $N$ \dotfill Total number of rows in the dataset \\[4pt]
+\noindent $N_1$ \dotfill Count of minority class rows \\[4pt]
+\noindent $\rho = N_1/N$ \dotfill Minority ratio, the fraction of minority rows \\[4pt]
+\noindent $\pi = P(y=1)$ \dotfill Target minority ratio specified at generation time \\[4pt]
+\noindent $\mathcal{X}$ \dotfill Feature space \\[4pt]
+\noindent $d_{num}$, $d_{cat}$ \dotfill Number of numerical and categorical features \\[4pt]
+\noindent $\mathcal{C}_j$ \dotfill Categorical domain for feature $j$ \\[4pt]
+\noindent $G_\theta$ \dotfill Generative model parameterised by $\theta$ \\[4pt]
+\noindent $G$, $D$ \dotfill Generator and discriminator networks in a GAN \\[4pt]
+\noindent $\mathcal{L}_{GAN}$ \dotfill GAN minimax objective \\[4pt]
+\noindent $p_{data}(\mathbf{x})$ \dotfill True data distribution \\[4pt]
+\noindent $p_\theta(\mathbf{x})$ \dotfill Model's learned distribution \\[4pt]
+\noindent $q_\phi(\mathbf{z}|\mathbf{x})$ \dotfill VAE encoder distribution parameterised by $\phi$ \\[4pt]
+\noindent $p_\theta(\mathbf{x}|\mathbf{z})$ \dotfill VAE decoder distribution parameterised by $\theta$ \\[4pt]
+\noindent $\phi$ \dotfill Encoder network parameters \\[4pt]
+\noindent $\mathbf{z}$ \dotfill Latent vector produced by the VAE encoder \\[4pt]
+\noindent $d_z = 64$ \dotfill Dimensionality of the latent space \\[4pt]
+\noindent $\boldsymbol{\mu}$, $\boldsymbol{\sigma}^2$ \dotfill Mean and variance output by the VAE encoder \\[4pt]
+\noindent $\boldsymbol{\epsilon}$ \dotfill Random Gaussian noise (reparameterisation or diffusion) \\[4pt]
+\noindent $\beta_{\text{VAE}}$ \dotfill KL weight in the VAE loss (set to 0.1) \\[4pt]
+\noindent $t$ \dotfill Diffusion timestep \\[4pt]
+\noindent $\mathbf{z}_t$ \dotfill Noisy latent vector at timestep $t$ \\[4pt]
+\noindent $T = 1000$ \dotfill Total number of diffusion timesteps \\[4pt]
+\noindent $\beta_t$ \dotfill Noise variance added at timestep $t$ (linearly increasing) \\[4pt]
+\noindent $\alpha_t = 1 - \beta_t$ \dotfill Signal retention at timestep $t$ \\[4pt]
+\noindent $\bar{\alpha}_t$ \dotfill Cumulative signal retention factor at timestep $t$ \\[4pt]
+\noindent $\epsilon_\theta$ \dotfill DiT noise prediction network parameterised by $\theta$ \\[4pt]
+\noindent $w$ \dotfill CFG guidance scale (default 2.0) \\[4pt]
+\noindent $p_{uncond}$ \dotfill Label dropout probability during CFG training (0.10) \\[4pt]
+\noindent $\emptyset$ \dotfill Null token used when class label is dropped \\[4pt]
+\noindent $\tilde{\epsilon}$ \dotfill Guided noise prediction (CFG output) \\[4pt]
+\noindent $\mathcal{L}_{VAE}$ \dotfill Total VAE training loss \\[4pt]
+\noindent $\mathcal{L}_{recon}$ \dotfill Reconstruction loss component of VAE \\[4pt]
+\noindent $D_{KL}$ \dotfill Kullback-Leibler divergence \\[4pt]
+\noindent $\text{KS}$ \dotfill Kolmogorov-Smirnov statistic (distributional fidelity) \\[4pt]
+\noindent $\text{F1}_{min}$ \dotfill F1-score for the minority class (primary utility metric) \\[4pt]
+\noindent $\text{AUC}$ \dotfill Area Under the ROC Curve (overall utility metric) \\[4pt]
+\noindent $\text{DCR}$ \dotfill Distance to Closest Record (empirical privacy metric)

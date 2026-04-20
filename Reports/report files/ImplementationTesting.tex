@@ -1,8 +1,8 @@
 \chapter{Implementation}
 
-This chapter describes the RE-TabSyn pipeline: environment setup, data preprocessing, and the synthetic data generation procedure. Experimental design details --- datasets, model configurations, training procedures, and evaluation metrics --- are in Chapter~\ref{ch:experimental_design}.
+This chapter describes the RE-TabSyn pipeline, including environment setup, data preprocessing, and the synthetic data generation procedure. Experimental design details, including datasets, model configurations, training procedures, and evaluation metrics, are in Chapter~\ref{ch:experimental_design}.
 
-All experiments were conducted using Python 3.13.5 with PyTorch 2.9.1, on a MacBook Air (Apple M3, 16 GB unified RAM, macOS 26.4). Supporting libraries: NumPy 2.1.3, Pandas 2.2.3, scikit-learn 1.6.1, XGBoost 3.1.2.
+All experiments were conducted using Python 3.13.5 with PyTorch 2.9.1, on a MacBook Air (Apple M3, 16 GB unified RAM, macOS 26.4). Supporting libraries include NumPy 2.1.3, Pandas 2.2.3, scikit-learn 1.6.1, XGBoost 3.1.2.
 
 \section{Experimental Environment}
 
@@ -27,17 +27,17 @@ Figure~\ref{fig:pipeline} shows the sequential flow from raw data ingestion to s
 \label{fig:pipeline}
 \end{figure}
 
-The pipeline has five modules:
+The pipeline has five modules.
 \begin{enumerate}
-    \item Data Ingestion: Unified access to all six benchmark datasets with a standardized interface that identifies numerical columns, categorical columns, and the target variable.
+    \item Data Ingestion. Unified access to all six benchmark datasets with a standardized interface that identifies numerical columns, categorical columns, and the target variable.
 
-    \item Preprocessing: Imputation, encoding, and scaling applied to training data only, then identically to the test split.
+    \item Preprocessing. Imputation, encoding, and scaling applied to training data only, then identically to the test split.
 
-    \item Model Training: Two-phase protocol --- VAE to convergence, then Latent Diffusion Model with CFG on frozen VAE latents.
+    \item Model Training. Two-phase protocol, VAE to convergence, then Latent Diffusion Model with CFG on frozen VAE latents.
 
-    \item Generation: Latent sampling, CFG-guided denoising, VAE decoding, and reverse transformation. Output is a Pandas DataFrame matching the original data format.
+    \item Generation. Latent sampling, CFG-guided denoising, VAE decoding, and reverse transformation. Output is a Pandas DataFrame matching the original data format.
 
-    \item Evaluation: Fidelity, utility, and privacy metrics computed across three random seeds, reported as mean $\pm$ standard deviation.
+    \item Evaluation. Fidelity, utility, and privacy metrics computed across three random seeds, reported as mean $\pm$ standard deviation.
 \end{enumerate}
 
 \section{Data Preprocessing}
@@ -56,11 +56,11 @@ The preprocessing pipeline applies four steps in order: (1) missing value imputa
 
 Numerical columns are imputed with the column median. The median is preferred over the mean for financial data because skewed distributions (a few very large transactions or incomes) pull the mean away from the typical value.
 
-Categorical columns are imputed with the column mode. An alternative approach --- treating missingness as a distinct category --- is also supported when the pattern of missingness carries information.
+Categorical columns are imputed with the column mode. An alternative approach of treating missingness as a distinct category is also supported when the pattern of missingness carries information.
 
 \subsection{Feature encoding and scaling}
 
-Numerical features are mapped to $\mathcal{N}(0, 1)$ using a Quantile Transformer. Financial distributions are almost never Gaussian: transaction amounts, for example, cluster around small values with a long right tail. The Quantile Transform is invertible and gives equal representational weight to every part of the distribution during training.
+Numerical features are mapped to $\mathcal{N}(0, 1)$ using a Quantile Transformer. Financial distributions are almost never Gaussian, as transaction amounts, for example, cluster around small values with a long right tail. The Quantile Transform is invertible and gives equal representational weight to every part of the distribution during training.
 
 Categorical features are label-encoded to integers in $\{0, 1, \ldots, K-1\}$. One-hot encoding creates a high-dimensional, sparse binary vector per feature; the diffusion noise process produces dense vectors that are incompatible with this sparse structure. Label encoding avoids the dimensionality explosion, and the VAE encoder learns continuous embeddings from the integer-coded categories.
 
@@ -68,14 +68,14 @@ Categorical features are label-encoded to integers in $\{0, 1, \ldots, K-1\}$. O
 
 Once trained, RE-TabSyn generates synthetic data in four steps without retraining.
 
-\textbf{Step 1 --- Latent Initialization:} Sample $N$ initial noise vectors from $\mathcal{N}(0, I)$ in the 64-dimensional latent space. To generate balanced data, assign half the vectors class label $y = 1$ and half $y = 0$. Any target ratio can be set by adjusting this split.
+Step 1, Latent Initialization. Sample $N$ initial noise vectors from $\mathcal{N}(0, I)$ in the 64-dimensional latent space. To generate balanced data, assign half the vectors class label $y = 1$ and half $y = 0$. Any target ratio can be set by adjusting this split.
 
-\textbf{Step 2 --- CFG-Guided Denoising:} Run 1,000 reverse diffusion steps. At each step:
+Step 2, CFG-Guided Denoising. Run 1,000 reverse diffusion steps. At each step, the following is performed.
 \begin{enumerate}
-    \item Compute conditional noise: $\epsilon_{cond} = \epsilon_\theta(\mathbf{z}_t, t, y)$
-    \item Compute unconditional noise: $\epsilon_{uncond} = \epsilon_\theta(\mathbf{z}_t, t, \emptyset)$
-    \item Apply CFG: $\tilde{\epsilon} = \epsilon_{uncond} + w \cdot (\epsilon_{cond} - \epsilon_{uncond})$, with $w = 2.0$
-    \item Update latent: $\mathbf{z}_{t-1} = f(\mathbf{z}_t, \tilde{\epsilon}, t)$
+    \item Compute conditional noise $\epsilon_{cond} = \epsilon_\theta(\mathbf{z}_t, t, y)$
+    \item Compute unconditional noise $\epsilon_{uncond} = \epsilon_\theta(\mathbf{z}_t, t, \emptyset)$
+    \item Apply CFG as $\tilde{\epsilon} = \epsilon_{uncond} + w \cdot (\epsilon_{cond} - \epsilon_{uncond})$, with $w = 2.0$
+    \item Update latent $\mathbf{z}_{t-1} = f(\mathbf{z}_t, \tilde{\epsilon}, t)$
 \end{enumerate}
 
 \begin{figure}[H]
@@ -87,6 +87,6 @@ Once trained, RE-TabSyn generates synthetic data in four steps without retrainin
 
 CFG requires two DiT forward passes per step, making generation roughly twice as slow as unconditional TabSyn. Fast sampling via DDIM \cite{ho2020ddpm} can reduce this to 50 steps with comparable quality.
 
-\textbf{Step 3 --- VAE Decoding:} Pass denoised latent vectors through the frozen VAE decoder. Numerical features are produced directly from linear output heads. Categorical features are obtained via argmax over per-column softmax probabilities.
+Step 3, VAE Decoding. Pass denoised latent vectors through the frozen VAE decoder. Numerical features are produced directly from linear output heads. Categorical features are obtained via argmax over per-column softmax probabilities.
 
-\textbf{Step 4 --- Reverse Transformation:} Apply the inverse preprocessing pipeline. Numerical features are mapped back via Inverse Quantile Transformer (an exact inverse preserving percentile rank). Categorical features are recovered by Inverse Label Encoding. The result is a Pandas DataFrame in the original feature space.
+Step 4, Reverse Transformation. Apply the inverse preprocessing pipeline. Numerical features are mapped back via Inverse Quantile Transformer (an exact inverse preserving percentile rank). Categorical features are recovered by Inverse Label Encoding. The result is a Pandas DataFrame in the original feature space.
